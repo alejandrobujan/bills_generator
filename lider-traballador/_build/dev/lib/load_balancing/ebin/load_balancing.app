@@ -1,0 +1,11 @@
+{application,load_balancing,
+             [{applications,[kernel,stdlib,elixir,logger]},
+              {description,"load_balancing"},
+              {modules,['Elixir.Core.Leader','Elixir.Core.ServiceHandler',
+                        'Elixir.Core.StandardServer',
+                        'Elixir.LoadBalancing.Application',
+                        'Elixir.Services.Service1',
+                        'Elixir.Services.Service2']},
+              {registered,[]},
+              {vsn,"0.1.0"},
+              {mod,{'Elixir.LoadBalancing.Application',[]}}]}.
