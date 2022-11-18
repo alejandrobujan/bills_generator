@@ -33,7 +33,7 @@ defmodule Core.StandardLeader do
   @doc """
     Inicia un proceso líder dos filtros.
   """
-  @callback start_link() :: {:ok, pid()}
+  @callback start_link(any()) :: {:ok, pid()}
 
   @doc """
   Para o proceso líder
