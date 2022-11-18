@@ -1,0 +1,15 @@
+@startuml Bill Generator pipe and filter
+title Bill Generator pipe and filter (nivel de contexto)
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Context.puml
+
+Person_Ext(client, "Cliente", "Quere facer uso do sistema")
+System(pipeline_system, "Bill Generator", "Recibe a petición, procésaa filtro a filtro e xera un output.")
+System_Ext(external_libraries, "Iona (Document generation using LaTeX)", "Dependencia que compila código LaTeX e xera documentos PDF.")
+
+Rel(client, pipeline_system, "Envía", "Petición ao sistema", "Introduce a petición ao sistema cos produtos, cantidades, comprador e vendedor.")
+Rel(pipeline_system, external_libraries, "Envía", "O código LaTeX completo e o nome do ficheiro onde se vai gardar.", "Introduce o código fonte no compilador\n e o nome do ficheiro.")
+Rel(external_libraries, bill.pdf, "Xera", "A factura en formato PDF", "Exporta o documento co nome previamente calculado no directorio out/")
+
+
+
+@enduml

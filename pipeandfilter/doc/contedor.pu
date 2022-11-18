@@ -1,0 +1,20 @@
+@startuml Bill Generator pipe and filter
+title Bill Generator pipe and filter (nivel de contedor)
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+
+Person_Ext(client, "Cliente", "Quere facer uso do sistema")
+
+System_Boundary(pipeline_system, "Bill Generator"){
+    Container(bill_calculator, "Bill Calculator", "Filtro encargado de calcular os prezos de cada liña de factura así como o total desta.")
+    Container(latex_formatter, "LaTeX Formatter", "Filtro encargado de formatear e embeber a factura xa calculada en código LaTeX.")
+    Container(latex_to_pdf, "LaTeX to PDF", "Filtro encargado da xestión da compilación do código LaTeX e da xeración e exportación do documento en formato PDF.")
+}
+System_Ext(external_libraries, "Iona (Document generation using LaTeX)", "Dependencia que compila código LaTeX e xera documentos PDF.")
+
+Rel(client, bill_calculator, "Envía", "Petición ao sistema", "Introduce a petición ao sistema cos produtos, cantidades, comprador e vendedor.")
+Rel(bill_calculator, latex_formatter, "Envía", "Os datos da factura e o total global e por liñas xa calculados.", "Introduce os datos ao formateador para xerar o código.")
+Rel(latex_formatter, latex_to_pdf, "Envía", "O código LaTeX relativo á factura.", "Introduce o código ao filtro xestor da compilación para xerar o documento.")
+Rel(latex_to_pdf, external_libraries, "Envía", "O código LaTeX completo e o nome do ficheiro onde se vai gardar.", "Introduce o código fonte no compilador\n e o nome do ficheiro.")
+Rel(external_libraries, bill.pdf, "Xera", "A factura en formato PDF", "Exporta o documento co nome previamente calculado no directorio out/")
+
+@enduml

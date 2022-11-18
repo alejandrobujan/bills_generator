@@ -1,0 +1,43 @@
+@startuml Bill Generator pipe and filter
+title Bill Generator pipe and filter (nivel de código)
+interface       Elixir.GenServer
+interface       Elixir.Application
+class        BillGenerator.Application implements Elixir.Application{
++ start()
++ generate()
+}
+class        Default.BillCalculator implements Elixir.GenServer{
++ start_link()
++ stop()
++ init()
++ calc()
++ handle_cast()
+- calculate_bill()
+- do_calculate_bill()
+}
+class        Default.LaTeXFormatter implements Elixir.GenServer{
++ start_link()
++ stop()
++ init()
++ format()
++ handle_cast()
++ generate_latex()
+- format_bill()
+- do_format_bill()
+}
+class        Default.LaTeXToPDF implements Elixir.GenServer{
++ start_link()
++ stop()
++ init()
++ handle_cast()
++ generate()
+- generate_filename()
+}
+package Default {
+struct Product{
++ name
++ price
+}
+}
+
+@enduml
