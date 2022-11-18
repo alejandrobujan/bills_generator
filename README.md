@@ -19,3 +19,8 @@ Documentation can be generated with [ExDoc](https://github.com/elixir-lang/ex_do
 and published on [HexDocs](https://hexdocs.pm). Once published, the docs can
 be found at <https://hexdocs.pm/generacion_facturas>.
 
+# Dudas
+
+Quien escribe en la base de datos? Tener un nuevo último filtro en el que el worker
+sea quien escriba en la base de datos, o el último líder (compilación de latex)
+sea el que escriba el output
