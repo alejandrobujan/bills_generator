@@ -1,0 +1,115 @@
+@import "~/src/styles/builders.scss";
+
+.Notification_aggregator {
+  height: 100vh;
+  position: fixed;
+  bottom: 3rem;
+  left: 3rem;
+  z-index: 100;
+
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  flex-direction: column;
+  gap: 2rem;
+  pointer-events: none;
+}
+
+.Notification_container {
+  cursor: pointer;
+  pointer-events: auto;
+  position: relative;
+  padding: 1rem;
+
+  border-radius: var(--border-radius);
+  border: 2px solid;
+
+  @include for-screens-above("l") {
+    width: 20vw;
+  }
+  @include for-screen("m") {
+    width: 35vw;
+  }
+  @include for-screen("s") {
+    width: 50vw;
+  }
+  @include for-screen("xs") {
+    width: 80vw;
+  }
+}
+
+.Notification_topBar {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.Notification_title {
+  display: flex;
+  justify-content: left;
+  align-items: center;
+  gap: 0.8rem;
+  font-size: 1.1rem;
+  font-weight: 600;
+
+  color: var(--blue1);
+}
+
+.Notification_message {
+  margin-top: 1rem;
+  color: var(--blue1);
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+.Notification_success {
+  background-color: var(--green4);
+  border-color: var(--green3);
+
+  transition: background-color 0.3s ease-in-out;
+  &:hover {
+    background-color: var(--green3);
+  }
+
+  .Notification_title {
+    > svg {
+      color: var(--green2);
+    }
+    border-color: var(--green2);
+  }
+}
+
+.Notification_error {
+  background-color: var(--red4);
+  border-color: var(--red3);
+
+  transition: background-color 0.3s ease-in-out;
+  &:hover {
+    background-color: var(--red3);
+  }
+
+  .Notification_title {
+    > svg {
+      color: var(--red2);
+    }
+    border-color: var(--red2);
+  }
+}
+
+.Notification_info {
+  background-color: var(--blue4);
+  border-color: var(--blue3);
+
+  transition: background-color 0.3s ease-in-out;
+  &:hover {
+    background-color: var(--blue3);
+  }
+
+  .Notification_title {
+    > svg {
+      color: var(--blue2);
+    }
+    border-color: var(--blue2);
+  }
+}
