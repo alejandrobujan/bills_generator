@@ -56,12 +56,23 @@ defmodule Core.StandardLeader do
   """
   @callback redirect(pid(), any()) :: :ok
 
-  @callback get_worker_module() :: module()
+  @callback worker_action(any()) :: any()
 
   @callback next_action(any()) :: any()
 
   defmacro __using__(_) do
     quote do
+      alias __MODULE__, as: LeaderModule
+
+      defmodule Worker do
+        alias Core.StandardFilter
+        use StandardFilter
+
+        def do_process_filter(message) do
+          LeaderModule.worker_action(message)
+        end
+      end
+
       @workload_trigger_max 0.9
       @workload_trigger_min 0.2
 
@@ -102,7 +113,9 @@ defmodule Core.StandardLeader do
       def init(__init_args) do
         Logger.debug("#{__MODULE__} initialized")
 
-        service_handler = ServiceHandler.new(__MODULE__, get_worker_module(), 1)
+        # We can call to worker module, since it is relative from current module, and
+        # defined at first lines of this using
+        service_handler = ServiceHandler.new(__MODULE__, Worker, 1)
 
         {:ok, _pid} = Task.start(fn -> check_services_worload(@workload_check_period) end)
 

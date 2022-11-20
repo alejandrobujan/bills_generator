@@ -4,16 +4,18 @@ defmodule GeneracionFacturas.Application do
   @moduledoc false
 
   use Application
-  alias Leaders.Leader1
-  alias Leaders.Leader2
+  alias Filters.Filter1
+  alias Filters.Filter2
+  alias Filters.Filter3
 
   @impl true
   def start(_type, _args) do
     children = [
       # Starts a worker by calling: GeneracionFacturas.Worker.start_link(arg)
       # {GeneracionFacturas.Worker, arg}
-      Leader1,
-      Leader2
+      Filter1,
+      Filter2,
+      Filter3
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html
