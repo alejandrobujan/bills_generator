@@ -1,6 +1,6 @@
 # Bill Generator
 
-Bill Generator é unha implementación en [Elixir](https://elixir-lang.org/) dunha arquitectura pipe and filter, sendo cada un destos filtros unha implementación de [GenServer](https://hexdocs.pm/elixir/1.12/GenServer.html). Baséase na xeración de facturas en formato PDF a partires dunha lista de produtos e cantidades, un comprador, e un vendedor, usando código LaTeX como intermediario. 
+Bill Generator é unha implementación en [Elixir](https://elixir-lang.org/) dunha arquitectura pipe and filter, sendo cada un destos filtros unha implementación de [GenServer](https://hexdocs.pm/elixir/1.12/GenServer.html). Baséase na xeración de facturas en formato PDF a partires dunha lista de produtos e cantidades, un comprador, e un vendedor, usando código LaTeX como intermediario.
 
 ## Instalación
 
@@ -11,7 +11,6 @@ Para clonar o repositorio, pódese usar calquera software compatible con GitHub,
 Teremos que descargar as dependencias asociadas ao proxecto, polo tanto, dentro do directorio do repositorio, usamos:
 
     mix deps.get
-
 
 ## LaTeX
 
@@ -62,7 +61,7 @@ Para xerar un pdf, enviamos este input ao sistema:
 BillGenerator.Application.generate(list, seller, purchaser)
 ```
 
-Agora, dentro do directorio `out` podemos atopar a factura xerada, gardada cun nome con patrón `bill-<y>-<m>-<d>-<h>-<M>-<s>.pdf` que dependerá da data e hora na que foi xerada. 
+Agora, dentro do directorio `out` podemos atopar a factura xerada, gardada cun nome con patrón `bill-<y>-<m>-<d>-<h>-<M>-<s>.pdf` que dependerá da data e hora na que foi xerada.
 
 Neste caso, xerarase un documento co seguinte contido:
 
@@ -71,12 +70,13 @@ Neste caso, xerarase un documento co seguinte contido:
 ## Outra documentación
 
 Os diagramas C4 atópanse no directorio `doc` do repositorio:
-+ [Contexto](doc/contexto.png)
-+ [Contedor](doc/contedor.png)
-+ [Compoñente](doc/componhente.png)
-+ [Código](doc/codigo.png)
 
-O proxecto tamén ten soporte para xerar documentación HTML con [ExDoc](https://github.com/elixir-lang/ex_doc), sen embargo, hai que ter en conta que a xeración destes documentos realizaríase no directorio `doc` e eliminaría todo o contido existente nese directorio como todo relacionado cos diagramas C4 entre outros. Unha boa solución sería mover os diagramas e imaxes actualmente no directorio `doc` a outro directorio, pero por agora, iso xeraría un conflicto coas especificacións do enunciado. 
+- [Contexto](doc/contexto.png)
+- [Contedor](doc/contedor.png)
+- [Compoñente](doc/componhente.png)
+- [Código](doc/codigo.png)
+
+O proxecto tamén ten soporte para xerar documentación HTML con [ExDoc](https://github.com/elixir-lang/ex_doc), sen embargo, hai que ter en conta que a xeración destes documentos realizaríase no directorio `doc` e eliminaría todo o contido existente nese directorio como todo relacionado cos diagramas C4 entre outros. Unha boa solución sería mover os diagramas e imaxes actualmente no directorio `doc` a outro directorio, pero por agora, iso xeraría un conflicto coas especificacións do enunciado.
 
 De todas formas para xerar a documentación HTML (sendo consciente de que se sobreescribe o directorio `doc`):
 

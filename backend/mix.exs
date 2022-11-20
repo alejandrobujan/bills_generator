@@ -14,6 +14,7 @@ defmodule GeneracionFacturas.MixProject do
   # Run "mix help compile.app" to learn about applications.
   def application do
     [
+      applications: [:iona],
       extra_applications: [:logger],
       mod: {GeneracionFacturas.Application, []}
     ]
@@ -22,6 +23,7 @@ defmodule GeneracionFacturas.MixProject do
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
+      {:iona, "~> 0.4"},
       {:ex_doc, "~> 0.24", only: :dev, runtime: false},
       {:credo, "~> 1.5", only: [:dev, :test], runtime: false},
       {:dialyxir, "~> 1.0", only: [:dev], runtime: false}

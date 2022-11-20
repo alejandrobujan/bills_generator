@@ -13,9 +13,9 @@ defmodule GeneracionFacturas.Application do
     children = [
       # Starts a worker by calling: GeneracionFacturas.Worker.start_link(arg)
       # {GeneracionFacturas.Worker, arg}
-      Filter1,
-      Filter2,
-      Filter3
+      Filters.BillCalculator,
+      Filters.LatexFormatter,
+      Filters.LatexToPdf
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html

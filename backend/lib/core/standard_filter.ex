@@ -56,7 +56,7 @@ defmodule Core.StandardFilter do
       @impl GenServer
       def handle_cast({:process_filter, input_data}, {leader, name} = state) do
         message = __MODULE__.do_process_filter(input_data)
-        Logger.debug("Sending message from #{name} to leader: #{message}")
+        # Logger.debug("Sending message from #{name} to leader: #{message}")
         leader.redirect(self(), message)
         {:noreply, state}
       end
