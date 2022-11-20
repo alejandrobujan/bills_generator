@@ -45,6 +45,19 @@ tiene el campo pdf a null en la base de datos. Quién escribe en la base
 de datos, el worker que genera el latex? Otro filtro nuevo que solamente
 lo escriba? o el líder del worker que genera el latex?
 
+# Ideas
+
+Monitorización de los filtros? Podemos sacar una gráfica del número
+de trabajadores en cada instante, útil para ver cómo se comporta el sistema.
+
+Usar Iona para obtener el pdf en binario
+
+```elixir
+Iona.source(path: "fancy.tex")
+|> Iona.to(:pdf)
+|> MyModule.do_something_with_pdf_string
+```
+
 # Testing
 
 ```elixir

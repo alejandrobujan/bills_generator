@@ -227,21 +227,14 @@ defmodule Core.StandardLeader do
         workers_to_kill = min(ceil(rate_diff * total_workers), max_workers_to_kill)
 
         new_service_handler =
-          cond do
-            total_free_workers == 0 ->
-              # Logger.debug("Not killing any workers for #{worker_module}, no free workers")
+          case workers_to_kill do
+            0 ->
+              # Logger.debug("Not killing any workers for #{worker_module}")
               service_handler
 
-            total_workers == min_workers ->
-              # Logger.debug(
-              #   "Not killing any workers for #{worker_module}, min_workers reached (#{min_workers})"
-              # )
-
-              service_handler
-
-            true ->
-              # Logger.info("Killing #{workers_to_kill} workers for #{worker_module}")
-              ServiceHandler.kill_workers(service_handler, workers_to_kill)
+            n ->
+              # Logger.info("Killing #{n} workers for #{worker_module}")
+              ServiceHandler.kill_workers(service_handler, n)
           end
 
         new_service_handler
