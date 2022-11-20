@@ -26,3 +26,5 @@ generacion_facturas-*.tar
 /tmp/
 
 .elixir_ls
+
+out/

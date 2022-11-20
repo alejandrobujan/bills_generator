@@ -68,6 +68,7 @@ defmodule Core.StandardLeader do
         alias Core.StandardFilter
         use StandardFilter
 
+        @impl StandardFilter
         def do_process_filter(message) do
           LeaderModule.worker_action(message)
         end
