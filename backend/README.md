@@ -77,6 +77,6 @@ list = [{%Product{name: "iPhone 14 Pro", price: 1319.99}, 1},
     {%Product{name: "Peas", price: 1.00}, 1}]
 seller = "Sainsbury's, 15-17 Tottenham Ct Rd, London W1T 1BJ, UK"
 purchaser = "John Smith, 7 Horsefair Green, Otterbourne SO21 1GN, UK"
-1..1000 |> Enum.each(fn _x -> Filters.BillCalculator.process_filter({list,seller,purchaser})end)
+1..60 |> Enum.each(fn _x -> Filters.BillCalculator.process_filter({list,seller,purchaser})end)
 
 ```
