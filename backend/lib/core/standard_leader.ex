@@ -156,9 +156,10 @@ defmodule Core.StandardLeader do
       @impl GenServer
       def handle_info({:check, period}, service_handler) do
         # Logger.info("Starting workload checking")
-
         total_workers = ServiceHandler.total_workers(service_handler)
         total_free_workers = ServiceHandler.total_free_workers(service_handler)
+
+        Logger.info("#{__MODULE__} has #{total_workers} workers")
 
         workload_rate = 1 - total_free_workers / total_workers
 
