@@ -3,10 +3,18 @@ defmodule BillsGenerator.Filters.LatexToPdf do
   use StandardLeader
 
   @impl StandardLeader
-  def worker_action(latex) do
+  def worker_action({stored_bill, latex}) do
     filename = generate_filename()
     if !File.exists?("out/"), do: File.mkdir("out/")
-    Iona.source(latex) |> Iona.write!(filename)
+    # Iona.source(latex) |> Iona.write!(filename)
+
+    {:ok, pdf} =
+      latex
+      |> Iona.source()
+      |> Iona.to(:pdf)
+
+    stored_bill |> Ecto.Changeset.change(pdf: pdf) |> BillsGenerator.Repo.update!()
+
     filename
   end
 

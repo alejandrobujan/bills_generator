@@ -24,4 +24,11 @@ defmodule BillsGenerator.Application do
 
     Supervisor.start_link(children, strategy: :one_for_one, name: BillsGenerator.Supervisor)
   end
+
+  def generate_bill(user, products, seller, purchaser) do
+    # Esto lo debería hacer un filtro?
+    {:ok, stored_bill} = Repo.insert(%Bill{user: user})
+
+    BillCalculator.process_filter({stored_bill, products, seller, purchaser})
+  end
 end

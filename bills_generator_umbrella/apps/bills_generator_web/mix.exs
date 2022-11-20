@@ -24,7 +24,7 @@ defmodule BillsGeneratorWeb.MixProject do
   def application do
     [
       mod: {BillsGeneratorWeb.Application, []},
-      extra_applications: [:logger, :runtime_tools]
+      extra_applications: [:logger, :runtime_tools, :bills_generator]
     ]
   end
 

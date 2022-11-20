@@ -8,5 +8,8 @@ defmodule BillsGeneratorWeb.Router do
   scope "/api", BillsGeneratorWeb do
     pipe_through(:api)
     post("/bills", BillController, :generate)
+    get("/bills/:id", BillController, :download)
+    get("/bills", BillController, :get)
+    get("/bills/:id/available", BillController, :download_available?)
   end
 end

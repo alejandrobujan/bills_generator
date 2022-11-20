@@ -3,8 +3,8 @@ defmodule BillsGenerator.Filters.BillCalculator do
   use StandardLeader
 
   @impl StandardLeader
-  def worker_action({bill_lines, seller, purchaser}),
-    do: {calculate_bill(bill_lines), seller, purchaser}
+  def worker_action({stored_bill, bill_lines, seller, purchaser}),
+    do: {stored_bill, calculate_bill(bill_lines), seller, purchaser}
 
   @impl StandardLeader
   def next_action(output_data),

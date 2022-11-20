@@ -20,7 +20,11 @@ defmodule BillsPipeline.Application do
 
     # See https://hexdocs.pm/elixir/Supervisor.html
     # for other strategies and supported options
-    opts = [strategy: :one_for_one, name: GeneracionFacturas.Supervisor]
+    opts = [strategy: :one_for_one, name: BillsPipeline.Supervisor]
     Supervisor.start_link(children, opts)
+  end
+
+  def generate_bill(products, seller, purchaser) do
+    BillCalculator.process_filter({products, seller, purchaser})
   end
 end
