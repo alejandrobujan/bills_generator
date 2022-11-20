@@ -21,11 +21,11 @@ be found at <https://hexdocs.pm/generacion_facturas>.
 
 # Dudas
 
-Quien escribe en la base de datos? Tener un nuevo último filtro en el que el worker
-sea quien escriba en la base de datos, o el último líder (compilación de latex)
-sea el que escriba el output
+Quién escribe en la base
+de datos? el worker que genera el latex? Otro filtro nuevo en el que
+el worker solamente lo escriba? o el líder del worker que genera el latex?
 
-# TODO
+# To do
 
 Las facturas están bugeadas si la tabla es muy grande,
 no se rompe entre páginas.
@@ -33,6 +33,17 @@ no se rompe entre páginas.
 # Notas
 
 Para que se creen más workers del formatter y del bill calculator, las facturas tienen que tener muchos items. Por ejemplo, 1000 items.
+
+Idea para lo de la base de datos:
+el phoenix inserta una nueva factura con el esquema de ecto,
+pero con el campo de pdf a null. Al hacer esto, se devuelve
+la factura con el campo ID autogenerado por ecto. Luego, hay que
+ir pasando esta factura vacía a los filtros, ya que en el último filtro
+se tendría que escribir en la base de datos con ese ID.
+Así, en el frontend podemos poner que la factura aún no está disponible si
+tiene el campo pdf a null en la base de datos. Quién escribe en la base
+de datos, el worker que genera el latex? Otro filtro nuevo que solamente
+lo escriba? o el líder del worker que genera el latex?
 
 # Testing
 
