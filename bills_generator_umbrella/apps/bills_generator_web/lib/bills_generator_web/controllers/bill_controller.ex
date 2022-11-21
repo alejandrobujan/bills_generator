@@ -14,10 +14,10 @@ defmodule BillsGeneratorWeb.BillController do
 
     seller = body["seller"]
     purchaser = body["purchaser"]
-
+    user = body["user"]
     # Pass the bill throught all filters, or just create it at the last worker?
     # In this way, we can track
-    BillsGenerator.Application.generate_bill(user, stored_bill, products, seller, purchaser)
+    BillsGenerator.Application.generate_bill(user, products, seller, purchaser)
 
     conn |> send_resp(200, "ok")
   end

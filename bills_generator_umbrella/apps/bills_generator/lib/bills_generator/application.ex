@@ -7,6 +7,7 @@ defmodule BillsGenerator.Application do
   alias BillsGenerator.Filters.BillCalculator
   alias BillsGenerator.Filters.LatexFormatter
   alias BillsGenerator.Filters.LatexToPdf
+  alias BillsGenerator.{Bill, Repo}
 
   @impl true
   def start(_type, _args) do
