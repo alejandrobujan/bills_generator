@@ -1,5 +1,5 @@
-import AnimatePresence from "framer-motion";
 import styles from "./slideSection.module.scss";
+import BillGenerator from "../BillGenerator/BillGenerator";
 
 interface Props {
   titles: string[];
@@ -9,8 +9,7 @@ interface Props {
 export default function SlideSection({ children }: Props): JSX.Element {
   return (
     <div className={styles.SlideSection_container}>
-      <AnimatePresence>
-			</AnimatePresence>
+      <BillGenerator />
     </div>
   );
 }

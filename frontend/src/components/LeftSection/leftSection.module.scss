@@ -1,0 +1,85 @@
+.LeftSection_container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 20vw;
+  min-width: max-content;
+  padding: 2rem 1rem;
+
+  border: 3px solid gray;
+  background-color: #efefef67;
+  border-radius: 10px;
+}
+
+.LeftSection_title {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 1rem;
+
+  > h1 {
+    white-space: nowrap;
+    font-size: 2rem;
+    font-weight: 800;
+    color: #1f1f1f;
+  }
+
+  > svg {
+    font-size: 1.8rem;
+  }
+}
+
+.LeftSection_menu {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-top: 6rem;
+}
+
+.LeftSection_item {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+
+  cursor: pointer;
+  user-select: none;
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: var(--black3);
+
+  transition: all 0.3s;
+
+  &:hover {
+    color: var(--black2);
+  }
+
+  &[data-is_selected="true"] {
+    &::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 0;
+      height: 100%;
+      border-radius: 0.5rem;
+      background-color: #0c0c0cdd;
+      animation: fill 0.2s var(--easeInSine) forwards;
+    }
+
+    > * {
+      z-index: 1;
+    }
+    color: var(--white1);
+  }
+}
+
+@keyframes fill {
+  0% {
+    width: 0;
+  }
+  100% {
+    width: 100%;
+  }
+}
