@@ -1,8 +1,9 @@
 import styles from "./billGenerator.module.scss";
 import ArrowFwd from "@mui/icons-material/ArrowForwardIos";
-import ImportFileSection from "./ImportFileSection";
+import ImportFileSection from "../ImportFileSection/ImportFileSection";
 import { FormEvent, useState } from "react";
 import BillService from "../../services/BillService";
+import NormalButton from "../Buttton/NormalButton";
 
 export default function BillGenerator() {
   const [selectedFile, setSelectedFile] = useState<File | undefined>(undefined);
@@ -10,28 +11,26 @@ export default function BillGenerator() {
     undefined
   );
 
-  function handleSubmit(e: FormEvent<HTMLInputElement>) {
+  function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    BillService.generateBill(selectedFile).then((blob) =>
-      setGeneratedBill(blob)
-    );
+    // BillService.generateBill(selectedFile).then((blob) =>
+    //   setGeneratedBill(blob)
+    // );
   }
 
   return (
-    <div className={styles.BillGenerator_container}>
-      <h1 className={styles.BillGenerator_title}>Generate</h1>
-
-      <form>
-        <ImportFileSection setSelectedFile={setSelectedFile} />
-        <label
-          className={styles.BillGenerator_generateBtn}
-          htmlFor="submit-bill"
-        >
+    <form className={styles.BillGenerator_container} onSubmit={handleSubmit}>
+      <ImportFileSection setSelectedFile={setSelectedFile} />
+      <label
+        className={styles.BillGenerator_generateLabel}
+        htmlFor="submit-bill"
+      >
+        <NormalButton>
           <span>Generate</span>
           <ArrowFwd />
-        </label>
-        <input type="submit" id="submit-bill" onSubmit={handleSubmit} />
-      </form>
-    </div>
+        </NormalButton>
+      </label>
+      <input type="submit" id="submit-bill" />
+    </form>
   );
 }

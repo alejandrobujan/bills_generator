@@ -5,6 +5,7 @@ body {
   margin: 0 auto;
   font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
     Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
+  background-color: #ffffff;
 }
 
 input {
@@ -20,6 +21,12 @@ input {
 a {
   color: inherit;
   text-decoration: none;
+}
+
+label {
+  ~ input {
+    display: none;
+  }
 }
 
 button {

@@ -1,6 +1,91 @@
+@import "~/src/styles/builders.scss";
+
 .Home_container {
   height: 100vh;
-  padding: 2rem;
+  width: 90vw;
+  max-width: 1500px;
+  margin: 0 auto;
   display: flex;
+  flex-direction: column;
+  align-items: center;
   gap: 5rem;
+}
+
+.Home_titleContainer {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.Home_title {
+  user-select: none;
+  z-index: 1;
+  margin-top: 6rem;
+
+  font-size: 3.7rem;
+  letter-spacing: 0.07rem;
+  font-weight: 500;
+  color: #171717;
+  @include stroke(7, #ffffff);
+}
+
+.Home_waveContainer {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+}
+
+.Home_slideSelectorContainer {
+  margin-top: 4rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.Home_slideSectionTitle {
+  overflow: hidden;
+  position: relative;
+  padding: 1rem 8rem;
+  cursor: pointer;
+
+  > span {
+    white-space: nowrap;
+    transition: all 0.3s ease-in-out;
+    font-size: 1.4rem;
+    font-weight: 300;
+    color: #707070;
+
+    &[data-is_selected="true"] {
+      color: #000000;
+    }
+    &[data-is_selected="false"] {
+      color: #707070;
+    }
+  }
+}
+
+.Home_slideSectionLine {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  height: 2px;
+  background-color: #171717;
+}
+
+// Slide content
+
+.Home_slideContentWrapper {
+  overflow: hidden;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.Home_slideSectionContent {
+  position: relative;
+  width: 100%;
 }

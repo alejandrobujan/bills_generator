@@ -1,6 +1,7 @@
 import styles from "./importFileSection.module.scss";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import { ChangeEvent } from "react";
+import AcceptButton from "../Buttton/AcceptButton";
 
 interface Props {
   setSelectedFile: (file: File | undefined) => void;
@@ -22,13 +23,17 @@ export default function ImportFileSection({ setSelectedFile }: Props) {
         </span>
       </div>
 
-      <label className={styles.ImportFileSection_fileBtn} htmlFor="file-upload">
-        <span>Choose file</span>
-        <CloudUploadIcon />
+      <label
+        className={styles.ImportFileSection_uploadLabel}
+        htmlFor="file-upload"
+      >
+        <AcceptButton>
+          <span>Choose file</span>
+          <CloudUploadIcon />
+        </AcceptButton>
       </label>
       <input
         onChange={handleChange}
-        className={styles.ImportFileSection_fileBtn}
         type="file"
         id="file-upload"
         accept="application/json"
