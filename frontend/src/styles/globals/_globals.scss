@@ -23,12 +23,6 @@ a {
   text-decoration: none;
 }
 
-label {
-  ~ input {
-    display: none;
-  }
-}
-
 button {
   border: none;
   margin: 0;

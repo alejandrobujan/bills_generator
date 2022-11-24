@@ -25,4 +25,8 @@
   > button {
     pointer-events: none;
   }
+
+  ~ input {
+    display: none;
+  }
 }
