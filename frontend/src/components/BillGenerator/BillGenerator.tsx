@@ -1,14 +1,13 @@
 import styles from "./billGenerator.module.scss";
 import ArrowFwdIcon from "@mui/icons-material/ArrowForwardIos";
-import AddIcon from "@mui/icons-material/Add";
 import ImportFileSection from "../ImportFileSection/ImportFileSection";
 import { FormEvent, useState } from "react";
 import BillService from "../../services/BillService";
 import NormalButton from "../Buttton/NormalButton";
 import Bill from "../../entities/Bill";
 import Product from "../../entities/Product";
-import TextInput from "../Input/TextInput";
 import ProductList from "../ProductList/ProductList";
+import TextInput from "../Input/TextInput";
 
 export default function BillGenerator() {
   const [selectedFile, setSelectedFile] = useState<File | undefined>(undefined);
@@ -48,35 +47,29 @@ export default function BillGenerator() {
     <form className={styles.BillGenerator_wrapper} onSubmit={handleSubmit}>
       {/* <ImportFileSection setSelectedFile={setSelectedFile} /> */}
 
-      <div className={styles.BillGenerator_container}>
-        <div className={styles.BillGenerator_billForm}>
-          <TextInput
-            label="User"
-            value={formState.user}
-            onChange={(user) => setFormState({ ...formState, user })}
-          />
-          <TextInput
-            label="Seller"
-            value={formState.seller}
-            onChange={(seller) => setFormState({ ...formState, seller })}
-          />
-          <TextInput
-            label="Purchaser"
-            value={formState.purchaser}
-            onChange={(purchaser) => setFormState({ ...formState, purchaser })}
-          />
+      <div className={styles.BillGenerator_generalForm}>
+        <TextInput
+          required
+          label="User"
+          value={formState.user}
+          onChange={(user) => setFormState({ ...formState, user })}
+        />
+        <TextInput
+          required
+          label="Seller"
+          value={formState.seller}
+          onChange={(seller) => setFormState({ ...formState, seller })}
+        />
+        <TextInput
+          required
+          label="Purchaser"
+          value={formState.purchaser}
+          onChange={(purchaser) => setFormState({ ...formState, purchaser })}
+        />
+      </div>
 
-          <NormalButton>
-            <span>Add Product</span>
-            <AddIcon />
-          </NormalButton>
-        </div>
-
-        <div className={styles.BillGenerator_separator} />
-
-        <div className={styles.BillGenerator_productList}>
-          <ProductList products={formState.products} />
-        </div>
+      <div className={styles.BillGenerator_productList}>
+        <ProductList products={formState.products} />
       </div>
 
       <label

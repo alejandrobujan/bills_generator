@@ -16,14 +16,7 @@
   gap: 5rem;
 }
 
-.BillGenerator_separator {
-  height: 70%;
-  width: 1px;
-  margin: auto 0;
-  background-color: #222222;
-}
-
-.BillGenerator_billForm {
+.BillGenerator_generalForm {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -36,7 +29,7 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  width: 40%;
+  width: 70%;
   heihgt: 100%;
   gap: 1.5rem;
 }

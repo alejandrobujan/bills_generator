@@ -25,3 +25,9 @@
   background-color: #5da53e;
   color: var(--white1);
 }
+
+.DangerButton {
+  @extend .Button;
+  background-color: #d9534f;
+  color: var(--white1);
+}

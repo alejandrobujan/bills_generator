@@ -1,36 +1,13 @@
-import { useState } from "react";
-import styles from "./input.module.scss";
+import Input from "./Input";
 
 interface Props {
-  label: string;
+  label?: string;
   placeholder?: string;
   value?: string;
+  required?: boolean;
   onChange: (value: string) => void;
 }
 
-export default function TextInput({
-  label,
-  placeholder,
-  value,
-  onChange,
-}: Props) {
-  const [isSelected, setIsSelected] = useState(false);
-
-
-  return (
-    <div className={styles.Input_wrapper} data-is_selected={isSelected}>
-      <label className={styles.Input_label} htmlFor={label}>
-        {label}
-      </label>
-      <input
-        className={styles.Input_input}
-        type="text"
-        placeholder={placeholder}
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        onFocus={() => setIsSelected(true)}
-        onBlur={() => setIsSelected(false)}
-      />
-    </div>
-  );
+export default function TextInput(props: Props) {
+  return <Input {...props} type="text" />;
 }

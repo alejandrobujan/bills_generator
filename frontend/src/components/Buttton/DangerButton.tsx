@@ -7,9 +7,9 @@ interface Props {
   className?: string;
 }
 
-export default function AcceptButton({ children, type, className }: Props) {
+export default function DangerButton({ children, type, className }: Props) {
   return (
-    <Button type={type} className={`${className} ${styles.AcceptButton}`}>
+    <Button type={type} className={`${className} ${styles.DangerButton}`}>
       {children}
     </Button>
   );
