@@ -1,15 +1,10 @@
+import { ButtonProps } from "../../utils/defaultIntefaces";
 import Button from "./Button";
 import styles from "./button.module.scss";
 
-interface Props {
-  children: React.ReactNode;
-  type?: "button" | "submit" | "reset";
-  className?: string;
-}
-
-export default function DangerButton({ children, type, className }: Props) {
+export default function DangerButton({ children, className, ...props }: ButtonProps) {
   return (
-    <Button type={type} className={`${className} ${styles.DangerButton}`}>
+    <Button className={`${className} ${styles.DangerButton}`} {...props}>
       {children}
     </Button>
   );

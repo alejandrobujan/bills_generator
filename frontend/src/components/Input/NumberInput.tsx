@@ -13,5 +13,5 @@ export default function TextInput(props: Props) {
     props.onChange(Number(value));
   }
 
-  return <Input {...props} type="text" onChange={onChange} />;
+  return <Input {...props} type="number" onChange={onChange} />;
 }

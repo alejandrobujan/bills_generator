@@ -22,7 +22,7 @@
   padding: 1rem;
 
   border-radius: var(--border-radius);
-  border: 2px solid;
+  border: 1px solid;
 
   @include for-screens-above("l") {
     width: 20vw;
@@ -50,8 +50,8 @@
   justify-content: left;
   align-items: center;
   gap: 0.8rem;
-  font-size: 1.1rem;
-  font-weight: 600;
+  font-size: 1rem;
+  font-weight: 400;
 
   color: var(--blue1);
 }
@@ -82,18 +82,17 @@
 
 .Notification_error {
   background-color: var(--red4);
-  border-color: var(--red3);
+  border-color: black;
 
   transition: background-color 0.3s ease-in-out;
   &:hover {
-    background-color: var(--red3);
+    background-color: rgba(234, 94, 94, 0.116);
   }
 
   .Notification_title {
     > svg {
-      color: var(--red2);
+      color: rgb(176, 43, 43);
     }
-    border-color: var(--red2);
   }
 }
 

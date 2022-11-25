@@ -1,15 +1,10 @@
+import { ButtonProps } from "../../utils/defaultIntefaces";
 import Button from "./Button";
 import styles from "./button.module.scss";
 
-interface Props {
-  children: React.ReactNode;
-  type?: "button" | "submit" | "reset";
-  className?: string;
-}
-
-export default function AcceptButton({ children, type, className }: Props) {
+export default function AcceptButton({ children, className, ...props }: ButtonProps) {
   return (
-    <Button type={type} className={`${className} ${styles.AcceptButton}`}>
+    <Button className={`${className} ${styles.AcceptButton}`} {...props}>
       {children}
     </Button>
   );

@@ -43,6 +43,13 @@ export default function BillGenerator() {
     // BillService.generateBill(selectedFile).then((id) => waitForBill(id));
   }
 
+  function handleAddProduct(product: Product) {
+    setFormState({
+      ...formState,
+      products: [...formState.products, product],
+    });
+  }
+
   return (
     <form className={styles.BillGenerator_wrapper} onSubmit={handleSubmit}>
       {/* <ImportFileSection setSelectedFile={setSelectedFile} /> */}
@@ -69,19 +76,16 @@ export default function BillGenerator() {
       </div>
 
       <div className={styles.BillGenerator_productList}>
-        <ProductList products={formState.products} />
+        <ProductList
+          products={formState.products}
+          onAddProduct={handleAddProduct}
+        />
       </div>
 
-      <label
-        className={styles.BillGenerator_generateLabel}
-        htmlFor="submit-bill"
-      >
-        <NormalButton>
-          <span>Generate</span>
-          <ArrowFwdIcon />
-        </NormalButton>
-      </label>
-      <input type="submit" id="submit-bill" />
+      <NormalButton type="submit" className={styles.BillGenerator_generateButton}>
+        <span>Generate</span>
+        <ArrowFwdIcon />
+      </NormalButton>
     </form>
   );
 }

@@ -7,6 +7,13 @@
   gap: 1rem;
 }
 
+.ProductList_title {
+  font-size: 1.4rem;
+  font-weight: 300;
+  color: black;
+  margin-bottom: 1rem;
+}
+
 .ProductList_row {
   position: relative;
   display: flex;
@@ -22,7 +29,10 @@
     font-weight: 300;
     font-size: 1rem;
   }
+}
 
+.ProductList_header {
+  @extend .ProductList_row;
   > span {
     text-decoration: underline;
   }
@@ -36,4 +46,22 @@
 }
 
 .ProductList_body {
+  margin-top: 2rem;
+}
+
+.ProductList_item {
+  position: relative;
+  margin: 1rem 0;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid black;
+
+  span:nth-child(1) {
+    font-weight: 400;
+  }
+}
+
+.ProductList_noProducts {
+  font-size: 1rem;
+  font-weight: 400;
+  color: black;
 }

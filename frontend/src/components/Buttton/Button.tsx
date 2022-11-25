@@ -1,9 +1,7 @@
-interface Props {
-  children: React.ReactNode;
-  className?: string;
-  type?: "button" | "submit" | "reset";
-}
+import { ButtonProps } from "../../utils/defaultIntefaces";
 
-export default function Button({ children, className, type }: Props) {
-  return <button type={type} className={className}>{children}</button>;
-}
+const Button = ({ children, ...props }: ButtonProps) => {
+  return <button {...props}>{children}</button>;
+};
+
+export default Button;
