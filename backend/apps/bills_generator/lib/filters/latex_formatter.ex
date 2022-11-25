@@ -2,6 +2,12 @@ defmodule BillsGenerator.Filters.LatexFormatter do
   alias BillsGenerator.Core.StandardLeader
   use StandardLeader
 
+  # Example of error
+  # @impl StandardLeader
+  # def worker_action({stored_bill, bill_lines, seller, purchaser}) do
+  #   raise "error on LatexFormatter"
+  # end
+
   @impl StandardLeader
   def worker_action({stored_bill, bill, seller, purchaser}),
     do: {stored_bill, generate_latex(bill, seller, purchaser)}

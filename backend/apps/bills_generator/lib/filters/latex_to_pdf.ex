@@ -14,13 +14,19 @@ defmodule BillsGenerator.Filters.LatexToPdf do
       |> Iona.to(:pdf)
 
     stored_bill |> Ecto.Changeset.change(pdf: pdf) |> BillsGenerator.Repo.update!()
-
     filename
   end
 
+  # Handle error on leaders.
   @impl StandardLeader
-  def next_action(output_data), do: IO.puts("PDF generated in #{output_data}")
+  def next_action({:error, error_msg}), do: IO.puts("error in leader: #{error_msg}")
 
+  @impl StandardLeader
+  def next_action(output_data), do: IO.puts("PDF generated in #{output_data} ")
+
+  # Handle error on workers. It should insert a error condition into the databse
+  @impl StandardLeader
+  def on_error(error_msg), do: IO.puts("error in worker: #{error_msg}")
   # Private functions
 
   defp generate_filename() do

@@ -6,6 +6,12 @@ defmodule BillsGenerator.Filters.BillCalculator do
   def worker_action({stored_bill, bill_lines, seller, purchaser}),
     do: {stored_bill, calculate_bill(bill_lines), seller, purchaser}
 
+  # Example of error
+  # @impl StandardLeader
+  # def worker_action({stored_bill, bill_lines, seller, purchaser}) do
+  #   raise "error on bill_calculator"
+  # end
+
   @impl StandardLeader
   def next_action(output_data),
     do: BillsGenerator.Filters.LatexFormatter.process_filter(output_data)

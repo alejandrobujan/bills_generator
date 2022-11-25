@@ -8,6 +8,8 @@ Lanzar postgres en el puerto 5432 con user y pass `postgres`
 
 ```console
 mix ecto.create
+mix ecto.migrate
 mix phx.server
 curl localhost:4000/api/bills -X POST -H "Content-Type: application/json" -d @data.json
+wget localhost:4000/api/bills/1
 ```

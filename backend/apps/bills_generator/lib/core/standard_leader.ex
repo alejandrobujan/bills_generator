@@ -58,8 +58,12 @@ defmodule BillsGenerator.Core.StandardLeader do
 
   @callback worker_action(any()) :: any()
 
+  # Callback to execute code if needed on worker
+  @callback on_error(any()) :: :ok
+
   @callback next_action(any()) :: any()
 
+  @optional_callbacks on_error: 1
   defmacro __using__(_) do
     quote do
       alias __MODULE__, as: LeaderModule
@@ -69,8 +73,32 @@ defmodule BillsGenerator.Core.StandardLeader do
         use StandardFilter
 
         @impl StandardFilter
-        def do_process_filter(message) do
-          LeaderModule.worker_action(message)
+        def do_process_filter({:error, error_msg}) do
+          # When an error is produced in a step of the pipeline,
+          # the error is propagated forward to the next steps,
+          # until the last step, where the error is handled.
+          # Error could be handled in middle steps if needed,
+          # but final error output must be done by the last step
+          # of the pipeline
+
+          # Callback if error needs to be handled by worker
+          LeaderModule.on_error(error_msg)
+
+          # Always return the error as filter's output, so the leader will know
+          # if an error happened
+          {:error, error_msg}
+        end
+
+        @impl StandardFilter
+        def do_process_filter(input_data) do
+          # If an exception occurs when processing the input data in the filter worker,
+          # the output of the filter will be {:error,error_msg}
+          try do
+            LeaderModule.worker_action(input_data)
+          rescue
+            e ->
+              {:error, Exception.message(e)}
+          end
         end
       end
 
@@ -241,6 +269,14 @@ defmodule BillsGenerator.Core.StandardLeader do
       end
 
       defp handle_workload_rate(service_handler, _workload_rate), do: service_handler
+
+      # By default, do not handle error
+      @impl StandardLeader
+      def on_error(error_msg) do
+        :ok
+      end
+
+      defoverridable(on_error: 1)
     end
   end
 end
