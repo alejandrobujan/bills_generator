@@ -1,21 +1,18 @@
 export default class Product {
-  id: string;
   name: string;
   price: number;
   quantity: number;
 
   static getInstance(
-    id: string,
     name: string,
     price: number,
     quantity: number
   ): Product | null {
     if (name == "") return null;
-    return new Product(id, name, price, quantity);
+    return new Product(name, price, quantity);
   }
 
-  private constructor(id: string, name: string, price: number, quantity: number) {
-    this.id = id;
+  private constructor(name: string, price: number, quantity: number) {
     this.name = name;
     this.price = price;
     this.quantity = quantity;

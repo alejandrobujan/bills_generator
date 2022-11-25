@@ -24,7 +24,8 @@
 
   > span,
   input {
-    width: 12rem;
+    min-width: 8rem;
+    width: 10vw;
     text-align: center;
     font-weight: 300;
     font-size: 1rem;
@@ -38,11 +39,19 @@
   }
 }
 
+.ProductList_formWrapper {
+  display: flex;
+  align-items: center;
+  position: relative;
+  left: 2rem;
+}
+
 .ProductList_addButton {
-  position: absolute;
-  right: 0;
+  margin-left: 2rem;
   width: 2rem;
   height: 2rem;
+  background-color: #00000013;
+  color: black;
 }
 
 .ProductList_body {
@@ -50,13 +59,41 @@
 }
 
 .ProductList_item {
+  display: flex;
   position: relative;
-  margin: 1rem 0;
-  padding-bottom: 1rem;
-  border-bottom: 1px solid black;
+  align-items: center;
+  left: 5rem;
 
-  span:nth-child(1) {
-    font-weight: 400;
+  > .ProductList_row {
+    margin: 1rem 0;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid black;
+
+    span:nth-child(1) {
+      font-weight: 400;
+    }
+  }
+
+  &:hover {
+    > .ProductList_removeButton {
+      animation: show 0.4s 0.4s both;
+    }
+  }
+}
+
+.ProductList_removeButton {
+  opacity: 0;
+  margin-left: 2rem;
+  width: 2rem;
+  height: 2rem;
+}
+
+@keyframes show {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
   }
 }
 

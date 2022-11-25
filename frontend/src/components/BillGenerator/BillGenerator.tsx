@@ -50,6 +50,9 @@ export default function BillGenerator() {
     });
   }
 
+  function handleRemoveProduct(id: Product["id"]) {
+  }
+
   return (
     <form className={styles.BillGenerator_wrapper} onSubmit={handleSubmit}>
       {/* <ImportFileSection setSelectedFile={setSelectedFile} /> */}
@@ -79,6 +82,7 @@ export default function BillGenerator() {
         <ProductList
           products={formState.products}
           onAddProduct={handleAddProduct}
+          onRemoveProduct={handleRemoveProduct}
         />
       </div>
 

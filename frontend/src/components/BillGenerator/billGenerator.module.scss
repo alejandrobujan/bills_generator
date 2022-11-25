@@ -5,14 +5,15 @@
   justify-content: center;
   width: 100%;
   gap: 4rem;
-  padding: 0 5rem;
+  padding: 0 5vw;
 }
 
 .BillGenerator_generalForm {
   display: flex;
   flex-direction: column;
   // align-items: center;
-  width: 40%;
+  min-width: 18rem;
+  width: 35%;
   gap: 1.2rem;
 }
 
