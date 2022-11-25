@@ -12,9 +12,9 @@ defmodule BillsGenerator.Filters.LatexFormatter do
   # Private functions
 
   defp generate_latex(bill, seller, purchaser) do
-    "\\documentclass[a4paper, 10pt]{letter}\n\\address{#{String.replace(seller, ",", ", \\\\ \n")}}\n\\begin{document}\n\\begin{letter}\n{#{String.replace(purchaser, ",", ", \\\\ \n")}}\n\\opening{}\n\\begin{center}\n\\begin{tabular}{| p{7cm} | l | l | l |}\n\\hline\nDescription & Quantity & Price & Amount \\\\ \\hline \n" <>
+    "\\documentclass[a4paper, 10pt]{letter}\\usepackage{longtable}\n\\address{#{String.replace(seller, ",", ", \\\\ \n")}}\n\\begin{document}\n\\begin{letter}\n{#{String.replace(purchaser, ",", ", \\\\ \n")}}\n\\opening{}\n\\begin{center}\n\\begin{longtable}{| p{7cm} | l | l | l |}\n\\hline\nDescription & Quantity & Price & Amount \\\\ \\hline \n" <>
       format_bill(bill) <>
-      "\\end{tabular}\n\\end{center}\n\\closing{Seal or signature:}\n\\end{letter}\n\\end{document}"
+      "\\end{longtable}\n\\end{center}\n\\closing{Seal or signature:}\n\\end{letter}\n\\end{document}"
   end
 
   defp format_bill([]), do: ""
