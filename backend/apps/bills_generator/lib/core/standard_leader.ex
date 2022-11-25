@@ -96,8 +96,8 @@ defmodule BillsGenerator.Core.StandardLeader do
           try do
             LeaderModule.worker_action(input_data)
           rescue
-            e ->
-              {:error, Exception.message(e)}
+            exception ->
+              {:error, Exception.message(exception)}
           end
         end
       end
