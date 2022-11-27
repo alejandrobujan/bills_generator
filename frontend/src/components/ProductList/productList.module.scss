@@ -32,13 +32,6 @@
   }
 }
 
-.ProductList_header {
-  @extend .ProductList_row;
-  > span {
-    text-decoration: underline;
-  }
-}
-
 .ProductList_formWrapper {
   display: flex;
   align-items: center;
@@ -56,13 +49,18 @@
 
 .ProductList_body {
   margin-top: 2rem;
+  height: 30vh;
+  overflow: visible;
+  overflow-y: scroll;
+  position: relative;
+  left: 2rem;
+  padding: 0 1rem;
 }
 
 .ProductList_item {
-  display: flex;
   position: relative;
+  display: flex;
   align-items: center;
-  left: 5rem;
 
   > .ProductList_row {
     margin: 1rem 0;
@@ -76,13 +74,14 @@
 
   &:hover {
     > .ProductList_removeButton {
-      animation: show 0.4s 0.4s both;
+      animation: show 0.3s 0.2s forwards;
     }
   }
 }
 
 .ProductList_removeButton {
   opacity: 0;
+  visibility: hidden;
   margin-left: 2rem;
   width: 2rem;
   height: 2rem;
@@ -91,13 +90,16 @@
 @keyframes show {
   0% {
     opacity: 0;
+    visibility: hidden;
   }
   100% {
     opacity: 1;
+    visibility: visible;
   }
 }
 
 .ProductList_noProducts {
+  margin-top: 2rem;
   font-size: 1rem;
   font-weight: 400;
   color: black;

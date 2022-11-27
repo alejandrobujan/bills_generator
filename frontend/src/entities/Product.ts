@@ -1,23 +1,18 @@
-export default class Product {
-  id: string;
-  name: string;
-  price: number;
-  quantity: number;
+import { Number, String, Record, Static } from "runtypes";
 
-  static getInstance(
-    id: string,
-    name: string,
-    price: number,
-    quantity: number
-  ): Product | null {
-    if (name == "") return null;
-    return new Product(id, name, price, quantity);
-  }
+export const ProductSchema = Record({
+  id: String,
+  name: String.withConstraint(
+    (name) => name.length > 0 || "Name must be at least 1 character long"
+  ),
+  price: Number.withConstraint(
+    (price) => price >= 0 || "Price must be greater than or equal to 0"
+  ),
+  quantity: Number.withConstraint(
+    (quantity) => quantity >= 0 || "Quantity must be greater than or equal to 0"
+  ),
+});
 
-  private constructor(id: string, name: string, price: number, quantity: number) {
-    this.id = id;
-    this.name = name;
-    this.price = price;
-    this.quantity = quantity;
-  }
-}
+type Product = Static<typeof ProductSchema>;
+
+export default Product;

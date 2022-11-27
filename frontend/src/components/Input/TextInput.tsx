@@ -6,6 +6,7 @@ interface Props {
   value?: string;
   required?: boolean;
   onChange: (value: string) => void;
+  ignoreEnter?: boolean;
 }
 
 export default function TextInput(props: Props) {

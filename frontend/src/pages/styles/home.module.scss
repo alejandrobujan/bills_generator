@@ -8,7 +8,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding-bottom: 2rem;
+  padding-bottom: 8rem;
 }
 
 .Home_titleContainer {
@@ -22,7 +22,7 @@
 .Home_title {
   user-select: none;
   z-index: 1;
-  margin-top: 6rem;
+  margin-top: 3rem;
 
   font-size: 3.7rem;
   letter-spacing: 0.07rem;
@@ -91,4 +91,5 @@
 .Home_slideSectionContent {
   position: relative;
   width: 100%;
+  overflow-y: hidden;
 }

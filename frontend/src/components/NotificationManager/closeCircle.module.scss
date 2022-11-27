@@ -1,6 +1,6 @@
 .CloseCircle_wrapper {
   position: relative;
-  --size: 1.6rem;
+  --size: 1.4rem;
   width: var(--size);
   height: var(--size);
 }
@@ -10,7 +10,7 @@
   height: var(--size);
 
   > circle {
-    stroke-width: 8px;
+    stroke-width: 5px;
     stroke-opacity: 0;
   }
 }

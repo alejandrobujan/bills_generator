@@ -1,3 +1,8 @@
+.BillGenerator_importFile {
+  margin: 0 auto;
+  font-size: 0.8rem;
+}
+
 .BillGenerator_wrapper {
   display: flex;
   flex-direction: column;
@@ -6,6 +11,7 @@
   width: 100%;
   gap: 4rem;
   padding: 0 5vw;
+  margin-top: 2rem;
 }
 
 .BillGenerator_generalForm {
@@ -25,4 +31,10 @@
 .BillGenerator_generateButton {
   width: 9rem;
   height: 3rem;
+}
+
+.BillGenerator_billPdfContainer {
+  margin-top: 5rem;
+  display: flex;
+  justify-content: center;
 }

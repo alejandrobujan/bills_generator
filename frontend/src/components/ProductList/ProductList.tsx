@@ -1,15 +1,16 @@
 import { MouseEvent, useState } from "react";
-import Product from "../../entities/Product";
+import Product, { ProductSchema } from "../../entities/Product";
 import NormalButton from "../Buttton/NormalButton";
 import NumberInput from "../Input/NumberInput";
 import TextInput from "../Input/TextInput";
 import styles from "./productList.module.scss";
 import AddIcon from "@mui/icons-material/Add";
-import RemoveIcon from '@mui/icons-material/Remove';
+import DeleteIcon from "@mui/icons-material/DeleteOutline";
 import { useNotifications } from "../NotificationManager/NotificationManager";
 import { AnimatePresence, motion } from "framer-motion";
 import { v4 } from "uuid";
-import DangerButton from "../Buttton/DangerButton";
+import { ValidationError } from "runtypes";
+import Utils from "../../utils/utils";
 
 interface Props {
   products: Product[];
@@ -28,7 +29,7 @@ function ListItem({ product, onRemoveProduct }: ItemProps) {
       layout
       transition={{ type: "spring", bounce: 0, duration: 0.4 }}
       initial={{ left: "-20%", opacity: 0 }}
-      animate={{ left: "2rem", opacity: 1 }}
+      animate={{ left: 0, opacity: 1 }}
       exit={{ left: "-20%", opacity: 0 }}
       className={styles.ProductList_item}
     >
@@ -37,13 +38,13 @@ function ListItem({ product, onRemoveProduct }: ItemProps) {
         <span>{product.quantity} uds.</span>
         <span>{product.price}$</span>
       </div>
-      <DangerButton
+      <NormalButton
         className={styles.ProductList_removeButton}
         onClick={() => onRemoveProduct(product.id)}
         type="button"
       >
-        <RemoveIcon />
-      </DangerButton>
+        <DeleteIcon />
+      </NormalButton>
     </motion.div>
   );
 }
@@ -66,25 +67,24 @@ export default function ProductList({
   }>(defaultProduct);
 
   function handleClick(_: MouseEvent<HTMLButtonElement>) {
-    const product = Product.getInstance(
-      v4(),
-      productFields.name,
-      productFields.price,
-      productFields.quantity
-    );
-    if (product === null) {
-      createErrorNotification("Product name is required", 8000);
-      return;
+    try {
+      const product: Product = ProductSchema.check({
+        ...productFields,
+        id: v4(),
+      });
+      setProductFields(defaultProduct);
+      onAddProduct(product);
+    } catch (error: any) {
+      const message = Utils.getValidationErrorMessage(error);
+      createErrorNotification(`Invalid product: ${message}`, 8000);
     }
-    setProductFields(defaultProduct);
-    onAddProduct(product);
   }
 
   return (
     <div className={styles.ProductList_container}>
       <h2 className={styles.ProductList_title}>Product list</h2>
 
-      <div className={styles.ProductList_header}>
+      <div className={styles.ProductList_row}>
         <span>Product name</span>
         <span>Quantity</span>
         <span>Price</span>
@@ -93,16 +93,19 @@ export default function ProductList({
       <div className={styles.ProductList_formWrapper}>
         <div className={styles.ProductList_row}>
           <TextInput
+            ignoreEnter
             value={productFields.name}
             onChange={(name) => setProductFields({ ...productFields, name })}
           />
           <NumberInput
+            ignoreEnter
             value={productFields.quantity}
             onChange={(quantity) =>
               setProductFields({ ...productFields, quantity })
             }
           />
           <NumberInput
+            ignoreEnter
             value={productFields.price}
             onChange={(price) => setProductFields({ ...productFields, price })}
           />
@@ -117,30 +120,32 @@ export default function ProductList({
         </NormalButton>
       </div>
 
-      <div className={styles.ProductList_body}>
-        <AnimatePresence>
-          {products.length === 0 ? (
-            <motion.span
-              layout
-              transition={{ type: "spring", bounce: 0, duration: 0.4 }}
-              initial={{ left: "-20%", opacity: 0 }}
-              animate={{ left: 0, opacity: 1 }}
-              exit={{ left: "40%", opacity: 0 }}
-              className={styles.ProductList_noProducts}
-            >
-              No products
-            </motion.span>
-          ) : (
-            products.map((product, index) => (
-              <ListItem
-                key={index}
-                product={product}
-                onRemoveProduct={onRemoveProduct}
-              />
-            ))
-          )}
-        </AnimatePresence>
-      </div>
+      <AnimatePresence>
+        {products.length === 0 ? (
+          <motion.span
+            layout
+            transition={{ type: "spring", bounce: 0, duration: 0.4 }}
+            initial={{ left: "-20%", opacity: 0 }}
+            animate={{ left: 0, opacity: 1 }}
+            exit={{ left: "-20%", opacity: 0 }}
+            className={styles.ProductList_noProducts}
+          >
+            No products
+          </motion.span>
+        ) : (
+          <div className={styles.ProductList_body}>
+            <AnimatePresence>
+              {products.map((product, index) => (
+                <ListItem
+                  key={index}
+                  product={product}
+                  onRemoveProduct={onRemoveProduct}
+                />
+              ))}
+            </AnimatePresence>
+          </div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

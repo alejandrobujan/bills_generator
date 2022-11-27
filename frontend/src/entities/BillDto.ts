@@ -1,20 +1,13 @@
-import Product from "./Product";
+import { String, Array, Record, Static } from "runtypes";
+import { ProductDtoSchema } from "./ProductDto";
 
-export default class BillDto {
-  user: string;
-  products: Product[];
-  seller: string;
-  purchaser: string;
+export const BillDtoSchema = Record({
+  user: String.withConstraint((user) => user.length > 0),
+  seller: String.withConstraint((seller) => seller.length > 0),
+  purchaser: String.withConstraint((purchaser) => purchaser.length > 0),
+  products: Array(ProductDtoSchema),
+});
 
-  constructor(
-    user: string,
-    products: Product[],
-    seller: string,
-    purchaser: string
-  ) {
-    this.user = user;
-    this.products = products;
-    this.seller = seller;
-    this.purchaser = purchaser;
-  }
-}
+type BillDto = Static<typeof BillDtoSchema>;
+
+export default BillDto;

@@ -5,17 +5,25 @@ export default abstract class BillService {
   private static endpoint = "/api";
 
   static generateBill(bill: BillDto): Promise<Bill["id"]> {
-    return fetch(`${this.endpoint}/expenses`, {
-      method: "POST",
-      mode: "cors",
-      body: JSON.stringify(bill),
-      headers: {
-        "Content-Type": "application/json",
-      },
-    }).then((res) => res.json());
+    return new Promise((resolve, reject) => {
+      resolve("1");
+    });
+    // return fetch(`${this.endpoint}/expenses`, {
+    //   method: "POST",
+    //   mode: "cors",
+    //   body: JSON.stringify(bill),
+    //   headers: {
+    //     "Content-Type": "application/json",
+    //   },
+    // }).then((res) => res.json());
   }
 
   static getBill(id: Bill["id"]): Promise<Blob | undefined> {
+    return new Promise((resolve, reject) => {
+      setTimeout(() => {
+        resolve(undefined);
+      }, 5000);
+    });
     return fetch(`${this.endpoint}/expenses/${id}`, {
       method: "GET",
       mode: "cors",

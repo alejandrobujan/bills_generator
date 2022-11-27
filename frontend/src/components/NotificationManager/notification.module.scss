@@ -50,7 +50,7 @@
   justify-content: left;
   align-items: center;
   gap: 0.8rem;
-  font-size: 1rem;
+  font-size: 0.9rem;
   font-weight: 400;
 
   color: var(--blue1);
@@ -91,7 +91,7 @@
 
   .Notification_title {
     > svg {
-      color: rgb(176, 43, 43);
+      color: #070707
     }
   }
 }
