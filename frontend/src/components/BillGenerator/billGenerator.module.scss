@@ -17,13 +17,17 @@
 .BillGenerator_generalForm {
   display: flex;
   flex-direction: column;
-  // align-items: center;
   min-width: 18rem;
   width: 35%;
   gap: 1.2rem;
 }
 
 .BillGenerator_productList {
+  width: 70%;
+  height: 100%;
+}
+
+.BillGenerator_pdfConfiguration {
   width: 70%;
   height: 100%;
 }

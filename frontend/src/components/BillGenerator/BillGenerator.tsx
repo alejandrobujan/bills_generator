@@ -13,6 +13,8 @@ import { v4 } from "uuid";
 import { useNotifications } from "../NotificationManager/NotificationManager";
 import Utils from "../../utils/utils";
 import PdfViewer from "../PdfViewer/PdfViewer";
+import PdfConfiguration from "../PdfConfiguration/PdfConfiguration";
+import PdfConfig, { getDefaultConfig } from "../../entities/PdfConfig";
 
 export default function BillGenerator() {
   const { createErrorNotification } = useNotifications();
@@ -22,14 +24,20 @@ export default function BillGenerator() {
   const [isGenerating, setIsGenerating] = useState<boolean>(false);
   const [formState, setFormState] = useState<{
     user: string;
-    seller: string;
-    purchaser: string;
-    products: Product[];
+    bill: {
+      seller: string;
+      purchaser: string;
+      products: Product[];
+    };
+    config: PdfConfig;
   }>({
     user: "",
-    seller: "",
-    purchaser: "",
-    products: [],
+    bill: {
+      seller: "",
+      purchaser: "",
+      products: [],
+    },
+    config: getDefaultConfig(),
   });
 
   function waitForBill(id: Bill["id"]) {
@@ -48,19 +56,26 @@ export default function BillGenerator() {
     if (!file) return;
     file.text().then((jsonString) => {
       try {
-        const bill: BillDto = BillDtoSchema.check(JSON.parse(jsonString));
+        const completeBill: BillDto = BillDtoSchema.check(
+          JSON.parse(jsonString)
+        );
 
-        const productsWithId: Product[] =
-          bill.products.map((product) => ({
+        const productsWithId: Product[] = completeBill.bill.products.map(
+          (product) => ({
             ...product,
             id: v4(),
-          })) ?? [];
+          })
+        );
 
         setFormState({
-          user: bill.user,
-          seller: bill.seller,
-          purchaser: bill.purchaser,
-          products: productsWithId,
+          user: completeBill.user,
+          bill: {
+            ...formState.bill,
+            seller: completeBill.bill.seller,
+            purchaser: completeBill.bill.purchaser,
+            products: productsWithId,
+          },
+          config: completeBill.config ?? getDefaultConfig(),
         });
       } catch (error: any) {
         createErrorNotification("Invalid bill specification", 8000);
@@ -79,13 +94,26 @@ export default function BillGenerator() {
   function handleAddProduct(product: Product) {
     setFormState({
       ...formState,
-      products: [...formState.products, product],
+      bill: {
+        ...formState.bill,
+        products: [...formState.bill.products, product],
+      },
     });
   }
   function handleRemoveProduct(id: Product["id"]) {
     setFormState({
       ...formState,
-      products: formState.products.filter((p) => p.id !== id),
+      bill: {
+        ...formState.bill,
+        products: formState.bill.products.filter((p) => p.id !== id),
+      },
+    });
+  }
+
+  function handleChangeConfig(config: PdfConfig) {
+    setFormState({
+      ...formState,
+      config,
     });
   }
 
@@ -107,22 +135,39 @@ export default function BillGenerator() {
           <TextInput
             required
             label="Seller"
-            value={formState.seller}
-            onChange={(seller) => setFormState({ ...formState, seller })}
+            value={formState.bill.seller}
+            onChange={(seller) =>
+              setFormState({
+                ...formState,
+                bill: { ...formState.bill, seller },
+              })
+            }
           />
           <TextInput
             required
             label="Purchaser"
-            value={formState.purchaser}
-            onChange={(purchaser) => setFormState({ ...formState, purchaser })}
+            value={formState.bill.purchaser}
+            onChange={(purchaser) =>
+              setFormState({
+                ...formState,
+                bill: { ...formState.bill, purchaser },
+              })
+            }
           />
         </div>
 
         <div className={styles.BillGenerator_productList}>
           <ProductList
-            products={formState.products}
+            products={formState.bill.products}
             onAddProduct={handleAddProduct}
             onRemoveProduct={handleRemoveProduct}
+          />
+        </div>
+
+        <div className={styles.BillGenerator_pdfConfiguration}>
+          <PdfConfiguration
+            config={formState.config}
+            onChangeConfig={handleChangeConfig}
           />
         </div>
 
@@ -141,7 +186,7 @@ export default function BillGenerator() {
             <span>Generating bill...</span>
           </div>
         ) : (
-          generatedBill && <PdfViewer file={generatedBill!} />
+          !generatedBill && <PdfViewer file={generatedBill!} />
         )}
       </div>
     </>
