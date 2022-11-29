@@ -6,7 +6,7 @@ export default abstract class BillService {
 
   static generateBill(bill: BillDto): Promise<Bill["id"]> {
     return new Promise((resolve, reject) => {
-      resolve("1");
+      resolve(1);
     });
     // return fetch(`${this.endpoint}/expenses`, {
     //   method: "POST",

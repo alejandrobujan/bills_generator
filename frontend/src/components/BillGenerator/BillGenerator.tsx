@@ -12,17 +12,17 @@ import TextInput from "../Input/TextInput";
 import BillDto, { BillDtoSchema } from "../../entities/BillDto";
 import { v4 } from "uuid";
 import { useNotifications } from "../NotificationManager/NotificationManager";
-import PdfViewer from "../PdfViewer/PdfViewer";
 import PdfConfiguration from "../PdfConfiguration/PdfConfiguration";
 import PdfConfig, { getDefaultConfig } from "../../entities/PdfConfig";
 import { AnimatePresence, motion } from "framer-motion";
+import DownloadIcon from "@mui/icons-material/Download";
+import AcceptButton from "../Buttton/AcceptButton";
 
 export default function BillGenerator() {
   const { createErrorNotification, createSuccessNotification } =
     useNotifications();
-  const [generatedBill, setGeneratedBill] = useState<Blob | undefined>(
-    undefined
-  );
+  const [isBillGenerated, setIsBillGenerated] = useState<boolean>(false);
+  const [billId, setBillId] = useState<Bill["id"] | undefined>(undefined);
   const [isGenerating, setIsGenerating] = useState<boolean>(false);
   const [formState, setFormState] = useState<{
     user: string;
@@ -45,6 +45,7 @@ export default function BillGenerator() {
   function waitForBill(id: Bill["id"]) {
     BillService.getBill(id).then((bill) => {
       setIsGenerating(false);
+      setIsBillGenerated(true);
       createSuccessNotification("Bill generated successfully", 5000);
     });
     //   if (bill) {
@@ -97,7 +98,10 @@ export default function BillGenerator() {
     if (isGenerating) return;
     setIsGenerating(true);
     const billDto: BillDto = BillDtoSchema.check(formState);
-    BillService.generateBill(billDto).then((id) => waitForBill(id));
+    BillService.generateBill(billDto).then((id) => {
+      setBillId(id);
+      waitForBill(id);
+    });
   }
 
   function handleAddProduct(product: Product) {
@@ -180,46 +184,52 @@ export default function BillGenerator() {
           />
         </div>
 
-        <NormalButton
-          type="submit"
-          className={styles.BillGenerator_generateButton}
-        >
-          <span>Generate</span>
+        <AnimatePresence>
+          {isBillGenerated ? (
+            <motion.a
+              href={`/api/bills/${billId}`}
+              download="bill.pdf"
+              target="_blank"
+              rel="noreferrer"
+            >
+              <AcceptButton type="button">
+                <span>Download generated bill</span>
+                <DownloadIcon />
+              </AcceptButton>
+            </motion.a>
+          ) : (
+            <NormalButton
+              type="submit"
+              className={styles.BillGenerator_generateButton}
+            >
+              <span>Generate</span>
 
-          <AnimatePresence>
-            {isGenerating ? (
-              <motion.div
-                transition={{ duration: 0.6 }}
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                className={styles.BillGenerator_loadingLoop}
-              >
-                <LoopIcon />
-              </motion.div>
-            ) : (
-              <motion.div
-                transition={{ duration: 0.8 }}
-                initial={{ left: 0, opacity: 0 }}
-                animate={{ left: 0, opacity: 1 }}
-                exit={{ left: "100%" }}
-              >
-                <ArrowFwdIcon />
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </NormalButton>
+              <AnimatePresence>
+                {isGenerating ? (
+                  <motion.div
+                    transition={{ duration: 0.6 }}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    className={styles.BillGenerator_loadingLoop}
+                  >
+                    <LoopIcon />
+                  </motion.div>
+                ) : (
+                  <motion.div
+                    transition={{ duration: 0.8 }}
+                    initial={{ left: 0, opacity: 0 }}
+                    animate={{ left: 0, opacity: 1 }}
+                    exit={{ left: "100%" }}
+                  >
+                    <ArrowFwdIcon />
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </NormalButton>
+          )}
+        </AnimatePresence>
       </form>
-
-      {/* <div className={styles.BillGenerator_billPdfContainer}>
-        {isGenerating ? (
-          <div className={styles.BillGenerator_loading}>
-            <span>Generating bill...</span>
-          </div>
-        ) : (
-          !generatedBill && <PdfViewer file={generatedBill!} />
-        )}
-      </div> */}
     </>
   );
 }
