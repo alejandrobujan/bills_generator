@@ -9,10 +9,9 @@ defmodule BillsGeneratorWeb.BillController do
     bill = body["bill"]
 
     products =
-      body["items"]
+      bill["products"]
       |> Enum.map(fn item ->
-        {%Product{name: item["product"]["name"], price: item["product"]["price"]},
-         item["quantity"]}
+        {%Product{name: item["name"], price: item["price"]}, item["quantity"]}
       end)
 
     seller = bill["seller"]
