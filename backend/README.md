@@ -4,14 +4,17 @@ Esto está aún en pruebas. El código en la app BillsGenerator es una copia de 
 
 # Testing
 
-Lanzar postgres en el puerto 5432 con user y pass `postgres`
+Instalar docker y docker-compose.
+
+Desde la carpeta `backend/`
 
 ```console
-docker pull postgres
-docker run -e POSTGRES_PASSWORD=postgres -p 5432:5432 postgres
+docker-compose up -d
 mix ecto.create
 mix ecto.migrate
 mix phx.server
 curl localhost:4000/api/bills -X POST -H "Content-Type: application/json" -d @data.json
 wget localhost:4000/api/bills/1
 ```
+
+Para ver los logs de la base de datos: `docker-compose logs`
