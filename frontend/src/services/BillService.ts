@@ -4,29 +4,23 @@ import BillDto from "../entities/BillDto";
 export default abstract class BillService {
   private static endpoint = "/api";
 
-  static generateBill(bill: BillDto): Promise<Bill["id"]> {
-    return new Promise((resolve, reject) => {
-      resolve(1);
-    });
-    // return fetch(`${this.endpoint}/expenses`, {
-    //   method: "POST",
-    //   mode: "cors",
-    //   body: JSON.stringify(bill),
-    //   headers: {
-    //     "Content-Type": "application/json",
-    //   },
-    // }).then((res) => res.json());
+  static generateBill(bill: BillDto): Promise<number> {
+    return fetch(`${this.endpoint}/bills`, {
+      method: "POST",
+      body: JSON.stringify(bill),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+      .then((res) => res.json())
+      .then((res) => res.id);
   }
 
-  static getBill(id: Bill["id"]): Promise<Blob | undefined> {
-    return new Promise((resolve, reject) => {
-      setTimeout(() => {
-        resolve(undefined);
-      }, 5000);
-    });
-    return fetch(`${this.endpoint}/expenses/${id}`, {
+  static isAvailable(id: number): Promise<boolean> {
+    return fetch(`${this.endpoint}/bills/${id}/available`, {
       method: "GET",
-      mode: "cors",
-    }).then((res) => res.blob());
+    })
+      .then((res) => res.json())
+      .then((res) => res.available);
   }
 }

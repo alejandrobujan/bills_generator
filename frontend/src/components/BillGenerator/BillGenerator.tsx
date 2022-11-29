@@ -2,18 +2,17 @@ import styles from "./billGenerator.module.scss";
 import ArrowFwdIcon from "@mui/icons-material/ArrowForwardIos";
 import LoopIcon from "@mui/icons-material/Loop";
 import ImportFile from "../ImportFile/ImportFile";
-import { FormEvent, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 import BillService from "../../services/BillService";
 import NormalButton from "../Buttton/NormalButton";
-import Bill from "../../entities/Bill";
+import Bill, { getDefaultBill, toBillDto } from "../../entities/Bill";
 import Product from "../../entities/Product";
 import ProductList from "../ProductList/ProductList";
 import TextInput from "../Input/TextInput";
-import BillDto, { BillDtoSchema } from "../../entities/BillDto";
-import { v4 } from "uuid";
+import BillDto, { BillDtoSchema, toBill } from "../../entities/BillDto";
 import { useNotifications } from "../NotificationManager/NotificationManager";
 import PdfConfiguration from "../PdfConfiguration/PdfConfiguration";
-import PdfConfig, { getDefaultConfig } from "../../entities/PdfConfig";
+import PdfConfig from "../../entities/PdfConfig";
 import { AnimatePresence, motion } from "framer-motion";
 import DownloadIcon from "@mui/icons-material/Download";
 import AcceptButton from "../Buttton/AcceptButton";
@@ -21,114 +20,89 @@ import AcceptButton from "../Buttton/AcceptButton";
 export default function BillGenerator() {
   const { createErrorNotification, createSuccessNotification } =
     useNotifications();
-  const [isBillGenerated, setIsBillGenerated] = useState<boolean>(false);
-  const [billId, setBillId] = useState<Bill["id"] | undefined>(undefined);
-  const [isGenerating, setIsGenerating] = useState<boolean>(false);
-  const [formState, setFormState] = useState<{
-    user: string;
-    bill: {
-      seller: string;
-      purchaser: string;
-      products: Product[];
-    };
-    config: PdfConfig;
-  }>({
-    user: "",
-    bill: {
-      seller: "",
-      purchaser: "",
-      products: [],
-    },
-    config: getDefaultConfig(),
-  });
 
-  function waitForBill(id: Bill["id"]) {
-    BillService.getBill(id).then((bill) => {
-      setIsGenerating(false);
-      setIsBillGenerated(true);
-      createSuccessNotification("Bill generated successfully", 5000);
-    });
-    //   if (bill) {
-    //     setGeneratedBill(bill);
-    //     setIsGenerating(false);
-    //   }
-    //   setTimeout(() => waitForBill(id), 500);
-    // });
+  const [isGenerating, setIsGenerating] = useState<boolean>(false);
+  const [billId, setBillId] = useState<number | undefined>(undefined);
+  const [currentBill, setCurrentBill] = useState<Bill>(getDefaultBill());
+
+  function waitForBill(id: number) {
+    BillService.isAvailable(id)
+      .then((isAvailable) => {
+        if (!isAvailable) {
+          setTimeout(() => waitForBill(id), 500);
+          return;
+        }
+        setIsGenerating(false);
+        createSuccessNotification("Bill generated successfully", 5000);
+      })
+      .catch(() => {
+        setIsGenerating(false);
+        setBillId(undefined);
+        createErrorNotification("Error generating bill", 5000);
+      });
   }
 
   function handleImportFile(file: File | undefined) {
     if (!file) return;
-    file.text().then((jsonString) => {
-      try {
-        const completeBill: BillDto = BillDtoSchema.check(
-          JSON.parse(jsonString)
-        );
-
-        const productsWithId: Product[] = completeBill.bill.products.map(
-          (product) => ({
-            ...product,
-            id: v4(),
-          })
-        );
-
-        const newConfig = {
-          ...getDefaultConfig(),
-          ...completeBill.config,
-        };
-
-        setFormState({
-          user: completeBill.user,
-          bill: {
-            ...formState.bill,
-            seller: completeBill.bill.seller,
-            purchaser: completeBill.bill.purchaser,
-            products: productsWithId,
-          },
-          config: newConfig,
-        });
-      } catch (error: any) {
-        createErrorNotification("Invalid bill specification", 8000);
-        return;
-      }
-    });
+    file
+      .text()
+      .then((jsonString) => {
+        try {
+          const billDto: BillDto = BillDtoSchema.check(JSON.parse(jsonString));
+          setCurrentBill(toBill(billDto));
+        } catch (error: any) {
+          createErrorNotification("Invalid bill specification", 8000);
+          return;
+        }
+      })
+      .catch(() => createErrorNotification("Error while importing file", 8000));
   }
 
   function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     if (isGenerating) return;
     setIsGenerating(true);
-    const billDto: BillDto = BillDtoSchema.check(formState);
-    BillService.generateBill(billDto).then((id) => {
-      setBillId(id);
-      waitForBill(id);
-    });
+
+    BillService.generateBill(toBillDto(currentBill))
+      .then((id) => {
+        setBillId(id);
+        waitForBill(id);
+      })
+      .catch(() => {
+        setIsGenerating(false);
+        createErrorNotification("Error while generating bill", 5000);
+      });
   }
 
   function handleAddProduct(product: Product) {
-    setFormState({
-      ...formState,
+    setCurrentBill({
+      ...currentBill,
       bill: {
-        ...formState.bill,
-        products: [...formState.bill.products, product],
+        ...currentBill.bill,
+        products: [...currentBill.bill.products, product],
       },
     });
   }
   function handleRemoveProduct(id: Product["id"]) {
-    setFormState({
-      ...formState,
+    setCurrentBill({
+      ...currentBill,
       bill: {
-        ...formState.bill,
-        products: formState.bill.products.filter((p) => p.id !== id),
+        ...currentBill.bill,
+        products: currentBill.bill.products.filter((p) => p.id !== id),
       },
     });
   }
 
   function handleChangeConfig(config: PdfConfig) {
-    setFormState({
-      ...formState,
+    setCurrentBill({
+      ...currentBill,
       config,
     });
   }
+
+  useEffect(() => {
+    if (billId) setBillId(undefined);
+  }, [currentBill, billId]);
 
   return (
     <>
@@ -142,28 +116,39 @@ export default function BillGenerator() {
           <TextInput
             required
             label="User"
-            value={formState.user}
-            onChange={(user) => setFormState({ ...formState, user })}
+            value={currentBill.user}
+            onChange={(user) => setCurrentBill({ ...currentBill, user })}
+          />
+          <TextInput
+            required
+            label="Title"
+            value={currentBill.bill.title}
+            onChange={(title) =>
+              setCurrentBill({
+                ...currentBill,
+                bill: { ...currentBill.bill, title },
+              })
+            }
           />
           <TextInput
             required
             label="Seller"
-            value={formState.bill.seller}
+            value={currentBill.bill.seller}
             onChange={(seller) =>
-              setFormState({
-                ...formState,
-                bill: { ...formState.bill, seller },
+              setCurrentBill({
+                ...currentBill,
+                bill: { ...currentBill.bill, seller },
               })
             }
           />
           <TextInput
             required
             label="Purchaser"
-            value={formState.bill.purchaser}
+            value={currentBill.bill.purchaser}
             onChange={(purchaser) =>
-              setFormState({
-                ...formState,
-                bill: { ...formState.bill, purchaser },
+              setCurrentBill({
+                ...currentBill,
+                bill: { ...currentBill.bill, purchaser },
               })
             }
           />
@@ -171,7 +156,7 @@ export default function BillGenerator() {
 
         <div className={styles.BillGenerator_productList}>
           <ProductList
-            products={formState.bill.products}
+            products={currentBill.bill.products}
             onAddProduct={handleAddProduct}
             onRemoveProduct={handleRemoveProduct}
           />
@@ -179,13 +164,13 @@ export default function BillGenerator() {
 
         <div className={styles.BillGenerator_pdfConfiguration}>
           <PdfConfiguration
-            config={formState.config}
+            config={currentBill.config}
             onChangeConfig={handleChangeConfig}
           />
         </div>
 
         <AnimatePresence>
-          {isBillGenerated ? (
+          {billId ? (
             <motion.a
               href={`/api/bills/${billId}`}
               download="bill.pdf"
