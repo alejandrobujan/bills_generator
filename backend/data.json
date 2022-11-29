@@ -1,6 +1,7 @@
 {
 	"user": "David",
 	"bill": {
+	  "title": "Titulo",
 	  "purchaser": "Trile S.A",
 	  "seller": "Corunat S.A",
 	  "products": [

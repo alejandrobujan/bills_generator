@@ -52,8 +52,10 @@ defmodule BillsGeneratorWeb.BillController do
 
   def get_all(conn, %{"user" => user}) do
     bills =
-      Repo.all(from(b in Bill, select: {b.id, b.title}, where: b.user == ^user))
-      |> Enum.map(fn {id, title} -> %{id: id, title: title} end)
+      Repo.all(from(b in Bill, select: {b.id, b.title, b.updated_at}, where: b.user == ^user))
+      |> Enum.map(fn {id, title, updated_at} ->
+        %{id: id, title: title, created_at: updated_at}
+      end)
 
     json(conn, %{bills: bills})
   end

@@ -7,7 +7,6 @@ defmodule BillsGenerator.Filters.LatexFormatter do
   # def worker_action({stored_bill, bill_lines, seller, purchaser}) do
   #   raise "error on LatexFormatter"
   # end
-
   @impl StandardLeader
   def worker_action({bill_id, title, user, bill, seller, purchaser}),
     do: {bill_id, title, user, generate_latex(bill, seller, purchaser)}
