@@ -1,5 +1,6 @@
 import styles from "./billGenerator.module.scss";
 import ArrowFwdIcon from "@mui/icons-material/ArrowForwardIos";
+import LoopIcon from "@mui/icons-material/Loop";
 import ImportFile from "../ImportFile/ImportFile";
 import { FormEvent, useState } from "react";
 import BillService from "../../services/BillService";
@@ -11,13 +12,14 @@ import TextInput from "../Input/TextInput";
 import BillDto, { BillDtoSchema } from "../../entities/BillDto";
 import { v4 } from "uuid";
 import { useNotifications } from "../NotificationManager/NotificationManager";
-import Utils from "../../utils/utils";
 import PdfViewer from "../PdfViewer/PdfViewer";
 import PdfConfiguration from "../PdfConfiguration/PdfConfiguration";
 import PdfConfig, { getDefaultConfig } from "../../entities/PdfConfig";
+import { AnimatePresence, motion } from "framer-motion";
 
 export default function BillGenerator() {
-  const { createErrorNotification } = useNotifications();
+  const { createErrorNotification, createSuccessNotification } =
+    useNotifications();
   const [generatedBill, setGeneratedBill] = useState<Blob | undefined>(
     undefined
   );
@@ -43,6 +45,7 @@ export default function BillGenerator() {
   function waitForBill(id: Bill["id"]) {
     BillService.getBill(id).then((bill) => {
       setIsGenerating(false);
+      createSuccessNotification("Bill generated successfully", 5000);
     });
     //   if (bill) {
     //     setGeneratedBill(bill);
@@ -67,6 +70,11 @@ export default function BillGenerator() {
           })
         );
 
+        const newConfig = {
+          ...getDefaultConfig(),
+          ...completeBill.config,
+        };
+
         setFormState({
           user: completeBill.user,
           bill: {
@@ -75,7 +83,7 @@ export default function BillGenerator() {
             purchaser: completeBill.bill.purchaser,
             products: productsWithId,
           },
-          config: completeBill.config ?? getDefaultConfig(),
+          config: newConfig,
         });
       } catch (error: any) {
         createErrorNotification("Invalid bill specification", 8000);
@@ -86,6 +94,7 @@ export default function BillGenerator() {
 
   function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
+    if (isGenerating) return;
     setIsGenerating(true);
     const billDto: BillDto = BillDtoSchema.check(formState);
     BillService.generateBill(billDto).then((id) => waitForBill(id));
@@ -176,11 +185,33 @@ export default function BillGenerator() {
           className={styles.BillGenerator_generateButton}
         >
           <span>Generate</span>
-          <ArrowFwdIcon />
+
+          <AnimatePresence>
+            {isGenerating ? (
+              <motion.div
+                transition={{ duration: 0.6 }}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className={styles.BillGenerator_loadingLoop}
+              >
+                <LoopIcon />
+              </motion.div>
+            ) : (
+              <motion.div
+                transition={{ duration: 0.8 }}
+                initial={{ left: 0, opacity: 0 }}
+                animate={{ left: 0, opacity: 1 }}
+                exit={{ left: "100%" }}
+              >
+                <ArrowFwdIcon />
+              </motion.div>
+            )}
+          </AnimatePresence>
         </NormalButton>
       </form>
 
-      <div className={styles.BillGenerator_billPdfContainer}>
+      {/* <div className={styles.BillGenerator_billPdfContainer}>
         {isGenerating ? (
           <div className={styles.BillGenerator_loading}>
             <span>Generating bill...</span>
@@ -188,7 +219,7 @@ export default function BillGenerator() {
         ) : (
           !generatedBill && <PdfViewer file={generatedBill!} />
         )}
-      </div>
+      </div> */}
     </>
   );
 }

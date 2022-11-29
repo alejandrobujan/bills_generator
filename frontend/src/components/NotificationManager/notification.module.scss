@@ -21,8 +21,11 @@
   position: relative;
   padding: 1rem;
 
+  background-color: white;
   border-radius: var(--border-radius);
-  border: 1px solid;
+  border: 1px solid black;
+
+  transition: background-color 0.3s ease-in-out;
 
   @include for-screens-above("l") {
     width: 20vw;
@@ -64,45 +67,36 @@
 }
 
 .Notification_success {
-  background-color: var(--green4);
-  border-color: var(--green3);
-
-  transition: background-color 0.3s ease-in-out;
   &:hover {
-    background-color: var(--green3);
+    background-color: #d1ecd1;
   }
 
   .Notification_title {
     > svg {
-      color: var(--green2);
+      color: #36b72a;
     }
-    border-color: var(--green2);
   }
 }
 
 .Notification_error {
-  background-color: var(--red4);
-  border-color: black;
-
-  transition: background-color 0.3s ease-in-out;
   &:hover {
-    background-color: rgba(234, 94, 94, 0.116);
+    background-color: #ecd1d1;
   }
 
   .Notification_title {
     > svg {
-      color: #070707
+      color: #b72a2a;
     }
   }
 }
 
 .Notification_info {
-  background-color: var(--blue4);
-  border-color: var(--blue3);
+  background-color: #ffffff;
+  border-color: black;
 
   transition: background-color 0.3s ease-in-out;
   &:hover {
-    background-color: var(--blue3);
+    background-color: #1818a0;
   }
 
   .Notification_title {

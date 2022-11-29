@@ -16,5 +16,7 @@
       }
     ]
   },
-  "config": {}
+  "config": {
+    "fontSize": 14
+  }
 }

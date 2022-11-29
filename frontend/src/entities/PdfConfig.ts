@@ -1,5 +1,11 @@
 import { Number, Record, Static, Union, Literal } from "runtypes";
 
+export enum FontFamily {
+  "Arial",
+  "Times New Roman",
+  "Courier New",
+}
+
 const FontFamilySchema = Union(
   Literal("Arial"),
   Literal("Times New Roman"),

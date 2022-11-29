@@ -10,8 +10,6 @@ interface Props {
 }
 
 export default function PdfConfiguration({ config, onChangeConfig }: Props) {
-  const [configState, setConfigState] = useState<PdfConfig>(config);
-
   return (
     <div className={styles.PdfConfiguration_container}>
       <h2 className={styles.PdfConfiguration_title}>Configuration</h2>
@@ -19,7 +17,7 @@ export default function PdfConfiguration({ config, onChangeConfig }: Props) {
       <div className={styles.PdfConfiguration_form}>
         <SelectInput
           label="Font family"
-          value={configState.fontFamily}
+          value={config.fontFamily}
           onChange={(type) => {
             let constType;
             if (type === "Arial") constType = "Arial" as const;
@@ -27,8 +25,8 @@ export default function PdfConfiguration({ config, onChangeConfig }: Props) {
               constType = "Times New Roman" as const;
             else if (type === "Courier New") constType = "Courier New" as const;
 
-            setConfigState({
-              ...configState,
+            onChangeConfig({
+              ...config,
               fontFamily: constType,
             });
           }}
@@ -40,10 +38,10 @@ export default function PdfConfiguration({ config, onChangeConfig }: Props) {
 
         <NumberInput
           label="Font size"
-          value={configState.fontSize}
+          value={config.fontSize}
           onChange={(size) =>
-            setConfigState({
-              ...configState,
+            onChangeConfig({
+              ...config,
               fontSize: size,
             })
           }
