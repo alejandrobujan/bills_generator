@@ -1,4 +1,5 @@
 import { Number, String, Record, Static } from "runtypes";
+import ProductDto from "./ProductDto";
 
 export const ProductSchema = Record({
   id: String,
@@ -14,5 +15,12 @@ export const ProductSchema = Record({
 });
 
 type Product = Static<typeof ProductSchema>;
-
 export default Product;
+
+export const toProductDto = (product: Product): ProductDto => {
+  return {
+    name: product.name,
+    price: product.price,
+    quantity: product.quantity,
+  };
+};

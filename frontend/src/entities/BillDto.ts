@@ -1,9 +1,8 @@
 import { String, Array, Record, Static } from "runtypes";
-import { v4 } from "uuid";
 import Bill from "./Bill";
 import { getDefaultConfig, PdfConfigSchema } from "./PdfConfig";
 import Product from "./Product";
-import { ProductDtoSchema } from "./ProductDto";
+import { ProductDtoSchema, toProduct } from "./ProductDto";
 
 export const BillDtoSchema = Record({
   user: String.withConstraint((user) => user.length > 0),
@@ -20,16 +19,11 @@ type BillDto = Static<typeof BillDtoSchema>;
 export default BillDto;
 
 export const toBill = (dto: BillDto): Bill => {
-  const newProducts: Product[] = dto.bill.products.map((product) => {
-    return {
-      id: v4(),
-      name: product.name,
-      price: product.price,
-      quantity: product.quantity,
-    };
-  });
+  const products: Product[] = dto.bill.products.map((product) =>
+    toProduct(product)
+  );
 
-  const newConfig = {
+  const config = {
     ...getDefaultConfig(),
     ...dto.config,
   };
@@ -38,8 +32,8 @@ export const toBill = (dto: BillDto): Bill => {
     user: dto.user,
     bill: {
       ...dto.bill,
-      products: newProducts,
+      products,
     },
-    config: newConfig,
+    config,
   };
 };

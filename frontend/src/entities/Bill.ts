@@ -1,7 +1,7 @@
 import { String, Array, Record, Static } from "runtypes";
 import BillDto from "./BillDto";
 import { getDefaultConfig, PdfConfigSchema } from "./PdfConfig";
-import { ProductSchema } from "./Product";
+import { ProductSchema, toProductDto } from "./Product";
 import ProductDto from "./ProductDto";
 
 export const BillSchema = Record({
@@ -18,7 +18,7 @@ export const BillSchema = Record({
 type Bill = Static<typeof BillSchema>;
 export default Bill;
 
-export const getDefaultBill = () => {
+export const getDefaultBill = (): Bill => {
   return {
     user: "",
     bill: {
@@ -32,20 +32,15 @@ export const getDefaultBill = () => {
 };
 
 export const toBillDto = (bill: Bill): BillDto => {
-  const newProducts: ProductDto[] = bill.bill.products.map((product) => {
-    return {
-      name: product.name,
-      price: product.price,
-      quantity: product.quantity,
-    };
-  });
+  const products: ProductDto[] = bill.bill.products.map((product) =>
+    toProductDto(product)
+  );
 
   return {
-    user: bill.user,
+    ...bill,
     bill: {
       ...bill.bill,
-      products: newProducts,
+      products,
     },
-    config: bill.config,
   };
 };

@@ -1,4 +1,3 @@
-import Bill from "../entities/Bill";
 import BillDto from "../entities/BillDto";
 
 export default abstract class BillService {

@@ -11,6 +11,10 @@ import { AnimatePresence, motion } from "framer-motion";
 import { v4 } from "uuid";
 import { ValidationError } from "runtypes";
 import Utils from "../../utils/utils";
+import ProductDto, {
+  getDefaultProductDto,
+  toProduct,
+} from "../../entities/ProductDto";
 
 interface Props {
   products: Product[];
@@ -55,24 +59,15 @@ export default function ProductList({
   onRemoveProduct,
 }: Props) {
   const { createErrorNotification } = useNotifications();
-  const defaultProduct = {
-    name: "",
-    price: 0,
-    quantity: 0,
-  };
-  const [productFields, setProductFields] = useState<{
-    name: string;
-    price: number;
-    quantity: number;
-  }>(defaultProduct);
+
+  const [currentProduct, setCurrentProduct] = useState<ProductDto>(
+    getDefaultProductDto()
+  );
 
   function handleClick(_: MouseEvent<HTMLButtonElement>) {
     try {
-      const product: Product = ProductSchema.check({
-        ...productFields,
-        id: v4(),
-      });
-      setProductFields(defaultProduct);
+      const product: Product = ProductSchema.check(toProduct(currentProduct));
+      setCurrentProduct(getDefaultProductDto());
       onAddProduct(product);
     } catch (error: any) {
       const message = Utils.getValidationErrorMessage(error);
@@ -94,20 +89,22 @@ export default function ProductList({
         <div className={styles.ProductList_row}>
           <TextInput
             ignoreEnter
-            value={productFields.name}
-            onChange={(name) => setProductFields({ ...productFields, name })}
+            value={currentProduct.name}
+            onChange={(name) => setCurrentProduct({ ...currentProduct, name })}
           />
           <NumberInput
             ignoreEnter
-            value={productFields.quantity}
+            value={currentProduct.quantity}
             onChange={(quantity) =>
-              setProductFields({ ...productFields, quantity })
+              setCurrentProduct({ ...currentProduct, quantity })
             }
           />
           <NumberInput
             ignoreEnter
-            value={productFields.price}
-            onChange={(price) => setProductFields({ ...productFields, price })}
+            value={currentProduct.price}
+            onChange={(price) =>
+              setCurrentProduct({ ...currentProduct, price })
+            }
           />
         </div>
 

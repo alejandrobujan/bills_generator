@@ -1,5 +1,3 @@
-import { ValidationError } from "runtypes";
-
 export default abstract class Utils {
   static getValidationErrorMessage(error: any): string {
     const completeMessage = Object.values(error.details)[0] as string;
