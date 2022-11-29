@@ -5,6 +5,9 @@ defmodule BillsGeneratorWeb.BillController do
   import Ecto.Query, only: [from: 2]
 
   def generate(conn, body) do
+    user = body["user"]
+    bill = body["bill"]
+
     products =
       body["items"]
       |> Enum.map(fn item ->
@@ -12,10 +15,9 @@ defmodule BillsGeneratorWeb.BillController do
          item["quantity"]}
       end)
 
-    seller = body["seller"]
-    purchaser = body["purchaser"]
-    user = body["user"]
-    title = body["title"]
+    seller = bill["seller"]
+    purchaser = bill["purchaser"]
+    title = bill["title"]
     # Pass the bill throught all filters, or just create it at the last worker?
     # In this way, we can track
     bill_id = BillsGenerator.Application.generate_bill(title, user, products, seller, purchaser)
