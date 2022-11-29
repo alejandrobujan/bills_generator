@@ -9,8 +9,8 @@ defmodule BillsGenerator.Filters.LatexFormatter do
   # end
 
   @impl StandardLeader
-  def worker_action({stored_bill, bill, seller, purchaser}),
-    do: {stored_bill, generate_latex(bill, seller, purchaser)}
+  def worker_action({bill_id, title, user, bill, seller, purchaser}),
+    do: {bill_id, title, user, generate_latex(bill, seller, purchaser)}
 
   @impl StandardLeader
   def next_action(output_data), do: BillsGenerator.Filters.LatexToPdf.process_filter(output_data)

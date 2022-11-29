@@ -4,6 +4,7 @@ defmodule BillsGenerator.Repo.Migrations.CreateBill do
   def change do
     create table(:bill) do
       add(:user, :string)
+      add(:title, :string)
       add(:pdf, :binary)
 
       timestamps()

@@ -15,11 +15,12 @@ defmodule BillsGeneratorWeb.BillController do
     seller = body["seller"]
     purchaser = body["purchaser"]
     user = body["user"]
+    title = body["title"]
     # Pass the bill throught all filters, or just create it at the last worker?
     # In this way, we can track
-    BillsGenerator.Application.generate_bill(user, products, seller, purchaser)
+    bill_id = BillsGenerator.Application.generate_bill(title, user, products, seller, purchaser)
 
-    conn |> send_resp(200, "ok")
+    conn |> json(%{id: bill_id})
   end
 
   def download(conn, %{"id" => id}) do
@@ -48,19 +49,15 @@ defmodule BillsGeneratorWeb.BillController do
     conn |> json(%{available: bill.pdf != nil})
   end
 
-  def get(conn, %{"user" => user}) do
+  def get_all(conn, %{"user" => user}) do
     bills =
-      Repo.all(from(b in Bill, select: {b.id, b.user}, where: b.user == ^user))
-      |> Enum.map(fn {id, user} -> %{id: id, user: user} end)
+      Repo.all(from(b in Bill, select: {b.id, b.title}, where: b.user == ^user))
+      |> Enum.map(fn {id, title} -> %{id: id, title: title} end)
 
     json(conn, %{bills: bills})
   end
 
-  def get(conn, _params) do
-    bills =
-      Repo.all(from(b in Bill, select: {b.id, b.user}))
-      |> Enum.map(fn {id, user} -> %{id: id, user: user} end)
-
-    json(conn, %{bills: bills})
+  def get_all(conn, _params) do
+    conn |> send_resp(400, "Bad request, must specify an user")
   end
 end

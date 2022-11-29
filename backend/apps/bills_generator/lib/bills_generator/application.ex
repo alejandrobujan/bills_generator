@@ -4,9 +4,7 @@ defmodule BillsGenerator.Application do
   @moduledoc false
 
   use Application
-  alias BillsGenerator.Filters.BillCalculator
-  alias BillsGenerator.Filters.LatexFormatter
-  alias BillsGenerator.Filters.LatexToPdf
+  alias BillsGenerator.Filters.{BillCalculator, LatexFormatter, LatexToPdf, StoreInDatabase}
   alias BillsGenerator.{Bill, Repo}
 
   @impl true
@@ -20,16 +18,20 @@ defmodule BillsGenerator.Application do
       # {BillsGenerator.Worker, arg}
       BillCalculator,
       LatexFormatter,
-      LatexToPdf
+      LatexToPdf,
+      StoreInDatabase
     ]
 
     Supervisor.start_link(children, strategy: :one_for_one, name: BillsGenerator.Supervisor)
   end
 
-  def generate_bill(user, products, seller, purchaser) do
+  def generate_bill(title, user, products, seller, purchaser) do
     # Esto lo debería hacer un filtro?
-    {:ok, stored_bill} = Repo.insert(%Bill{user: user})
+    {:ok, stored_bill} = Repo.insert(%Bill{})
 
-    BillCalculator.process_filter({stored_bill, products, seller, purchaser})
+    bill_id = stored_bill.id
+
+    BillCalculator.process_filter({bill_id, title, user, products, seller, purchaser})
+    bill_id
   end
 end

@@ -9,7 +9,7 @@ defmodule BillsGeneratorWeb.Router do
     pipe_through(:api)
     post("/bills", BillController, :generate)
     get("/bills/:id", BillController, :download)
-    get("/bills", BillController, :get)
+    get("/bills", BillController, :get_all)
     get("/bills/:id/available", BillController, :download_available?)
   end
 end
