@@ -3,12 +3,15 @@
   align-items: center;
   justify-content: center;
   gap: 1rem;
-  padding: 0.5rem 1rem;
+  padding: 0.6rem 1.1rem;
   cursor: pointer;
 
   border-radius: 5px;
   color: var(--white1);
 
+  span {
+    font-size: 0.9rem;
+  }
   svg {
     font-size: 1rem;
   }

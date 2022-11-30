@@ -9,7 +9,7 @@ interface Props {
   ignoreEnter?: boolean;
 }
 
-export default function TextInput(props: Props) {
+export default function NumberInput(props: Props) {
   function onChange(value: string) {
     props.onChange(Number(value));
   }

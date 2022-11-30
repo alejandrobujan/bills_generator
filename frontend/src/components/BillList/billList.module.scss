@@ -1,0 +1,25 @@
+.BillList_container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+
+.BillList_userForm {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.BillList_title {
+  margin: 2rem 0;
+}
+
+.BillList_noBills {
+  margin-top: 1rem;
+}
+
+.BillList_list {
+  height: 50rem;
+}

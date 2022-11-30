@@ -2,6 +2,7 @@ import { motion } from "framer-motion";
 import Head from "next/head";
 import { useState } from "react";
 import BillGenerator from "../components/BillGenerator/BillGenerator";
+import BillList from "../components/BillList/BillList";
 import NotificationManager from "../components/NotificationManager/NotificationManager";
 import WaveSvg from "../components/WaveSvg/WaveSvg";
 import styles from "./styles/home.module.scss";
@@ -72,22 +73,19 @@ export default function Home() {
             </div>
           </div>
 
-          <div className={styles.Home_slideContentWrapper}>
-            <motion.div
-              transition={slideAnimation.transition}
-              animate={!seeBillsSelected ? "visible" : "hidden"}
-              variants={slideAnimation.left.variants}
-              className={styles.Home_slideSectionContent}
-            >
+          <motion.div
+            transition={slideAnimation.transition}
+            animate={!seeBillsSelected ? "visible" : "hidden"}
+            variants={slideAnimation.left.variants}
+            className={styles.Home_slideContentWrapper}
+          >
+            <div className={styles.Home_slideSectionContent}>
               <BillGenerator />
-            </motion.div>
-            {/* <motion.div
-              transition={slideAnimation.transition}
-              animate={seeBillsSelected ? "visible" : "hidden"}
-              variants={slideAnimation.right.variants}
-              className={styles.Home_slideSectionContent}
-            ></motion.div> */}
-          </div>
+            </div>
+            <div className={styles.Home_slideSectionContent}>
+              <BillList />
+            </div>
+          </motion.div>
         </div>
       </NotificationManager>
     </>

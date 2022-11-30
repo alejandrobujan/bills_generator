@@ -192,6 +192,7 @@ export default function BillGenerator() {
               <AnimatePresence>
                 {isGenerating ? (
                   <motion.div
+                    layout
                     transition={{ duration: 0.6 }}
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
@@ -202,6 +203,7 @@ export default function BillGenerator() {
                   </motion.div>
                 ) : (
                   <motion.div
+                    layout
                     transition={{ duration: 0.8 }}
                     initial={{ left: 0, opacity: 0 }}
                     animate={{ left: 0, opacity: 1 }}

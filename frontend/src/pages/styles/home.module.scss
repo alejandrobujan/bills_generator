@@ -9,6 +9,7 @@
   flex-direction: column;
   align-items: center;
   padding-bottom: 8rem;
+  overflow-x: hidden;
 }
 
 .Home_titleContainer {
@@ -80,16 +81,12 @@
 // Slide content
 
 .Home_slideContentWrapper {
+  position: relative;
   margin-top: 4rem;
-  overflow-x: hidden;
   width: 100%;
   display: flex;
-  align-items: center;
-  justify-content: center;
 }
 
 .Home_slideSectionContent {
-  position: relative;
-  width: 100%;
-  overflow-y: hidden;
+  flex: 1 0 100%;
 }

@@ -1,3 +1,4 @@
+import BillDescription from "../entities/BillDescription";
 import BillDto from "../entities/BillDto";
 
 export default abstract class BillService {
@@ -21,5 +22,11 @@ export default abstract class BillService {
     })
       .then((res) => res.json())
       .then((res) => res.available);
+  }
+
+  static getBills(user: BillDto["user"]): Promise<BillDescription[]> {
+    return fetch(`${this.endpoint}/bills?user=${user} `, {
+      method: "GET",
+    }).then((res) => res.json());
   }
 }

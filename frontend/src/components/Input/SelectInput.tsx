@@ -9,7 +9,7 @@ interface Props {
   children: React.ReactNode;
 }
 
-export default function TextInput({
+export default function SelectInput({
   label,
   value,
   onChange,
