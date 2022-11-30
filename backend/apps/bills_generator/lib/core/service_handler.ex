@@ -159,9 +159,9 @@ defmodule BillsGenerator.Core.ServiceHandler do
   @spec assign_job(ServiceHandler.t(), {pid(), any()}) ::
           ServiceHandler.t()
   def assign_job(handler, {client, input_data}) do
+    # TODO: checkear isAlive
     {{:value, worker}, other_workers} = :queue.out(handler.free_workers)
     busy_workers = Map.put(handler.busy_workers, worker, client)
-
     handler.worker_module.process_filter(worker, input_data)
 
     %ServiceHandler{handler | free_workers: other_workers, busy_workers: busy_workers}
