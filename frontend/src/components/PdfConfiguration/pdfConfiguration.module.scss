@@ -1,0 +1,25 @@
+.PdfConfiguration_container {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.PdfConfiguration_title {
+  margin-bottom: 1rem;
+}
+
+.PdfConfiguration_form {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+
+  select,
+  input {
+		min-width: 20rem;
+  }
+}

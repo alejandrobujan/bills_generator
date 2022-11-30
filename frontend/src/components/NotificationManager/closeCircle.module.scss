@@ -1,6 +1,6 @@
 .CloseCircle_wrapper {
   position: relative;
-  --size: 1.6rem;
+  --size: 1.4rem;
   width: var(--size);
   height: var(--size);
 }
@@ -10,7 +10,7 @@
   height: var(--size);
 
   > circle {
-    stroke-width: 8px;
+    stroke-width: 5px;
     stroke-opacity: 0;
   }
 }
@@ -25,14 +25,14 @@
   overflow: visible;
 
   > circle {
-    stroke-width: 7px;
-    stroke: var(--blue1);
+    stroke-width: 5px;
+    stroke: black;
     shape-rendering: geometricPrecision;
   }
 }
 
 .CloseCircle_closeIcon {
-  color: var(--blue1);
+  color: black;
   width: calc(var(--size) - 0.5rem) !important;
   height: calc(var(--size) - 0.5rem) !important;
   position: absolute;

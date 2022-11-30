@@ -8,12 +8,15 @@ import NotificationSuccess from "./Notifications/NotificationSuccess";
 import NotificationError from "./Notifications/NotificationError";
 import NotificationInfo from "./Notifications/NotificationInfo";
 
-export const NotificationContext = createContext<{
-  createSuccessNotification: (title: string, timeout?: number) => void;
-  createErrorNotification: (title: string, timeout?: number) => void;
-  createInfoNotification: (title: string, timeout?: number) => void;
-  deleteNotification: (id: string) => void;
-} | undefined>(undefined);
+export const NotificationContext = createContext<
+  | {
+      createSuccessNotification: (title: string, timeout?: number) => void;
+      createErrorNotification: (title: string, timeout?: number) => void;
+      createInfoNotification: (title: string, timeout?: number) => void;
+      deleteNotification: (id: string) => void;
+    }
+  | undefined
+>(undefined);
 
 export const useNotifications = () => {
   const context = useContext(NotificationContext);
@@ -26,7 +29,7 @@ export const useNotifications = () => {
 };
 
 interface Props {
-  children: JSX.Element;
+  children: React.ReactNode;
 }
 
 export default function NotificationManager({ children }: Props): JSX.Element {

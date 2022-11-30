@@ -1,0 +1,14 @@
+.ImportFile_container {
+  width: fit-content;
+}
+
+.ImportFile_uploadLabel {
+  cursor: pointer;
+  > button {
+    pointer-events: none;
+  }
+
+  ~ input {
+    display: none;
+  }
+}

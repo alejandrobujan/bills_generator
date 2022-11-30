@@ -1,41 +1,58 @@
-.BillGenerator_container {
+.BillGenerator_importFile {
+  margin: 0 auto;
+  font-size: 0.8rem;
+}
+
+.BillGenerator_wrapper {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  width: 60vw;
-  min-width: max-content;
-  gap: 5rem;
-  margin-top: 5rem;
-  padding: 2rem 2rem;
-
-  border: 2px solid #c4c4c4;
-  border-radius: 10px;
-  background-color: #f0f0f052;
+  width: 100%;
+  gap: 4rem;
+  padding: 0 5vw;
+  margin-top: 2rem;
 }
 
-.BillGenerator_title {
-  font-size: 2.5rem;
-  font-weight: 600;
-  color: #1f1f1f;
-}
-
-.BillGenerator_generateBtn {
+.BillGenerator_generalForm {
   display: flex;
-  align-items: center;
-  gap: 1rem;
-  padding: 0.5rem 1rem;
-  cursor: pointer;
+  flex-direction: column;
+  min-width: 18rem;
+  width: 35%;
+  gap: 1.2rem;
+}
 
-  border-radius: 5px;
-  background-color: var(--black2);
-  color: var(--white1);
+.BillGenerator_productList {
+  width: 70%;
+  height: 100%;
+}
 
-  > svg {
-    font-size: 1rem;
+.BillGenerator_pdfConfiguration {
+  width: 70%;
+  height: 100%;
+}
+
+.BillGenerator_generateButton {
+  width: 9rem;
+  height: 3rem;
+  overflow: hidden;
+
+  > div {
+    position: relative;
+    display: flex;
+    align-items: center;
   }
+}
 
-  ~ input {
-    display: none;
+.BillGenerator_loadingLoop {
+  animation: loadingLoop 1.2s linear infinite;
+}
+
+@keyframes loadingLoop {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
   }
 }

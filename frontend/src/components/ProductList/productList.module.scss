@@ -1,0 +1,101 @@
+.ProductList_container {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.ProductList_title {
+  margin-bottom: 1rem;
+}
+
+.ProductList_row {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2rem;
+  width: 100%;
+
+  > span, input {
+    width: 12rem;
+    text-align: center;
+    font-weight: 300;
+    font-size: 1rem;
+  }
+}
+
+.ProductList_formWrapper {
+  display: flex;
+  align-items: center;
+  position: relative;
+  left: 2rem;
+}
+
+.ProductList_addButton {
+  margin-left: 2rem;
+  width: 2rem;
+  height: 2rem;
+  background-color: #00000013;
+  color: black;
+}
+
+.ProductList_body {
+  margin-top: 2rem;
+  height: 20rem;
+  overflow: visible;
+  overflow-y: scroll;
+  position: relative;
+  left: 2rem;
+  padding: 0 1rem;
+}
+
+.ProductList_item {
+  position: relative;
+  display: flex;
+  align-items: center;
+
+  > .ProductList_row {
+    margin: 1rem 0;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid black;
+
+    span:nth-child(1) {
+      font-weight: 400;
+    }
+  }
+
+  &:hover {
+    > .ProductList_removeButton {
+      animation: show 0.3s 0.2s forwards;
+    }
+  }
+}
+
+.ProductList_removeButton {
+  opacity: 0;
+  visibility: hidden;
+  margin-left: 2rem;
+  width: 2rem;
+  height: 2rem;
+}
+
+@keyframes show {
+  0% {
+    opacity: 0;
+    visibility: hidden;
+  }
+  100% {
+    opacity: 1;
+    visibility: visible;
+  }
+}
+
+.ProductList_noProducts {
+  margin-top: 2rem;
+  font-size: 1rem;
+  font-weight: 400;
+  color: black;
+}
