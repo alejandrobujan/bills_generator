@@ -17,6 +17,14 @@ curl localhost:4000/api/bills -X POST -H "Content-Type: application/json" -d @da
 wget localhost:4000/api/bills/1 -O bill.pdf
 ```
 
+
+Para lanzar el frontend:
+
+```console
+cd ../frontend
+npm install
+npm run dev
+```
 Se debería poder ver el frontend en `localhost:3000`.
 
 Para ver los logs de la base de datos: `docker-compose logs`
