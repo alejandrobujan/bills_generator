@@ -1,0 +1,25 @@
+services:
+  db:
+    image: postgres
+    container_name: bills-database
+    environment:
+      POSTGRES_PASSWORD: postgres
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
+      interval: 1s
+      timeout: 1s
+      retries: 10
+      start_period: 30s
+
+  backend:
+    depends_on:
+      db:
+        condition: service_healthy
+    build: backend/
+    image: bills/backend
+    container_name: bills-backend
+
+  frontend:
+    build: frontend/
+    image: bills/frontend
+    container_name: bills-frontend
