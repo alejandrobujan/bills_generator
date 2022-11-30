@@ -24,7 +24,10 @@ export default abstract class BillService {
       method: "GET",
     })
       .then((res) => res.json())
-      .then((res) => res.available);
+      .then((res) => {
+        console.log(res);
+        return res.available;
+      });
   }
 
   static getBills(user: BillDto["user"]): Promise<BillDescription[]> {

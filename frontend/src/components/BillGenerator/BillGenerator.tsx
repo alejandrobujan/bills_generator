@@ -23,18 +23,20 @@ export default function BillGenerator() {
 
   const [isGenerating, setIsGenerating] = useState<boolean>(false);
   const [billId, setBillId] = useState<number | undefined>(undefined);
-  const [isDownloaded, setIsDownloaded] = useState<boolean>(false);
   const [currentBill, setCurrentBill] = useState<Bill>(getDefaultBill());
 
   function waitForBill(id: number) {
+    console.log(id);
     BillService.isAvailable(id)
       .then((isAvailable) => {
         if (!isAvailable) {
+          console.log("waiting for bill");
           setTimeout(() => waitForBill(id), 500);
           return;
         }
-        setIsGenerating(false);
         createSuccessNotification("Bill generated successfully", 5000);
+        setBillId(id);
+        setIsGenerating(false);
       })
       .catch(() => {
         setIsGenerating(false);
@@ -66,7 +68,7 @@ export default function BillGenerator() {
 
     BillService.generateBill(toBillDto(currentBill))
       .then((id) => {
-        setBillId(id);
+        console.log(id);
         waitForBill(id);
       })
       .catch(() => {
@@ -100,11 +102,6 @@ export default function BillGenerator() {
       config,
     });
   }
-
-  useEffect(() => {
-    setBillId(undefined);
-    setIsDownloaded(false);
-  }, [currentBill, isDownloaded]);
 
   return (
     <>
@@ -179,7 +176,7 @@ export default function BillGenerator() {
               target="_blank"
               rel="noreferrer"
             >
-              <AcceptButton type="button" onClick={() => setIsDownloaded(true)}>
+              <AcceptButton type="button" onClick={() => setBillId(undefined)}>
                 <span>Download generated bill</span>
                 <DownloadIcon />
               </AcceptButton>

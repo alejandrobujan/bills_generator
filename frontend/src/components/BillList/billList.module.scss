@@ -21,6 +21,7 @@
 }
 
 .BillList_list {
+  overflow-y: auto;
   height: 50rem;
   width: 50%;
 }
@@ -49,6 +50,6 @@
 
 .BillList_downloadButton {
   display: flex;
-  justify-content: end;
+  justify-content: flex-end;
   align-items: center;
 }
