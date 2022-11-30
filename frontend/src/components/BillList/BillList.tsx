@@ -1,6 +1,5 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { FormEvent, useState } from "react";
-import BillDescription from "../../entities/BillDescription";
 import BillDto from "../../entities/BillDto";
 import BillService from "../../services/BillService";
 import NormalButton from "../Buttton/NormalButton";
@@ -8,6 +7,8 @@ import TextInput from "../Input/TextInput";
 import { useNotifications } from "../NotificationManager/NotificationManager";
 import SearchIcon from "@mui/icons-material/Search";
 import styles from "./billList.module.scss";
+import BillDescription from "../../entities/BillDescription";
+import DownloadIcon from "@mui/icons-material/Download";
 
 interface ItemProps {
   bill: BillDescription;
@@ -20,12 +21,24 @@ function BillItem({ bill }: ItemProps) {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -20 }}
-      className={styles.billItem}
+      className={styles.BillList_item}
     >
-      <div className={styles.billItemTitle}>{bill.title}</div>
-      <div className={styles.billItemDescription}>
-        {bill.timestamp.toISOString()}
-      </div>
+      <span className={styles.billItemTitle}>{bill.title}</span>
+      <span className={styles.billItemDescription}>
+        {bill.createdAt.toLocaleString()}
+      </span>
+      <a
+        href={`/api/bills/${bill.id}`}
+        download={`bill-${bill.id}.pdf`}
+        target="_blank"
+        rel="noreferrer"
+        className={styles.BillList_downloadButton}
+      >
+        <NormalButton type="button">
+          <span>Download</span>
+          <DownloadIcon />
+        </NormalButton>
+      </a>
     </motion.div>
   );
 }

@@ -3,11 +3,13 @@
   align-items: center;
   justify-content: center;
   gap: 1rem;
-  padding: 0.6rem 1.1rem;
+  padding: 0.4rem 0.9rem;
   cursor: pointer;
 
-  border-radius: 5px;
+  border-radius: 3px;
   color: var(--white1);
+
+  transition: all 0.15s;
 
   span {
     font-size: 0.9rem;
@@ -19,8 +21,13 @@
 
 .NormalButton {
   @extend .Button;
-  background-color: var(--black2);
-  color: var(--white1);
+  background-color: white;
+  color: black;
+  border: 1px solid black;
+
+  &:hover {
+    background-color: #dedede;
+  }
 }
 
 .AcceptButton {

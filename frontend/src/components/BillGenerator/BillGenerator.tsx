@@ -23,6 +23,7 @@ export default function BillGenerator() {
 
   const [isGenerating, setIsGenerating] = useState<boolean>(false);
   const [billId, setBillId] = useState<number | undefined>(undefined);
+  const [isDownloaded, setIsDownloaded] = useState<boolean>(false);
   const [currentBill, setCurrentBill] = useState<Bill>(getDefaultBill());
 
   function waitForBill(id: number) {
@@ -101,8 +102,9 @@ export default function BillGenerator() {
   }
 
   useEffect(() => {
-    if (billId) setBillId(undefined);
-  }, [currentBill, billId]);
+    setBillId(undefined);
+    setIsDownloaded(false);
+  }, [currentBill, isDownloaded]);
 
   return (
     <>
@@ -177,7 +179,7 @@ export default function BillGenerator() {
               target="_blank"
               rel="noreferrer"
             >
-              <AcceptButton type="button">
+              <AcceptButton type="button" onClick={() => setIsDownloaded(true)}>
                 <span>Download generated bill</span>
                 <DownloadIcon />
               </AcceptButton>

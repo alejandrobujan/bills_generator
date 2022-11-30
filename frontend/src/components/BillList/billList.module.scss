@@ -13,7 +13,7 @@
 }
 
 .BillList_title {
-  margin: 2rem 0;
+  margin: 5rem 0 2rem;
 }
 
 .BillList_noBills {
@@ -22,4 +22,33 @@
 
 .BillList_list {
   height: 50rem;
+  width: 50%;
+}
+
+.BillList_item {
+  display: flex;
+  align-items: center;
+
+  margin: 1.5rem 0;
+  padding: 0 3rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid black;
+  gap: 2rem;
+
+  font-weight: 300;
+
+  span:nth-child(1) {
+    font-weight: 400;
+  }
+
+  > * {
+    text-align: center;
+    width: 20rem;
+  }
+}
+
+.BillList_downloadButton {
+  display: flex;
+  justify-content: end;
+  align-items: center;
 }
