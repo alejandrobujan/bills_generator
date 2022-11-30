@@ -1,0 +1,14 @@
+services:
+  db:
+    image: postgres
+    container_name: bills-database
+    environment:
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - 5432:5432
+  frontend:
+    build: ../frontend/
+    image: bills/frontend
+    container_name: bills-frontend
+    ports:
+      - 3000:3000
