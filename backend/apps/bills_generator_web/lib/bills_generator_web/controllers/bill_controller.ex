@@ -11,7 +11,7 @@ defmodule BillsGeneratorWeb.BillController do
     products =
       bill["products"]
       |> Enum.map(fn item ->
-        {%Product{name: item["name"], price: item["price"]}, item["quantity"]}
+        {%Product{name: item["name"], price: item["price"] * 1.0}, item["quantity"]}
       end)
 
     seller = bill["seller"]
