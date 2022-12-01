@@ -25,7 +25,14 @@ function BillItem({ bill }: ItemProps) {
     >
       <span className={styles.billItemTitle}>{bill.title}</span>
       <span className={styles.billItemDescription}>
-        {bill.createdAt.toLocaleString()}
+        {/* Format date to hh:mm dd/mm/yy */}
+        {bill.createdAt.toLocaleString("es-ES", {
+          hour: "2-digit",
+          minute: "2-digit",
+          day: "2-digit",
+          month: "2-digit",
+          year: "2-digit",
+        })}
       </span>
       <a
         href={`/api/bills/${bill.id}`}
