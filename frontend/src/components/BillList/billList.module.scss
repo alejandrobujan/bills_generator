@@ -23,7 +23,7 @@
 .BillList_list {
   overflow-y: auto;
   height: 50rem;
-  width: 50%;
+  width: min(50rem, 90vw);
 }
 
 .BillList_item {
@@ -31,7 +31,7 @@
   align-items: center;
 
   margin: 1.5rem 0;
-  padding: 0 3rem;
+  padding: 0 min(3rem, 2vw);
   padding-bottom: 1rem;
   border-bottom: 1px solid black;
   gap: 2rem;

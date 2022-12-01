@@ -16,11 +16,13 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 2rem;
+  gap: min(2rem, 2vw);
   width: 100%;
 
-  > span, input {
+  > span,
+  input {
     width: 12rem;
+    max-width: 20vw;
     text-align: center;
     font-weight: 300;
     font-size: 1rem;
@@ -31,11 +33,11 @@
   display: flex;
   align-items: center;
   position: relative;
-  left: 2rem;
+  left: min(2rem, 2vw);
 }
 
 .ProductList_addButton {
-  margin-left: 2rem;
+  margin-left: min(2rem, 2vw);
   width: 2rem;
   height: 2rem;
 }
@@ -46,7 +48,7 @@
   overflow: visible;
   overflow-y: scroll;
   position: relative;
-  left: 2rem;
+  left: min(2rem, 2vw);
   padding: 0 1rem;
 }
 
@@ -75,7 +77,7 @@
 .ProductList_removeButton {
   opacity: 0;
   visibility: hidden;
-  margin-left: 2rem;
+  margin-left: min(2rem, 2vw);
   width: 2rem;
   height: 2rem;
 }
