@@ -33,6 +33,8 @@ Para ver los logs de la base de datos: `docker-compose logs`
 
 - Mejorar el latex generado en el formatter.
 
+- Limpiar código del StandardLeader y ServiceHandler (mejor eso lo hago yo(jorge)), en el mapa de busy_workers se guarda el cliente. Dejarlo así? Podría ser útil para los logs... pero no sé
+
 - Capa de validación de la bill request? Deberíamos comprobar que el user no es vacío, que el title tampoco,
   que las properties no sean nulas... Estaría bien tenerlo centralizado en una capa. Ahora mismo, solo se hace esa comprobación en el JSONParser, para el config.
 
