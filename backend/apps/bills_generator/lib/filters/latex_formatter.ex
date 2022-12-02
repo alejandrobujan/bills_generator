@@ -18,9 +18,26 @@ defmodule BillsGenerator.Filters.LatexFormatter do
 
   @spec generate_latex(BillRequest.t()) :: String.t()
   def generate_latex(bill_request) do
-    "#{latex_styler(bill_request.config)}\\usepackage{longtable}\n\\address{#{String.replace(bill_request.bill.seller, ",", ", \\\\ \n")}}\n\\begin{document}\n\\begin{letter}\n{#{String.replace(bill_request.bill.purchaser, ",", ", \\\\ \n")}}\n\\opening{}\n\\begin{center}\n\\begin{longtable}{| p{7cm} | l | l | l |}\n\\hline\nDescription & Quantity & Price & Amount \\\\ \\hline \n" <>
+    """
+    #{latex_styler(bill_request.config)}\\usepackage{longtable}
+    \\address{#{String.replace(bill_request.bill.seller, ",", ", \\\\ \n")}}
+    \\begin{document}
+    \\begin{letter}
+    {#{String.replace(bill_request.bill.purchaser, ",", ", \\\\ \n")}}
+    \\opening{}
+    \\begin{center}
+    \\begin{longtable}{| p{7cm} | l | l | l |}
+    \\hline
+    Description & Quantity & Price & Amount \\\\ \\hline
+    """ <>
       format_bill(bill_request.bill.products, bill_request.bill.total) <>
-      "\\end{longtable}\n\\end{center}\n\\closing{Seal or signature:}\n\\end{letter}\n\\end{document}"
+      """
+      \\end{longtable}
+      \\end{center}
+      \\closing{Seal or signature:}
+      \\end{letter}
+      \\end{document}
+      """
   end
 
   def latex_styler(config) do

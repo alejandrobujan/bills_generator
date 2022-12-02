@@ -1,7 +1,7 @@
 {
 	"user": "David",
 	"bill": {
-	  "title": "Titulo",
+	  "title": "Hola",
 	  "purchaser": "Trile S.A",
 	  "seller": "Corunat S.A",
 	  "products": [
@@ -18,7 +18,8 @@
 	  ]
 	},
 	"config": {
-	  "fontSize": 14
+	  "font_size": 12,
+	  "font_style": "latex"
 	}
-}
+  }
   
