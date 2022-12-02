@@ -1,13 +1,21 @@
 defmodule BillsGeneratorWeb.Router do
   use BillsGeneratorWeb, :router
 
-  pipeline :api do
+  pipeline :api_parsing do
+    plug(Plug.Parsers,
+      parsers: [:urlencoded, :multipart, :json],
+      pass: ["*/*"],
+      json_decoder: Phoenix.json_library()
+    )
+
     plug(:accepts, ["json"])
   end
 
   scope "/api", BillsGeneratorWeb do
-    pipe_through(:api)
     post("/bills", BillController, :generate)
+    # Do not pipe generate bills throught json parsers, since we will do it in the pipeline.
+
+    pipe_through(:api_parsing)
     get("/bills/:id", BillController, :download)
     get("/bills", BillController, :get_all)
     get("/bills/:id/available", BillController, :download_available?)

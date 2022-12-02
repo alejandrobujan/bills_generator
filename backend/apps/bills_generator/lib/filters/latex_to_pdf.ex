@@ -3,14 +3,13 @@ defmodule BillsGenerator.Filters.LatexToPdf do
   use StandardLeader
 
   @impl StandardLeader
-  def worker_action({bill_id, title, user, latex}) do
-    # Dont understand this dialyzer warning
+  def worker_action({bill_id, bill_request, latex}) do
     {:ok, pdf} =
       latex
       |> Iona.source()
       |> Iona.to(:pdf)
 
-    {bill_id, title, user, pdf}
+    {bill_id, bill_request, pdf}
   end
 
   @impl StandardLeader

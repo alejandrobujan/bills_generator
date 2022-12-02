@@ -1,7 +1,7 @@
 import Config
 
 # Configure your database
-config :bills_generator, BillsGenerator.Repo,
+config :bills_generator, BillsGenerator.Repository.Repo,
   username: "postgres",
   password: "postgres",
   hostname: "localhost",

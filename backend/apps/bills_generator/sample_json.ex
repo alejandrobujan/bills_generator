@@ -1,31 +1,25 @@
-data_json = """
+json_bill = """
 {
 	"user": "David",
 	"bill": {
 	  "title": "Titulo",
 	  "purchaser": "Trile S.A",
 	  "seller": "Corunat S.A",
-	  "lines": [
-		{
-		  "product":
+	  "products": [
 			{
 				"name": "Coca Cola",
-				"price": 1.5
+				"price": 1.5,
+				"quantity": 2
 			},
-		  "quantity": 2
-		},
-		{
-		  "product":
 			{
 				"name": "Pepsi",
-				"price": 1
-			},
-		  "quantity": 2
-		}
+				"price": 1,
+				"quantity": 2
+			}
 	  ]
 	},
 	"config": {
-		"font_size" : "10pt",
+		"font_size" : 10,
 		"font_style" : "times",
 		"paper_size" : "b5paper",
 		"landscape" : true

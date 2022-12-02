@@ -1,4 +1,4 @@
-defmodule BillsGenerator.Bill do
+defmodule BillsGenerator.Repository.Bill do
   use Ecto.Schema
   import Ecto.Changeset
 

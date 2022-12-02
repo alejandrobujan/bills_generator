@@ -59,11 +59,10 @@ defmodule BillsGenerator.Core.StandardLeader do
   @callback worker_action(any()) :: any()
 
   # Callback to execute code if needed on worker
-  @callback on_error(any()) :: :ok
+  @callback on_error(module(), any()) :: :ok
 
   @callback next_action(any()) :: any()
 
-  @optional_callbacks on_error: 1
   defmacro __using__(_) do
     quote do
       alias __MODULE__, as: LeaderModule
@@ -73,7 +72,7 @@ defmodule BillsGenerator.Core.StandardLeader do
         use StandardFilter
 
         @impl StandardFilter
-        def do_process_filter({:error, error_msg}) do
+        def do_process_filter({:error, module, error_msg} = error) do
           # When an error is produced in a step of the pipeline,
           # the error is propagated forward to the next steps,
           # until the last step, where the error is handled.
@@ -82,11 +81,11 @@ defmodule BillsGenerator.Core.StandardLeader do
           # of the pipeline
 
           # Callback if error needs to be handled by worker
-          LeaderModule.on_error(error_msg)
+          LeaderModule.on_error(module, error_msg)
 
           # Always return the error as filter's output, so the leader will know
           # if an error happened
-          {:error, error_msg}
+          error
         end
 
         @impl StandardFilter
@@ -97,7 +96,7 @@ defmodule BillsGenerator.Core.StandardLeader do
             LeaderModule.worker_action(input_data)
           rescue
             exception ->
-              {:error, Exception.message(exception)}
+              {:error, __MODULE__, Exception.message(exception)}
           end
         end
       end
@@ -187,7 +186,7 @@ defmodule BillsGenerator.Core.StandardLeader do
         total_workers = ServiceHandler.total_workers(service_handler)
         total_free_workers = ServiceHandler.total_free_workers(service_handler)
 
-        Logger.info("#{__MODULE__} has #{total_workers} workers")
+        # Logger.info("#{__MODULE__} has #{total_workers} workers")
 
         workload_rate = 1 - total_free_workers / total_workers
 
@@ -272,11 +271,11 @@ defmodule BillsGenerator.Core.StandardLeader do
 
       # By default, do not handle error
       @impl StandardLeader
-      def on_error(error_msg) do
+      def on_error(module, error_msg) do
         :ok
       end
 
-      defoverridable(on_error: 1)
+      defoverridable(on_error: 2)
     end
   end
 end

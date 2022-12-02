@@ -11,10 +11,10 @@ import Config
 
 # Configure Mix tasks and generators
 config :bills_generator,
-  ecto_repos: [BillsGenerator.Repo]
+  ecto_repos: [BillsGenerator.Repository.Repo]
 
 config :bills_generator_web,
-  ecto_repos: [BillsGenerator.Repo],
+  ecto_repos: [BillsGenerator.Repository.Repo],
   generators: [context_app: :bills_generator]
 
 # Configures the endpoint

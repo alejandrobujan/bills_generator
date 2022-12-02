@@ -18,6 +18,7 @@
     ]
   },
   "config": {
-    "fontSize": 14
+    "font_size": 12,
+    "font_style": "latex"
   }
 }

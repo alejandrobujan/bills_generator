@@ -4,18 +4,27 @@ defmodule BillsGenerator.Application do
   @moduledoc false
 
   use Application
-  alias BillsGenerator.Filters.{BillCalculator, LatexFormatter, LatexToPdf, StoreInDatabase}
-  alias BillsGenerator.{Bill, Repo}
+
+  alias BillsGenerator.Filters.{
+    JSONParser,
+    BillCalculator,
+    LatexFormatter,
+    LatexToPdf,
+    StoreInDatabase
+  }
+
+  alias BillsGenerator.Repository
 
   @impl true
   def start(_type, _args) do
     children = [
       # Start the Ecto repository
-      BillsGenerator.Repo,
+      Repository.Repo,
       # Start the PubSub system
       {Phoenix.PubSub, name: BillsGenerator.PubSub},
       # Start a worker by calling: BillsGenerator.Worker.start_link(arg)
       # {BillsGenerator.Worker, arg}
+      JSONParser,
       BillCalculator,
       LatexFormatter,
       LatexToPdf,
@@ -25,13 +34,12 @@ defmodule BillsGenerator.Application do
     Supervisor.start_link(children, strategy: :one_for_one, name: BillsGenerator.Supervisor)
   end
 
-  def generate_bill(title, user, products, seller, purchaser) do
+  def generate_bill(json_bill) do
     # Esto lo debería hacer un filtro?
-    {:ok, stored_bill} = Repo.insert(%Bill{})
-
+    {:ok, stored_bill} = Repository.Repo.insert(%Repository.Bill{})
     bill_id = stored_bill.id
-
-    BillCalculator.process_filter({bill_id, title, user, products, seller, purchaser})
+    JSONParser.process_filter({bill_id, json_bill})
+    # We have to return bill_id in order to let client which bill is generating
     bill_id
   end
 end

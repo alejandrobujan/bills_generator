@@ -36,6 +36,7 @@ defmodule BillsGenerator.MixProject do
   # Type `mix help deps` for examples and options.
   defp deps do
     [
+      {:poison, "~> 5.0"},
       {:iona, "~> 0.4"},
       {:phoenix_pubsub, "~> 2.0"},
       {:ecto_sql, "~> 3.6"},

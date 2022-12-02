@@ -1,4 +1,4 @@
-defmodule BillsGenerator.Repo.Migrations.CreateBill do
+defmodule BillsGenerator.Repository.Repo.Migrations.CreateBill do
   use Ecto.Migration
 
   def change do

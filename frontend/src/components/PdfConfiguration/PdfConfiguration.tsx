@@ -16,33 +16,31 @@ export default function PdfConfiguration({ config, onChangeConfig }: Props) {
 
       <div className={styles.PdfConfiguration_form}>
         <SelectInput
-          label="Font family"
-          value={config.fontFamily}
+          label="Font style"
+          value={config.font_style}
           onChange={(type) => {
             let constType;
-            if (type === "Arial") constType = "Arial" as const;
-            else if (type === "Times New Roman")
-              constType = "Times New Roman" as const;
-            else if (type === "Courier New") constType = "Courier New" as const;
+            if (type === "latex") constType = "latex" as const;
+            else if (type === "times")
+              constType = "times" as const;
 
             onChangeConfig({
               ...config,
-              fontFamily: constType,
+              font_style: constType,
             });
           }}
         >
-          <option value="Arial">Arial</option>
-          <option value="Times New Roman">Times New Roman</option>
-          <option value="Courier New">Courier New</option>
+          <option value="latex">latex</option>
+          <option value="times">times</option>
         </SelectInput>
 
         <NumberInput
           label="Font size"
-          value={config.fontSize}
+          value={config.font_size}
           onChange={(size) =>
             onChangeConfig({
               ...config,
-              fontSize: size,
+              font_size: size,
             })
           }
         />

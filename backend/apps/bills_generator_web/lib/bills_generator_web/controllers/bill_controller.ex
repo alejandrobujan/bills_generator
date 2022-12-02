@@ -1,32 +1,20 @@
 defmodule BillsGeneratorWeb.BillController do
   use Phoenix.Controller
-  alias BillsGenerator.Product
-  alias BillsGenerator.{Bill, Repo}
+  alias BillsGenerator.Entities.Product
+  alias BillsGenerator.Repository
   import Ecto.Query, only: [from: 2]
 
-  def generate(conn, body) do
-    user = body["user"]
-    bill = body["bill"]
-
-    products =
-      bill["products"]
-      |> Enum.map(fn item ->
-        {%Product{name: item["name"], price: item["price"] * 1.0}, item["quantity"]}
-      end)
-
-    seller = bill["seller"]
-    purchaser = bill["purchaser"]
-    title = bill["title"]
-    # Pass the bill throught all filters, or just create it at the last worker?
-    # In this way, we can track
-    bill_id = BillsGenerator.Application.generate_bill(title, user, products, seller, purchaser)
+  # We have parsers plug deactivated, so
+  def generate(conn, params) do
+    {:ok, body, _conn} = Plug.Conn.read_body(conn)
+    bill_id = BillsGenerator.Application.generate_bill(body)
 
     conn |> json(%{id: bill_id})
   end
 
   def download(conn, %{"id" => id}) do
     bill =
-      case Repo.get(Bill, id) do
+      case Repository.Repo.get(Repository.Bill, id) do
         nil -> conn |> send_resp(404, "Not found")
         bill -> bill
       end
@@ -42,7 +30,7 @@ defmodule BillsGeneratorWeb.BillController do
 
   def download_available?(conn, %{"id" => id}) do
     bill =
-      case Repo.get(Bill, id) do
+      case Repository.Repo.get(Repository.Bill, id) do
         nil -> conn |> send_resp(404, "Not found")
         bill -> bill
       end
@@ -52,7 +40,13 @@ defmodule BillsGeneratorWeb.BillController do
 
   def get_all(conn, %{"user" => user}) do
     bills =
-      Repo.all(from(b in Bill, select: {b.id, b.title, b.updated_at}, where: b.user == ^user))
+      Repository.Repo.all(
+        from(b in Repository.Bill,
+          select: {b.id, b.title, b.updated_at},
+          where: b.user == ^user,
+          order_by: [desc: b.updated_at]
+        )
+      )
       |> Enum.map(fn {id, title, updated_at} ->
         %{id: id, title: title, created_at: updated_at}
       end)

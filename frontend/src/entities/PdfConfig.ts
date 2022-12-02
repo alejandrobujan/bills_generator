@@ -1,22 +1,21 @@
 import { Number, Record, Static, Union, Literal } from "runtypes";
 
-const FontFamilySchema = Union(
-  Literal("Arial"),
-  Literal("Times New Roman"),
-  Literal("Courier New")
+const FontStyleSchema = Union(
+  Literal("latex"),
+  Literal("times"),
 );
 
 export const PdfConfigSchema = Record({
-  fontSize: Number.withConstraint((fontSize) => fontSize > 0).optional(),
-  fontFamily: FontFamilySchema.optional(),
+  font_size: Number.withConstraint((font_size) => font_size > 0).optional(),
+  font_style: FontStyleSchema.optional(),
 });
 
 type PdfConfig = Static<typeof PdfConfigSchema>;
 
 export const getDefaultConfig = () => {
   return {
-    fontFamily: "Arial" as const,
-    fontSize: 12,
+    font_style: "latex" as const,
+    font_size: 12,
   };
 };
 
