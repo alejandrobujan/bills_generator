@@ -3,6 +3,8 @@ defmodule BillsGeneratorWeb.BillController do
   alias BillsGenerator.Entities.Product
   alias BillsGenerator.Repository
   import Ecto.Query, only: [from: 2]
+  # This module is a service one, but using phoenix naming,
+  # it should be called controller
 
   # We have parsers plug deactivated, so
   def generate(conn, params) do
