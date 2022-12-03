@@ -35,7 +35,7 @@ function BillItem({ bill }: ItemProps) {
         })}
       </span>
       <a
-        href={`/api/bills/${bill.id}`}
+        href={`/api/bills/${bill.id}/download`}
         download={`bill-${bill.id}.pdf`}
         target="_blank"
         rel="noreferrer"

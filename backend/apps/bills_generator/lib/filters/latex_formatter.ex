@@ -8,8 +8,8 @@ defmodule BillsGenerator.Filters.LatexFormatter do
   #   raise "error on LatexFormatter"
   # end
   @impl StandardLeader
-  def worker_action({bill_id, bill_request}),
-    do: {bill_id, bill_request, generate_latex(bill_request)}
+  def worker_action(bill_id: bill_id, bill_request: bill_request),
+    do: [bill_id: bill_id, bill_request: bill_request, latex: generate_latex(bill_request)]
 
   @impl StandardLeader
   def next_action(output_data), do: BillsGenerator.Filters.LatexToPdf.process_filter(output_data)

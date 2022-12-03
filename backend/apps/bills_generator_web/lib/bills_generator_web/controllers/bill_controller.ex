@@ -12,6 +12,22 @@ defmodule BillsGeneratorWeb.BillController do
     conn |> json(%{id: bill_id})
   end
 
+  def get(conn, %{"id" => id}) do
+    bill = Repository.Repo.get!(Repository.Bill, id)
+
+    # TODO: change created_at to updated_at?
+    bill_map = %{
+      id: bill.id,
+      user: bill.user,
+      title: bill.title,
+      error: bill.error,
+      error_msg: bill.error_msg,
+      created_at: bill.updated_at
+    }
+
+    conn |> json(bill_map)
+  end
+
   def download(conn, %{"id" => id}) do
     bill =
       case Repository.Repo.get(Repository.Bill, id) do
@@ -25,7 +41,7 @@ defmodule BillsGeneratorWeb.BillController do
         pdf -> pdf
       end
 
-    conn |> send_download({:binary, pdf}, filename: "bill.pdf")
+    conn |> send_download({:binary, pdf}, filename: "bill-#{id}.pdf")
   end
 
   def download_available?(conn, %{"id" => id}) do
@@ -42,13 +58,20 @@ defmodule BillsGeneratorWeb.BillController do
     bills =
       Repository.Repo.all(
         from(b in Repository.Bill,
-          select: {b.id, b.title, b.updated_at},
+          select: {b.id, b.title, b.error, b.error_msg, b.updated_at},
           where: b.user == ^user,
           order_by: [desc: b.updated_at]
         )
       )
-      |> Enum.map(fn {id, title, updated_at} ->
-        %{id: id, title: title, created_at: updated_at}
+      |> Enum.map(fn {id, title, error, error_msg, updated_at} ->
+        %{
+          id: id,
+          user: user,
+          title: title,
+          error: error,
+          error_msg: error_msg,
+          created_at: updated_at
+        }
       end)
 
     json(conn, %{bills: bills})

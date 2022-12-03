@@ -6,6 +6,8 @@ defmodule BillsGenerator.Repository.Bill do
     field(:user, :string)
     field(:title, :string)
     field(:pdf, :binary)
+    field(:error, :boolean, default: false)
+    field(:error_msg, :string)
 
     timestamps()
   end
@@ -13,7 +15,6 @@ defmodule BillsGenerator.Repository.Bill do
   @doc false
   def changeset(bill, attrs) do
     bill
-    |> cast(attrs, [:user, :title])
-    |> validate_required([:user, :title])
+    |> cast(attrs, [:user, :title, :pdf, :error, :error_msg])
   end
 end

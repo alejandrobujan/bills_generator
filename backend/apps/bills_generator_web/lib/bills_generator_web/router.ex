@@ -16,8 +16,9 @@ defmodule BillsGeneratorWeb.Router do
     # Do not pipe generate bills throught json parsers, since we will do it in the pipeline.
 
     pipe_through(:api_parsing)
-    get("/bills/:id", BillController, :download)
     get("/bills", BillController, :get_all)
+    get("/bills/:id/download", BillController, :download)
+    get("/bills/:id", BillController, :get)
     get("/bills/:id/available", BillController, :download_available?)
   end
 end

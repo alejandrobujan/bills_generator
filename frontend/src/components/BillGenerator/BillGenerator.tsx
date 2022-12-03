@@ -171,7 +171,7 @@ export default function BillGenerator() {
         <AnimatePresence>
           {billId ? (
             <motion.a
-              href={`/api/bills/${billId}`}
+              href={`/api/bills/${billId}/download`}
               download="bill.pdf"
               target="_blank"
               rel="noreferrer"

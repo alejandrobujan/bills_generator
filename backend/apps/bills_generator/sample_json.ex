@@ -19,7 +19,7 @@ json_bill = """
 	  ]
 	},
 	"config": {
-		"font_size" : 10,
+		"font_size" : 1,,
 		"font_style" : "times",
 		"paper_size" : "b5paper",
 		"landscape" : true

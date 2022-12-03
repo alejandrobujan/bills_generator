@@ -59,7 +59,7 @@ defmodule BillsGenerator.Core.StandardLeader do
   @callback worker_action(any()) :: any()
 
   # Callback to execute code if needed on worker
-  @callback on_error(module(), any()) :: :ok
+  @callback on_error(module(), any(), any()) :: :ok
 
   @callback next_action(any()) :: any()
 
@@ -72,7 +72,7 @@ defmodule BillsGenerator.Core.StandardLeader do
         use StandardFilter
 
         @impl StandardFilter
-        def do_process_filter({:error, module, error_msg} = error) do
+        def do_process_filter({:error, module, error_msg, input_data} = error) do
           # When an error is produced in a step of the pipeline,
           # the error is propagated forward to the next steps,
           # until the last step, where the error is handled.
@@ -81,7 +81,7 @@ defmodule BillsGenerator.Core.StandardLeader do
           # of the pipeline
 
           # Callback if error needs to be handled by worker
-          LeaderModule.on_error(module, error_msg)
+          LeaderModule.on_error(module, error_msg, input_data)
 
           # Always return the error as filter's output, so the leader will know
           # if an error happened
@@ -97,7 +97,7 @@ defmodule BillsGenerator.Core.StandardLeader do
           rescue
             exception ->
               # Return leader module instead of worker module, to hide worker implementation.
-              {:error, LeaderModule, Exception.message(exception)}
+              {:error, LeaderModule, Exception.message(exception), input_data}
           end
         end
       end
@@ -272,11 +272,11 @@ defmodule BillsGenerator.Core.StandardLeader do
 
       # By default, do not handle error
       @impl StandardLeader
-      def on_error(module, error_msg) do
+      def on_error(module, error_msg, input_data) do
         :ok
       end
 
-      defoverridable(on_error: 2)
+      defoverridable(on_error: 3)
     end
   end
 end

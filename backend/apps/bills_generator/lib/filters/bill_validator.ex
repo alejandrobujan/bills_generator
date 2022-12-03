@@ -1,10 +1,10 @@
 defmodule BillsGenerator.Filters.BillValidator do
-  alias BillsGenerator.Entities.{BillRequest, Bill, BillConfig, Product}
+  alias BillsGenerator.Entities.BillRequest
   alias BillsGenerator.Core.StandardLeader
   use StandardLeader
 
   @impl StandardLeader
-  def worker_action({_bill_id, bill_request} = input_data) do
+  def worker_action([bill_id: _bill_id, bill_request: bill_request] = input_data) do
     validate_request!(bill_request)
     input_data
   end

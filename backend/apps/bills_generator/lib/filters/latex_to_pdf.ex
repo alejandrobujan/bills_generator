@@ -3,13 +3,13 @@ defmodule BillsGenerator.Filters.LatexToPdf do
   use StandardLeader
 
   @impl StandardLeader
-  def worker_action({bill_id, bill_request, latex}) do
+  def worker_action(bill_id: bill_id, bill_request: bill_request, latex: latex) do
     {:ok, pdf} =
       latex
       |> Iona.source()
       |> Iona.to(:pdf)
 
-    {bill_id, bill_request, pdf}
+    [bill_id: bill_id, bill_request: bill_request, pdf: pdf]
   end
 
   @impl StandardLeader
