@@ -1,13 +1,11 @@
-import BillDescription from "../entities/BillDescription";
-import BillDescriptionDto, {
-  toBillDescription,
-} from "../entities/BillDescriptionDto";
-import BillDto from "../entities/BillDto";
+import Bill from "../entities/Bill";
+import BillDto, { toBill } from "../entities/BillDto";
+import BillRequestDto from "../entities/BillRequestDto";
 
 export default abstract class BillService {
   private static endpoint = "/api";
 
-  static generateBill(bill: BillDto): Promise<number> {
+  static generateBill(bill: BillRequestDto): Promise<number> {
     return fetch(`${this.endpoint}/bills`, {
       method: "POST",
       body: JSON.stringify(bill),
@@ -19,24 +17,24 @@ export default abstract class BillService {
       .then((res) => res.id);
   }
 
-  static isAvailable(id: number): Promise<boolean> {
-    return fetch(`${this.endpoint}/bills/${id}/available`, {
+  static getBill(id: number): Promise<Bill> {
+    return fetch(`${this.endpoint}/bills/${id}`, {
       method: "GET",
     })
       .then((res) => res.json())
-      .then((res) => {
-        console.log(res);
-        return res.available;
-      });
+      .then((res) => toBill(res));
   }
 
-  static getBills(user: BillDto["user"]): Promise<BillDescription[]> {
+  static getBills(user: BillRequestDto["user"]): Promise<Bill[]> {
     return fetch(`${this.endpoint}/bills?user=${user} `, {
       method: "GET",
     })
       .then((res) => res.json())
       .then((res) =>
-        res.bills.map((bill: BillDescriptionDto) => toBillDescription(bill))
+        res.bills.map((bill: BillDto) => {
+          console.log(bill);
+          return toBill(bill);
+        })
       );
   }
 }

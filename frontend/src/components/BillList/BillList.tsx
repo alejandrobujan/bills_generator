@@ -1,17 +1,17 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { FormEvent, useState } from "react";
-import BillDto from "../../entities/BillDto";
+import BillRequestDto from "../../entities/BillRequestDto";
 import BillService from "../../services/BillService";
 import NormalButton from "../Buttton/NormalButton";
 import TextInput from "../Input/TextInput";
 import { useNotifications } from "../NotificationManager/NotificationManager";
 import SearchIcon from "@mui/icons-material/Search";
 import styles from "./billList.module.scss";
-import BillDescription from "../../entities/BillDescription";
+import Bill from "../../entities/Bill";
 import DownloadIcon from "@mui/icons-material/Download";
 
 interface ItemProps {
-  bill: BillDescription;
+  bill: Bill;
 }
 
 function BillItem({ bill }: ItemProps) {
@@ -25,7 +25,6 @@ function BillItem({ bill }: ItemProps) {
     >
       <span className={styles.billItemTitle}>{bill.title}</span>
       <span className={styles.billItemDescription}>
-        {/* Format date to hh:mm dd/mm/yy */}
         {bill.createdAt.toLocaleString("es-ES", {
           hour: "2-digit",
           minute: "2-digit",
@@ -53,11 +52,11 @@ function BillItem({ bill }: ItemProps) {
 export default function BillList() {
   const { createErrorNotification } = useNotifications();
 
-  const [currentUser, setCurrentUser] = useState<BillDto["user"] | undefined>(
-    undefined
-  );
+  const [currentUser, setCurrentUser] = useState<
+    BillRequestDto["user"] | undefined
+  >(undefined);
   const [isCurrentUser, setIsCurrentUser] = useState<boolean>(false);
-  const [bills, setBills] = useState<BillDescription[]>([]);
+  const [bills, setBills] = useState<Bill[]>([]);
 
   function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();

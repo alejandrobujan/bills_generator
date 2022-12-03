@@ -5,11 +5,17 @@ import ImportFile from "../ImportFile/ImportFile";
 import { FormEvent, useEffect, useState } from "react";
 import BillService from "../../services/BillService";
 import NormalButton from "../Buttton/NormalButton";
-import Bill, { getDefaultBill, toBillDto } from "../../entities/Bill";
+import BillRequest, {
+  getDefaultBillRequest,
+  toBillRequestDto,
+} from "../../entities/BillRequest";
 import Product from "../../entities/Product";
 import ProductList from "../ProductList/ProductList";
 import TextInput from "../Input/TextInput";
-import BillDto, { BillDtoSchema, toBill } from "../../entities/BillDto";
+import BillRequestDto, {
+  BillRequestDtoSchema,
+  toBillRequest,
+} from "../../entities/BillRequestDto";
 import { useNotifications } from "../NotificationManager/NotificationManager";
 import PdfConfiguration from "../PdfConfiguration/PdfConfiguration";
 import PdfConfig from "../../entities/PdfConfig";
@@ -23,14 +29,19 @@ export default function BillGenerator() {
 
   const [isGenerating, setIsGenerating] = useState<boolean>(false);
   const [billId, setBillId] = useState<number | undefined>(undefined);
-  const [currentBill, setCurrentBill] = useState<Bill>(getDefaultBill());
+  const [currentBill, setCurrentBill] = useState<BillRequest>(
+    getDefaultBillRequest()
+  );
 
   function waitForBill(id: number) {
-    console.log(id);
-    BillService.isAvailable(id)
-      .then((isAvailable) => {
-        if (!isAvailable) {
-          console.log("waiting for bill");
+    BillService.getBill(id)
+      .then((bill) => {
+        if (bill.error) {
+          setIsGenerating(false);
+          createErrorNotification(bill.errorMessage);
+          return;
+        }
+        if (!bill.isAvailable) {
           setTimeout(() => waitForBill(id), 500);
           return;
         }
@@ -51,8 +62,10 @@ export default function BillGenerator() {
       .text()
       .then((jsonString) => {
         try {
-          const billDto: BillDto = BillDtoSchema.check(JSON.parse(jsonString));
-          setCurrentBill(toBill(billDto));
+          const billDto: BillRequestDto = BillRequestDtoSchema.check(
+            JSON.parse(jsonString)
+          );
+          setCurrentBill(toBillRequest(billDto));
         } catch (error: any) {
           createErrorNotification("Invalid bill specification", 8000);
           return;
@@ -66,11 +79,8 @@ export default function BillGenerator() {
     if (isGenerating) return;
     setIsGenerating(true);
 
-    BillService.generateBill(toBillDto(currentBill))
-      .then((id) => {
-        console.log(id);
-        waitForBill(id);
-      })
+    BillService.generateBill(toBillRequestDto(currentBill))
+      .then((id) => setTimeout(() => waitForBill(id), 500))
       .catch(() => {
         setIsGenerating(false);
         createErrorNotification("Error while generating bill", 5000);
