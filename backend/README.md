@@ -44,9 +44,6 @@ Para ver los logs de la base de datos: `docker-compose logs`
 
 - [ ] Componente en la sombra para monitorizar los líderes? Podríamos guardar en un log el número de workers que tienen en cada instante. Útil para sacar gráficas del comportamiento del sistema. Para esto, habría que modificar el StandardLeader para que se le pueda preguntar el número de trabajadores. Además, podría ser una medida de prevención de errores.
 
-- [ ] El servidor debería responder en los endpoints directamente? La idea es que funcione como un directorio
-      y tenga el mínimo trabajo posible...La lógica de descargar, ver las bills,etc... debería estar en otro componente?
-
 - [ ] Paginar las peticiones a /bills? Pueden ser muchas para ser mandadas el front... Si da mucho trabajo, mejor pasar de esto. Permitir más parámetros? por ejemplo, filtrar las bills por rango de fecha...
 
 # Notas
@@ -54,6 +51,3 @@ Para ver los logs de la base de datos: `docker-compose logs`
 Tenemos táctica de repuesto en los workers, debido a que si uno peta, el leader también peta al estar linkeado, y también petaría el supervisor. Entonces, se volvería a lanzar el líder y funcionaría bien.
 
 Al modificar algún campo de input en el front, se tiene que quitar el botón de download bill. Además, una vez se le de al botón, no debería quitarse y poner generate, ya que la bill debería ser la misma y no hace falta volver a generarla.
-
-Ahora is_available debe mostrar true si se ha generado el pdf, o se ha generado un error. En cualquiera de los casos, el cliente debería volver a preguntar para saber si ha sido un error o está disponible el pdf. En vez de esto, igual es mejor preguntar directamente a /bills/id y tener todos los campos de la bill, y ya se puede mostrar un error en las notificaciones, ya no haría falta tener el is_available.
-Además, en el listado de bills debería mostrarse un error si ha ocurrido.
