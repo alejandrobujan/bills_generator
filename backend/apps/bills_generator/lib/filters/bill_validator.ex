@@ -1,0 +1,24 @@
+defmodule BillsGenerator.Filters.BillValidator do
+  alias BillsGenerator.Entities.{BillRequest, Bill, BillConfig, Product}
+  alias BillsGenerator.Core.StandardLeader
+  use StandardLeader
+
+  @impl StandardLeader
+  def worker_action({_bill_id, bill_request} = input_data) do
+    validate_request!(bill_request)
+    input_data
+  end
+
+  @impl StandardLeader
+  def next_action(output_data),
+    do: BillsGenerator.Filters.BillCalculator.process_filter(output_data)
+
+  # Private functions
+
+  defp validate_request!(bill_request) do
+    case BillRequest.validate(bill_request) do
+      :ok -> :ok
+      {:error, reason} -> raise reason
+    end
+  end
+end

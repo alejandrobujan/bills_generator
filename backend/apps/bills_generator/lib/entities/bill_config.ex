@@ -26,9 +26,64 @@ defmodule BillsGenerator.Entities.BillConfig do
           landscape: boolean()
         }
 
-  def is_valid?(config) do
-    config.font_size in @available_font_sizes &&
-      config.font_style in @available_font_styles &&
-      config.paper_size in @available_paper_sizes
+  def validate(%__MODULE__{
+        font_size: font_size,
+        font_style: font_style,
+        paper_size: paper_size,
+        landscape: landscape
+      }) do
+    # returns only the first error that is found
+    with :ok <- validate_font_size(font_size),
+         :ok <- validate_font_style(font_style),
+         :ok <- validate_paper_size(paper_size),
+         :ok <- validate_landscape(landscape) do
+      :ok
+    else
+      {:error, reason} -> {:error, reason}
+    end
   end
+
+  defp validate_font_size(font_size) when is_number(font_size) do
+    if font_size in @available_font_sizes do
+      :ok
+    else
+      {:error,
+       "Font size `#{font_size}` not supported. Available font sizes are: #{Enum.join(@available_font_sizes, ", ")}."}
+    end
+  end
+
+  defp validate_font_size(font_size) do
+    {:error, "Incorrect font size value `#{font_size}`. Font size must be a number."}
+  end
+
+  defp validate_font_style(font_style) when is_bitstring(font_style) do
+    if font_style in @available_font_styles do
+      :ok
+    else
+      {:error,
+       "Font style `#{font_style}` not supported. Available font styles are: #{Enum.join(@available_font_styles, ", ")}."}
+    end
+  end
+
+  defp validate_font_style(font_style) do
+    {:error, "Incorrect font style value `#{font_style}`. Font Style must be a string."}
+  end
+
+  defp validate_paper_size(paper_size) when is_bitstring(paper_size) do
+    if paper_size in @available_paper_sizes do
+      :ok
+    else
+      {:error,
+       "Paper size: `#{paper_size}` not supported. Available paper sizes are: #{Enum.join(@available_paper_sizes, ", ")}."}
+    end
+  end
+
+  defp validate_paper_size(paper_size) do
+    {:error, "Incorrect paper size value `#{paper_size}`. Paper Size must be a string."}
+  end
+
+  defp validate_landscape(landscape) when is_boolean(landscape), do: :ok
+
+  defp validate_landscape(landscape),
+    do: {:error, "Incorrect landscape value `#{landscape}`. Landscape must be a boolean value"}
 end

@@ -6,7 +6,8 @@ defmodule BillsGenerator.Application do
   use Application
 
   alias BillsGenerator.Filters.{
-    JSONParser,
+    BillParser,
+    BillValidator,
     BillCalculator,
     LatexFormatter,
     LatexToPdf,
@@ -24,7 +25,8 @@ defmodule BillsGenerator.Application do
       {Phoenix.PubSub, name: BillsGenerator.PubSub},
       # Start a worker by calling: BillsGenerator.Worker.start_link(arg)
       # {BillsGenerator.Worker, arg}
-      JSONParser,
+      BillParser,
+      BillValidator,
       BillCalculator,
       LatexFormatter,
       LatexToPdf,
@@ -38,7 +40,7 @@ defmodule BillsGenerator.Application do
     # Esto lo debería hacer un filtro?
     {:ok, stored_bill} = Repository.Repo.insert(%Repository.Bill{})
     bill_id = stored_bill.id
-    JSONParser.process_filter({bill_id, json_bill})
+    BillParser.process_filter({bill_id, json_bill})
     # We have to return bill_id in order to let client which bill is generating
     bill_id
   end

@@ -26,3 +26,5 @@ json_bill = """
 	}
 }
 """
+
+BillsGenerator.Application.generate_bill(json_bill)

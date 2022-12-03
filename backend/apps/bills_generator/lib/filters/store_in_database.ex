@@ -18,18 +18,18 @@ defmodule BillsGenerator.Filters.StoreInDatabase do
   # Handle error on leaders.
   @impl StandardLeader
   def next_action({:error, module, error_msg}),
-    do: IO.puts("error in module #{module}: #{error_msg}")
+    do: Logger.error("error in module #{module}: #{error_msg}")
 
   @impl StandardLeader
   def next_action({:ok, bill_id, user}),
-    do: IO.puts("PDF for user #{user} with bill id #{bill_id} successfully generated")
+    do: Logger.info("PDF for user #{user} with bill id #{bill_id} successfully generated")
 
   # Handle error on workers. It should insert a error condition into the databse
   @impl StandardLeader
   def on_error(module, error_msg),
     do:
-      IO.puts(
-        "catched error in #{__MODULE__.Worker}, error caused by module #{module}: #{error_msg}"
+      Logger.error(
+        "catched error in #{__MODULE__.Worker}, error caused by filter #{module}: #{error_msg}"
       )
 
   # Private functions

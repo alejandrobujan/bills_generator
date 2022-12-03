@@ -96,7 +96,8 @@ defmodule BillsGenerator.Core.StandardLeader do
             LeaderModule.worker_action(input_data)
           rescue
             exception ->
-              {:error, __MODULE__, Exception.message(exception)}
+              # Return leader module instead of worker module, to hide worker implementation.
+              {:error, LeaderModule, Exception.message(exception)}
           end
         end
       end
