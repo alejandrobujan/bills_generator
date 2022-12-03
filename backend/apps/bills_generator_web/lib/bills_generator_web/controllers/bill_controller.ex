@@ -64,7 +64,7 @@ defmodule BillsGeneratorWeb.BillController do
           is_available: pdf != nil,
           error: error,
           error_msg: error_msg,
-          created_at: DateTime.from_naive!(bill.updated_at, "Etc/UTC")
+          created_at: DateTime.from_naive!(updated_at, "Etc/UTC")
         }
       end)
 
