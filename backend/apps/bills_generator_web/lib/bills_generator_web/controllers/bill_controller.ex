@@ -20,6 +20,7 @@ defmodule BillsGeneratorWeb.BillController do
       id: bill.id,
       user: bill.user,
       title: bill.title,
+      is_available: bill.pdf != nil,
       error: bill.error,
       error_msg: bill.error_msg,
       created_at: bill.updated_at
@@ -58,16 +59,17 @@ defmodule BillsGeneratorWeb.BillController do
     bills =
       Repository.Repo.all(
         from(b in Repository.Bill,
-          select: {b.id, b.title, b.error, b.error_msg, b.updated_at},
+          select: {b.id, b.title, b.pdf, b.error, b.error_msg, b.updated_at},
           where: b.user == ^user,
           order_by: [desc: b.updated_at]
         )
       )
-      |> Enum.map(fn {id, title, error, error_msg, updated_at} ->
+      |> Enum.map(fn {id, title, pdf, error, error_msg, updated_at} ->
         %{
           id: id,
           user: user,
           title: title,
+          is_available: pdf != nil,
           error: error,
           error_msg: error_msg,
           created_at: updated_at
