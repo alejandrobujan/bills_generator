@@ -53,12 +53,7 @@ Para ver los logs de la base de datos: `docker-compose logs`
 
 Tenemos táctica de repuesto en los workers, debido a que si uno peta, el leader también peta al estar linkeado, y también petaría el supervisor. Entonces, se volvería a lanzar el líder y funcionaría bien.
 
-He cambiado el get_all bills, ahora devuelve más campos. Hace falta
-cambiar también el dto del frontend?
-
 Al modificar algún campo de input en el front, se tiene que quitar el botón de download bill. Además, una vez se le de al botón, no debería quitarse y poner generate, ya que la bill debería ser la misma y no hace falta volver a generarla.
 
 Ahora is_available debe mostrar true si se ha generado el pdf, o se ha generado un error. En cualquiera de los casos, el cliente debería volver a preguntar para saber si ha sido un error o está disponible el pdf. En vez de esto, igual es mejor preguntar directamente a /bills/id y tener todos los campos de la bill, y ya se puede mostrar un error en las notificaciones, ya no haría falta tener el is_available.
 Además, en el listado de bills debería mostrarse un error si ha ocurrido.
-
-Ahora mismo se muestra la fecha de creación como la fecha de updated. Deberíamos mostrar dos? una de created y otra de updated, para cuando ya se ha procesado el fitlro? O usar solo la de updated para todo?

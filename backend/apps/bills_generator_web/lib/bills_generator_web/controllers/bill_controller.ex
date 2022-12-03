@@ -25,7 +25,7 @@ defmodule BillsGeneratorWeb.BillController do
       is_available: bill.pdf != nil,
       error: bill.error,
       error_msg: bill.error_msg,
-      created_at: bill.updated_at
+      created_at: DateTime.from_naive!(bill.updated_at, "Etc/UTC")
     }
 
     conn |> json(bill_map)
