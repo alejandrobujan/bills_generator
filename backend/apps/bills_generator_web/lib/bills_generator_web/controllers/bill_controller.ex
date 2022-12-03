@@ -45,16 +45,6 @@ defmodule BillsGeneratorWeb.BillController do
     conn |> send_download({:binary, pdf}, filename: "bill-#{id}.pdf")
   end
 
-  def download_available?(conn, %{"id" => id}) do
-    bill =
-      case Repository.Repo.get(Repository.Bill, id) do
-        nil -> conn |> send_resp(404, "Not found")
-        bill -> bill
-      end
-
-    conn |> json(%{available: bill.pdf != nil})
-  end
-
   def get_all(conn, %{"user" => user}) do
     bills =
       Repository.Repo.all(
