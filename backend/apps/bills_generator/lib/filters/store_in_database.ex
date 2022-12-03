@@ -44,6 +44,7 @@ defmodule BillsGenerator.Filters.StoreInDatabase do
   # Catch errors that happens in the BillParser filter. The input data at that filter
   # is the bill id and the json bill. We can't know the user since an error happened in the
   # parse, so we only have the bill_id.
+  # Is there a better way of pattern matching the keyword list than this?
   def on_error(module, error_msg, [bill_id: bill_id] ++ _rest) do
     # bills that have not been parsed yet have the user and title fields empty
     # so they should be queried only by id

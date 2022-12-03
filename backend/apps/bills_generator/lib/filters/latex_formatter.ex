@@ -2,11 +2,6 @@ defmodule BillsGenerator.Filters.LatexFormatter do
   alias BillsGenerator.Core.StandardLeader
   use StandardLeader
 
-  # Example of error
-  # @impl StandardLeader
-  # def worker_action({stored_bill, bill_lines, seller, purchaser}) do
-  #   raise "error on LatexFormatter"
-  # end
   @impl StandardLeader
   def worker_action(bill_id: bill_id, bill_request: bill_request),
     do: [bill_id: bill_id, bill_request: bill_request, latex: generate_latex(bill_request)]
@@ -17,7 +12,7 @@ defmodule BillsGenerator.Filters.LatexFormatter do
   # Private functions
 
   @spec generate_latex(BillRequest.t()) :: String.t()
-  def generate_latex(bill_request) do
+  defp generate_latex(bill_request) do
     """
     #{latex_styler(bill_request.config)}\\usepackage{longtable}
     \\address{#{String.replace(bill_request.bill.seller, ",", ", \\\\ \n")}}
@@ -40,15 +35,15 @@ defmodule BillsGenerator.Filters.LatexFormatter do
       """
   end
 
-  def latex_styler(config) do
+  defp latex_styler(config) do
     "\\documentclass[#{config.paper_size}, #{config.font_size}pt#{landscape?(config.landscape)}#{font_styler(config.font_style)}"
   end
 
-  def font_styler("latex"), do: ""
-  def font_styler("times"), do: "\\usepackage{times}\n"
+  defp font_styler("latex"), do: ""
+  defp font_styler("times"), do: "\\usepackage{times}\n"
 
-  def landscape?(false), do: "]{letter}\n"
-  def landscape?(true), do: ", landscape]{letter}\n\\usepackage[margin=1cm]{geometry}\n"
+  defp landscape?(false), do: "]{letter}\n"
+  defp landscape?(true), do: ", landscape]{letter}\n\\usepackage[margin=1cm]{geometry}\n"
 
   defp format_bill([], 0), do: ""
 
