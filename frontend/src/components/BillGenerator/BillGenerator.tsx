@@ -6,6 +6,7 @@ import { FormEvent, useEffect, useState } from "react";
 import BillService from "../../services/BillService";
 import NormalButton from "../Buttton/NormalButton";
 import BillRequest, {
+  BillRequestSchema,
   getDefaultBillRequest,
   toBillRequestDto,
 } from "../../entities/BillRequest";
@@ -22,6 +23,7 @@ import PdfConfig from "../../entities/PdfConfig";
 import { AnimatePresence, motion } from "framer-motion";
 import DownloadIcon from "@mui/icons-material/Download";
 import AcceptButton from "../Buttton/AcceptButton";
+import ExportIcon from "@mui/icons-material/IosShare";
 
 export default function BillGenerator() {
   const { createErrorNotification, createSuccessNotification } =
@@ -32,6 +34,40 @@ export default function BillGenerator() {
   const [billRequest, setBillRequest] = useState<BillRequest>(
     getDefaultBillRequest()
   );
+
+  function handleImportFile(file: File | undefined) {
+    if (!file) return;
+    file
+      .text()
+      .then((jsonString) => {
+        try {
+          const billRequestDto: BillRequestDto = BillRequestDtoSchema.check(
+            JSON.parse(jsonString)
+          );
+          setBillRequest(toBillRequest(billRequestDto));
+        } catch (error: any) {
+          createErrorNotification("Invalid bill specification", 8000);
+          return;
+        }
+      })
+      .catch(() => createErrorNotification("Error while importing file", 8000));
+  }
+
+  function handleExportFile() {
+    const billRequestDto: BillRequestDto = toBillRequestDto(billRequest);
+    const element = document.createElement("a");
+    element.setAttribute(
+      "href",
+      "data:text/plain;charset=utf-8," +
+        encodeURIComponent(JSON.stringify(billRequestDto))
+    );
+    element.setAttribute("download", "bill.json");
+    element.style.display = "none";
+    document.body.appendChild(element);
+    element.click();
+    document.body.removeChild(element);
+    createSuccessNotification("Bill specification exported successfully", 3000);
+  }
 
   function waitForBill(id: number) {
     BillService.getBill(id)
@@ -52,26 +88,8 @@ export default function BillGenerator() {
       .catch(() => {
         setIsGenerating(false);
         setBillId(undefined);
-        createErrorNotification("Error generating bill", 5000);
+        createErrorNotification("Error while generating bill", 5000);
       });
-  }
-
-  function handleImportFile(file: File | undefined) {
-    if (!file) return;
-    file
-      .text()
-      .then((jsonString) => {
-        try {
-          const billDto: BillRequestDto = BillRequestDtoSchema.check(
-            JSON.parse(jsonString)
-          );
-          setBillRequest(toBillRequest(billDto));
-        } catch (error: any) {
-          createErrorNotification("Invalid bill specification", 8000);
-          return;
-        }
-      })
-      .catch(() => createErrorNotification("Error while importing file", 8000));
   }
 
   function handleSubmit(e: FormEvent<HTMLFormElement>) {
@@ -84,7 +102,10 @@ export default function BillGenerator() {
         .then((id) => waitForBill(id))
         .catch(() => {
           setIsGenerating(false);
-          createErrorNotification("Error while generating bill", 5000);
+          createErrorNotification(
+            "Error while generating bill, server is unreachable",
+            5000
+          );
         });
     }, 500);
   }
@@ -231,6 +252,15 @@ export default function BillGenerator() {
             </NormalButton>
           )}
         </AnimatePresence>
+
+        <NormalButton
+          className={styles.BillGenerator_exportButton}
+          type="button"
+          onClick={handleExportFile}
+        >
+          <span>Export to file</span>
+          <ExportIcon />
+        </NormalButton>
       </form>
     </>
   );

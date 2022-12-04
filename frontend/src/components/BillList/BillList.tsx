@@ -72,7 +72,11 @@ export default function BillList() {
   return (
     <div className={styles.BillList_container}>
       <form onSubmit={handleSubmit} className={styles.BillList_userForm}>
-        <TextInput label="User" onChange={(user) => setCurrentUser(user)} />
+        <TextInput
+          required
+          label="User"
+          onChange={(user) => setCurrentUser(user)}
+        />
         <NormalButton type="submit">
           <span>Search bills</span>
           <SearchIcon />

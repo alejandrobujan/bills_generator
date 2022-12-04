@@ -45,7 +45,6 @@ export default function PdfConfiguration({ config, onChangeConfig }: Props) {
           label="Paper size"
           value={config.paperSize}
           onChange={(paper) => {
-            console.log(paper, paperSizeMap.get(paper));
             onChangeConfig({
               ...config,
               paperSize: paperSizeMap.get(paper),
@@ -64,7 +63,6 @@ export default function PdfConfiguration({ config, onChangeConfig }: Props) {
           label="Landscape"
           checked={config.landscape}
           onChange={(landscape) => {
-            console.log(landscape);
             onChangeConfig({
               ...config,
               landscape,

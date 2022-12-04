@@ -6,7 +6,6 @@ export default abstract class BillService {
   private static endpoint = "/api";
 
   static generateBill(bill: BillRequestDto): Promise<number> {
-    console.log(bill);
     return fetch(`${this.endpoint}/bills`, {
       method: "POST",
       body: JSON.stringify(bill),
@@ -27,15 +26,13 @@ export default abstract class BillService {
   }
 
   static getBills(user: BillRequestDto["user"]): Promise<Bill[]> {
-    return fetch(`${this.endpoint}/bills?user=${user} `, {
-      method: "GET",
-    })
+    return fetch(
+      `${this.endpoint}/bills?` + new URLSearchParams({ user }).toString(),
+      {
+        method: "GET",
+      }
+    )
       .then((res) => res.json())
-      .then((res) =>
-        res.bills.map((bill: BillDto) => {
-          console.log(bill);
-          return toBill(bill);
-        })
-      );
+      .then((res) => res.bills.map((bill: BillDto) => toBill(bill)));
   }
 }

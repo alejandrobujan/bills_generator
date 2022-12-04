@@ -55,3 +55,10 @@
     transform: rotate(360deg);
   }
 }
+
+.BillGenerator_exportButton {
+  margin-top: -2rem;
+  span, svg {
+    font-size: 0.8rem;
+  }
+}
