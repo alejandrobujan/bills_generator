@@ -1,2 +1,2 @@
 ExUnit.start()
-Ecto.Adapters.SQL.Sandbox.mode(BillsGenerator.Repo, :manual)
+Ecto.Adapters.SQL.Sandbox.mode(BillsGenerator.Repository.Repo, :manual)

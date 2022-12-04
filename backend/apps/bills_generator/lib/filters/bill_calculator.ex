@@ -1,13 +1,13 @@
 defmodule BillsGenerator.Filters.BillCalculator do
   alias BillsGenerator.Entities.{BillRequest, Bill, Product}
-  alias BillsGenerator.Core.StandardLeader
-  use StandardLeader
+  alias BillsGenerator.Core.GenFilter
+  use GenFilter
 
-  @impl StandardLeader
+  @impl GenFilter
   def worker_action(bill_id: bill_id, bill_request: bill_request),
     do: [bill_id: bill_id, bill_request: update_bill(bill_request)]
 
-  @impl StandardLeader
+  @impl GenFilter
   def next_action(output_data),
     do: BillsGenerator.Filters.LatexFormatter.process_filter(output_data)
 
@@ -25,13 +25,13 @@ defmodule BillsGenerator.Filters.BillCalculator do
 
   defp do_calculate_bill(acc, [], total), do: {acc, total}
 
-  defp do_calculate_bill(acc, [product = %Product{price: price, quantity: qty} | t], total) do
-    product_total_price = price * qty
+  defp do_calculate_bill(acc, [product | t], total) do
+    {updated_product, product_total} = Product.update_total(product)
 
     do_calculate_bill(
-      [%Product{product | total: product_total_price} | acc],
+      [updated_product | acc],
       t,
-      total + product_total_price
+      total + product_total
     )
   end
 end

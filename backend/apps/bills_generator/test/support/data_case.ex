@@ -18,7 +18,7 @@ defmodule BillsGenerator.DataCase do
 
   using do
     quote do
-      alias BillsGenerator.Repo
+      alias BillsGenerator.Repository.Repo
 
       import Ecto
       import Ecto.Changeset

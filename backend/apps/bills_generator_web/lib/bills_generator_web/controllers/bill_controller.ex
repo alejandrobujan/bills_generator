@@ -1,13 +1,12 @@
 defmodule BillsGeneratorWeb.BillController do
   use Phoenix.Controller
-  alias BillsGenerator.Entities.Product
   alias BillsGenerator.Repository
   import Ecto.Query, only: [from: 2]
   # This module is a service one, but using phoenix naming,
   # it should be called controller
 
   # We have parsers plug deactivated, so
-  def generate(conn, params) do
+  def generate(conn, _params) do
     {:ok, body, _conn} = Plug.Conn.read_body(conn)
     bill_id = BillsGenerator.Application.generate_bill(body)
 
@@ -17,7 +16,6 @@ defmodule BillsGeneratorWeb.BillController do
   def get(conn, %{"id" => id}) do
     bill = Repository.Repo.get!(Repository.Bill, id)
 
-    # TODO: change created_at to updated_at?
     bill_map = %{
       id: bill.id,
       user: bill.user,

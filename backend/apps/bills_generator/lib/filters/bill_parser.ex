@@ -1,18 +1,19 @@
 defmodule BillsGenerator.Filters.BillParser do
   alias BillsGenerator.Entities.{BillRequest, Bill, BillConfig, Product}
-  alias BillsGenerator.Core.StandardLeader
-  use StandardLeader
+  alias BillsGenerator.Core.GenFilter
+  use GenFilter
 
-  @impl StandardLeader
+  @impl GenFilter
   def worker_action(bill_id: bill_id, json_bill: json_bill),
     do: [bill_id: bill_id, bill_request: parse_json(json_bill)]
 
-  @impl StandardLeader
+  @impl GenFilter
   def next_action(output_data),
     do: BillsGenerator.Filters.BillValidator.process_filter(output_data)
 
   # Private functions
 
+  @spec parse_json(String.t()) :: BillRequest.t()
   defp parse_json(json_bill) do
     Poison.decode!(json_bill,
       as: %BillRequest{

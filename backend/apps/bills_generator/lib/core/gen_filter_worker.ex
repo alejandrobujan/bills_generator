@@ -1,4 +1,4 @@
-defmodule BillsGenerator.Core.StandardFilter do
+defmodule BillsGenerator.Core.GenFilterWorker do
   @moduledoc """
   Módulo que representa o comportamento dun filtro estándar que pode ser rexistrado
   nun líder. É necesario que os filtros que se queiran rexistrar como traballadores utilicen este comportamento,
@@ -7,7 +7,7 @@ defmodule BillsGenerator.Core.StandardFilter do
   Para definir o comportamento do `process_filter` dun filtro, o filtro ten que definir a función
   `handle_process_filter/1`, xa que non se proporciona unha implementación por defecto para esta.
   """
-  alias BillsGenerator.Core.StandardFilter
+  alias BillsGenerator.Core.GenFilterWorker
 
   # Public API
 
@@ -28,20 +28,20 @@ defmodule BillsGenerator.Core.StandardFilter do
       use GenServer
       require Logger
 
-      @behaviour StandardFilter
+      @behaviour GenFilterWorker
 
       # Public API
-      @impl StandardFilter
+      @impl GenFilterWorker
       def start_link(leader, name) do
         GenServer.start_link(__MODULE__, {leader, name}, name: name)
       end
 
-      @impl StandardFilter
+      @impl GenFilterWorker
       def process_filter(server, input_data) do
         GenServer.cast(server, {:process_filter, input_data})
       end
 
-      @impl StandardFilter
+      @impl GenFilterWorker
       def stop(server) do
         GenServer.stop(server, :normal)
       end

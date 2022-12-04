@@ -1,12 +1,13 @@
 defmodule BillsGenerator.Filters.LatexFormatter do
-  alias BillsGenerator.Core.StandardLeader
-  use StandardLeader
+  alias BillsGenerator.Entities.BillRequest
+  alias BillsGenerator.Core.GenFilter
+  use GenFilter
 
-  @impl StandardLeader
+  @impl GenFilter
   def worker_action(bill_id: bill_id, bill_request: bill_request),
     do: [bill_id: bill_id, bill_request: bill_request, latex: generate_latex(bill_request)]
 
-  @impl StandardLeader
+  @impl GenFilter
   def next_action(output_data), do: BillsGenerator.Filters.LatexToPdf.process_filter(output_data)
 
   # Private functions

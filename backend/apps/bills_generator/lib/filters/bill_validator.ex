@@ -1,15 +1,15 @@
 defmodule BillsGenerator.Filters.BillValidator do
   alias BillsGenerator.Entities.BillRequest
-  alias BillsGenerator.Core.StandardLeader
-  use StandardLeader
+  alias BillsGenerator.Core.GenFilter
+  use GenFilter
 
-  @impl StandardLeader
+  @impl GenFilter
   def worker_action([bill_id: _bill_id, bill_request: bill_request] = input_data) do
     validate_request!(bill_request)
     input_data
   end
 
-  @impl StandardLeader
+  @impl GenFilter
   def next_action(output_data),
     do: BillsGenerator.Filters.BillCalculator.process_filter(output_data)
 

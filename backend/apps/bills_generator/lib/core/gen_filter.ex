@@ -1,4 +1,4 @@
-defmodule BillsGenerator.Core.StandardLeader do
+defmodule BillsGenerator.Core.GenFilter do
   @moduledoc """
   Módulo que implementa o compoñente líder dunha arquitectura líder-traballador.
 
@@ -26,7 +26,7 @@ defmodule BillsGenerator.Core.StandardLeader do
   """
 
   alias BillsGenerator.Core.ServiceHandler
-  alias BillsGenerator.Core.StandardLeader
+  alias BillsGenerator.Core.GenFilter
 
   # Public API
 
@@ -59,7 +59,7 @@ defmodule BillsGenerator.Core.StandardLeader do
   @callback worker_action(any()) :: any()
 
   # Callback to execute code if needed on worker
-  @callback on_error(module(), any(), any()) :: :ok
+  @callback on_error(caused_by :: module(), error_msg :: any(), input_data :: any()) :: :ok
 
   @callback next_action(any()) :: any()
 
@@ -68,10 +68,10 @@ defmodule BillsGenerator.Core.StandardLeader do
       alias __MODULE__, as: LeaderModule
 
       defmodule Worker do
-        alias BillsGenerator.Core.StandardFilter
-        use StandardFilter
+        alias BillsGenerator.Core.GenFilterWorker
+        use GenFilterWorker
 
-        @impl StandardFilter
+        @impl GenFilterWorker
         def do_process_filter({:error, module, error_msg, input_data} = error) do
           # When an error is produced in a step of the pipeline,
           # the error is propagated forward to the next steps,
@@ -88,7 +88,7 @@ defmodule BillsGenerator.Core.StandardLeader do
           error
         end
 
-        @impl StandardFilter
+        @impl GenFilterWorker
         def do_process_filter(input_data) do
           # If an exception occurs when processing the input data in the filter worker,
           # the output of the filter will be {:error,error_msg}
@@ -113,25 +113,25 @@ defmodule BillsGenerator.Core.StandardLeader do
       use GenServer
       require Logger
 
-      @behaviour StandardLeader
+      @behaviour GenFilter
 
-      @impl StandardLeader
+      @impl GenFilter
       def start_link(__init_args) do
         GenServer.start_link(__MODULE__, [], name: __MODULE__)
       end
 
-      @impl StandardLeader
+      @impl GenFilter
       def stop() do
         # Stopping the leader will also stop all linked workers
         GenServer.stop(__MODULE__)
       end
 
-      @impl StandardLeader
+      @impl GenFilter
       def process_filter(input_data) do
         GenServer.cast(__MODULE__, {:process_filter, input_data, self()})
       end
 
-      @impl StandardLeader
+      @impl GenFilter
       def redirect(worker, output_data) do
         GenServer.cast(__MODULE__, {:redirect, worker, output_data})
       end
@@ -271,8 +271,8 @@ defmodule BillsGenerator.Core.StandardLeader do
       defp handle_workload_rate(service_handler, _workload_rate), do: service_handler
 
       # By default, do not handle error
-      @impl StandardLeader
-      def on_error(module, error_msg, input_data) do
+      @impl GenFilter
+      def on_error(caused_by, error_msg, input_data) do
         :ok
       end
 

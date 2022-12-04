@@ -26,6 +26,55 @@ defmodule BillsGenerator.Entities.BillConfig do
           landscape: boolean()
         }
 
+  @doc """
+    ## Exemplos:
+        iex> BillsGenerator.Entities.BillConfig.new(11,"latex","a4paper",true)
+        %BillsGenerator.Entities.BillConfig{
+          font_size: 11,
+          font_style: "latex",
+          paper_size: "a4paper",
+          landscape: true
+        }
+  """
+  def new(font_size \\ 10, font_style \\ "latex", paper_size \\ "a4paper", landscape \\ false) do
+    %__MODULE__{
+      font_size: font_size,
+      font_style: font_style,
+      paper_size: paper_size,
+      landscape: landscape
+    }
+  end
+
+  @doc """
+  Valida a configuración da factura e devolve `:ok` se a configuración é válida ou unha tupla
+  con `{:error, reason}` se a configuración non é válida.
+  
+  ## Exemplos:
+      iex> config = BillsGenerator.Entities.BillConfig.new(11,"latex","a4paper",true)
+      iex> BillsGenerator.Entities.BillConfig.validate(config)
+      :ok
+      iex> config = BillsGenerator.Entities.BillConfig.new(0,"latex","a4paper",true)
+      iex> BillsGenerator.Entities.BillConfig.validate(config)
+      {:error, "Font size `0` not supported. Available font sizes are: 10, 11, 12."}
+      iex> config = BillsGenerator.Entities.BillConfig.new("11","latex","a4paper",true)
+      iex> BillsGenerator.Entities.BillConfig.validate(config)
+      {:error, "Incorrect font size value `11`. Font size must be a number."}
+      iex> config = BillsGenerator.Entities.BillConfig.new(11,"not_a_style","a4paper",true)
+      iex> BillsGenerator.Entities.BillConfig.validate(config)
+      {:error, "Font style `not_a_style` not supported. Available font styles are: latex, times."}
+      iex> config = BillsGenerator.Entities.BillConfig.new(11,11,"a4paper",true)
+      iex> BillsGenerator.Entities.BillConfig.validate(config)
+      {:error, "Incorrect font style value `11`. Font Style must be a string."}
+      iex> config = BillsGenerator.Entities.BillConfig.new(11,"latex","not_a_paper_size",true)
+      iex> BillsGenerator.Entities.BillConfig.validate(config)
+      {:error, "Paper size: `not_a_paper_size` not supported. Available paper sizes are: a4paper, a5paper, b5paper, letterpaper, legalpaper, executivepaper."}
+      iex> config = BillsGenerator.Entities.BillConfig.new(11,"latex",11,true)
+      iex> BillsGenerator.Entities.BillConfig.validate(config)
+      {:error, "Incorrect paper size value `11`. Paper size must be a string."}
+      iex> config = BillsGenerator.Entities.BillConfig.new(11,"latex","a4paper",5)
+      iex> BillsGenerator.Entities.BillConfig.validate(config)
+      {:error, "Incorrect landscape value `5`. Landscape must be a boolean."}
+  """
   def validate(%__MODULE__{
         font_size: font_size,
         font_style: font_style,
@@ -79,11 +128,11 @@ defmodule BillsGenerator.Entities.BillConfig do
   end
 
   defp validate_paper_size(paper_size) do
-    {:error, "Incorrect paper size value `#{paper_size}`. Paper Size must be a string."}
+    {:error, "Incorrect paper size value `#{paper_size}`. Paper size must be a string."}
   end
 
   defp validate_landscape(landscape) when is_boolean(landscape), do: :ok
 
   defp validate_landscape(landscape),
-    do: {:error, "Incorrect landscape value `#{landscape}`. Landscape must be a boolean value"}
+    do: {:error, "Incorrect landscape value `#{landscape}`. Landscape must be a boolean."}
 end

@@ -1,12 +1,12 @@
 defmodule BillsGenerator.Filters.LatexToPdf do
-  alias BillsGenerator.Core.StandardLeader
-  use StandardLeader
+  alias BillsGenerator.Core.GenFilter
+  use GenFilter
 
-  @impl StandardLeader
+  @impl GenFilter
   def worker_action(bill_id: bill_id, bill_request: bill_request, latex: latex),
     do: [bill_id: bill_id, bill_request: bill_request, pdf: generate_pdf(latex)]
 
-  @impl StandardLeader
+  @impl GenFilter
   def next_action(output_data),
     do: BillsGenerator.Filters.StoreInDatabase.process_filter(output_data)
 
