@@ -26,13 +26,13 @@
 
   > circle {
     stroke-width: 5px;
-    stroke: black;
+    stroke: var(--fg);
     shape-rendering: geometricPrecision;
   }
 }
 
 .CloseCircle_closeIcon {
-  color: black;
+  color: var(--fg);
   width: calc(var(--size) - 0.5rem) !important;
   height: calc(var(--size) - 0.5rem) !important;
   position: absolute;

@@ -21,9 +21,9 @@
   position: relative;
   padding: 1rem;
 
-  background-color: white;
+  background-color: var(--bg);
   border-radius: var(--border-radius);
-  border: 1px solid black;
+  border: 1px solid var(--fg);
 
   transition: background-color 0.3s ease-in-out;
 
@@ -56,36 +56,36 @@
   font-size: 0.9rem;
   font-weight: 400;
 
-  color: var(--blue1);
+  color: var(--fg);
 }
 
 .Notification_message {
   margin-top: 1rem;
-  color: var(--blue1);
+  color: var(--fg);
   font-size: 1rem;
   font-weight: 500;
 }
 
 .Notification_success {
   &:hover {
-    background-color: #d1ecd1;
+    background-color: var(--bg-subtle);
   }
 
   .Notification_title {
     > svg {
-      color: #36b72a;
+      color: var(--green);
     }
   }
 }
 
 .Notification_error {
   &:hover {
-    background-color: #ecd1d1;
+    background-color: var(--bg-subtle);
   }
 
   .Notification_title {
     > svg {
-      color: #b72a2a;
+      color: var(--red);
     }
   }
 }

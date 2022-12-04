@@ -79,12 +79,14 @@ export default function BillGenerator() {
     if (isGenerating) return;
     setIsGenerating(true);
 
-    BillService.generateBill(toBillRequestDto(billRequest))
-      .then((id) => setTimeout(() => waitForBill(id), 500))
-      .catch(() => {
-        setIsGenerating(false);
-        createErrorNotification("Error while generating bill", 5000);
-      });
+    setTimeout(() => {
+      BillService.generateBill(toBillRequestDto(billRequest))
+        .then((id) => waitForBill(id))
+        .catch(() => {
+          setIsGenerating(false);
+          createErrorNotification("Error while generating bill", 5000);
+        });
+    }, 500);
   }
 
   function handleAddProduct(product: Product) {

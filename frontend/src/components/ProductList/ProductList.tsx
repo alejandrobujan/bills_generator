@@ -39,8 +39,8 @@ function ListItem({ product, onRemoveProduct }: ItemProps) {
     >
       <div className={styles.ProductList_row}>
         <span>{product.name}</span>
-        <span>{product.quantity} uds.</span>
-        <span>{product.price}$</span>
+        <span>{product.quantity}</span>
+        <span>{product.price}€</span>
       </div>
       <NormalButton
         className={styles.ProductList_removeButton}

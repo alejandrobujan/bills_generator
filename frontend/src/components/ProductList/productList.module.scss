@@ -21,6 +21,7 @@
 
   > span,
   input {
+    color: var(--fg);
     width: 12rem;
     max-width: 20vw;
     text-align: center;
@@ -60,7 +61,7 @@
   > .ProductList_row {
     margin: 1rem 0;
     padding-bottom: 1rem;
-    border-bottom: 1px solid black;
+    border-bottom: 1px solid var(--fg-subtle);
 
     span:nth-child(1) {
       font-weight: 400;
@@ -97,5 +98,5 @@
   margin-top: 2rem;
   font-size: 1rem;
   font-weight: 400;
-  color: black;
+  color: var(--fg);
 }
