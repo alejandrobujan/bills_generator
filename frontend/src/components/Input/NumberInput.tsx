@@ -9,10 +9,12 @@ interface Props {
   ignoreEnter?: boolean;
 }
 
-export default function NumberInput(props: Props) {
-  function onChange(value: string) {
-    props.onChange(Number(value));
-  }
-
-  return <Input {...props} type="number" onChange={onChange} />;
+export default function NumberInput({ onChange, ...props }: Props) {
+  return (
+    <Input
+      {...props}
+      type="number"
+      onChange={(e) => onChange(Number(e.target.value))}
+    />
+  );
 }

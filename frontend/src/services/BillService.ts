@@ -6,6 +6,7 @@ export default abstract class BillService {
   private static endpoint = "/api";
 
   static generateBill(bill: BillRequestDto): Promise<number> {
+    console.log(bill);
     return fetch(`${this.endpoint}/bills`, {
       method: "POST",
       body: JSON.stringify(bill),

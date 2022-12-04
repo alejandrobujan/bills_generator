@@ -1,5 +1,6 @@
-import { useState } from "react";
 import PdfConfig from "../../entities/PdfConfig";
+import { fontStyleMap, paperSizeMap } from "../../entities/PdfConfigDto";
+import CheckboxInput from "../Input/CheckboxInput";
 import NumberInput from "../Input/NumberInput";
 import SelectInput from "../Input/SelectInput";
 import styles from "./pdfConfiguration.module.scss";
@@ -17,32 +18,58 @@ export default function PdfConfiguration({ config, onChangeConfig }: Props) {
       <div className={styles.PdfConfiguration_form}>
         <SelectInput
           label="Font style"
-          value={config.font_style}
+          value={config.fontStyle}
           onChange={(type) => {
-            let constType;
-            if (type === "latex") constType = "latex" as const;
-            else if (type === "times")
-              constType = "times" as const;
-
             onChangeConfig({
               ...config,
-              font_style: constType,
+              fontStyle: fontStyleMap.get(type),
             });
           }}
         >
-          <option value="latex">latex</option>
-          <option value="times">times</option>
+          <option value="latex">Latex (Default)</option>
+          <option value="times">Times New Roman</option>
         </SelectInput>
 
         <NumberInput
           label="Font size"
-          value={config.font_size}
-          onChange={(size) =>
+          value={config.fontSize}
+          onChange={(fontSize) =>
             onChangeConfig({
               ...config,
-              font_size: size,
+              fontSize,
             })
           }
+        />
+
+        <SelectInput
+          label="Paper size"
+          value={config.paperSize}
+          onChange={(paper) => {
+            console.log(paper, paperSizeMap.get(paper));
+            onChangeConfig({
+              ...config,
+              paperSize: paperSizeMap.get(paper),
+            });
+          }}
+        >
+          <option value="a4paper">A4</option>
+          <option value="a5paper">A5</option>
+          <option value="b5paper">B5</option>
+          <option value="executivepaper">Executive</option>
+          <option value="legalpaper">Legal</option>
+          <option value="letterpaper">Letter</option>
+        </SelectInput>
+
+        <CheckboxInput
+          label="Landscape"
+          checked={config.landscape}
+          onChange={(landscape) => {
+            console.log(landscape);
+            onChangeConfig({
+              ...config,
+              landscape,
+            });
+          }}
         />
       </div>
     </div>

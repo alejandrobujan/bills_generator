@@ -9,6 +9,8 @@ interface Props {
   ignoreEnter?: boolean;
 }
 
-export default function TextInput(props: Props) {
-  return <Input {...props} type="text" />;
+export default function TextInput({ onChange, ...props }: Props) {
+  return (
+    <Input {...props} type="text" onChange={(e) => onChange(e.target.value)} />
+  );
 }

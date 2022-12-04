@@ -1,22 +1,30 @@
-import { Number, Record, Static, Union, Literal } from "runtypes";
-
-const FontStyleSchema = Union(
-  Literal("latex"),
-  Literal("times"),
-);
+import { Number, Record, Static, Union, Literal, Boolean } from "runtypes";
+import PdfConfigDto, { FontStyleSchema, PaperSizeSchema } from "./PdfConfigDto";
 
 export const PdfConfigSchema = Record({
-  font_size: Number.withConstraint((font_size) => font_size > 0).optional(),
-  font_style: FontStyleSchema.optional(),
+  fontSize: Number.withConstraint((font_size) => font_size > 0).optional(),
+  fontStyle: FontStyleSchema.optional(),
+  paperSize: PaperSizeSchema.optional(),
+  landscape: Boolean.optional(),
 });
 
 type PdfConfig = Static<typeof PdfConfigSchema>;
+export default PdfConfig;
 
-export const getDefaultConfig = () => {
+export const getDefaultPdfConfig = () => {
   return {
-    font_style: "latex" as const,
-    font_size: 12,
+    fontStyle: "latex" as const,
+    fontSize: 12,
+    paperSize: "a4paper" as const,
+    landscape: false,
   };
 };
 
-export default PdfConfig;
+export const toPdfConfigDto = (config: PdfConfig): PdfConfigDto => {
+  return {
+    font_size: config.fontSize,
+    font_style: config.fontStyle,
+    paper_size: config.paperSize,
+    landscape: config.landscape,
+  };
+};

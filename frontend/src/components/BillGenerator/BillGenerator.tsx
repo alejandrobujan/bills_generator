@@ -29,7 +29,7 @@ export default function BillGenerator() {
 
   const [isGenerating, setIsGenerating] = useState<boolean>(false);
   const [billId, setBillId] = useState<number | undefined>(undefined);
-  const [currentBill, setCurrentBill] = useState<BillRequest>(
+  const [billRequest, setBillRequest] = useState<BillRequest>(
     getDefaultBillRequest()
   );
 
@@ -38,7 +38,7 @@ export default function BillGenerator() {
       .then((bill) => {
         if (bill.error) {
           setIsGenerating(false);
-          createErrorNotification(bill.errorMessage);
+          createErrorNotification(bill.errorMessage, 5000);
           return;
         }
         if (!bill.isAvailable) {
@@ -65,7 +65,7 @@ export default function BillGenerator() {
           const billDto: BillRequestDto = BillRequestDtoSchema.check(
             JSON.parse(jsonString)
           );
-          setCurrentBill(toBillRequest(billDto));
+          setBillRequest(toBillRequest(billDto));
         } catch (error: any) {
           createErrorNotification("Invalid bill specification", 8000);
           return;
@@ -79,7 +79,7 @@ export default function BillGenerator() {
     if (isGenerating) return;
     setIsGenerating(true);
 
-    BillService.generateBill(toBillRequestDto(currentBill))
+    BillService.generateBill(toBillRequestDto(billRequest))
       .then((id) => setTimeout(() => waitForBill(id), 500))
       .catch(() => {
         setIsGenerating(false);
@@ -88,30 +88,34 @@ export default function BillGenerator() {
   }
 
   function handleAddProduct(product: Product) {
-    setCurrentBill({
-      ...currentBill,
+    setBillRequest({
+      ...billRequest,
       bill: {
-        ...currentBill.bill,
-        products: [...currentBill.bill.products, product],
+        ...billRequest.bill,
+        products: [...billRequest.bill.products, product],
       },
     });
   }
   function handleRemoveProduct(id: Product["id"]) {
-    setCurrentBill({
-      ...currentBill,
+    setBillRequest({
+      ...billRequest,
       bill: {
-        ...currentBill.bill,
-        products: currentBill.bill.products.filter((p) => p.id !== id),
+        ...billRequest.bill,
+        products: billRequest.bill.products.filter((p) => p.id !== id),
       },
     });
   }
 
   function handleChangeConfig(config: PdfConfig) {
-    setCurrentBill({
-      ...currentBill,
+    setBillRequest({
+      ...billRequest,
       config,
     });
   }
+
+  useEffect(() => {
+    setBillId(undefined);
+  }, [billRequest]);
 
   return (
     <>
@@ -125,39 +129,39 @@ export default function BillGenerator() {
           <TextInput
             required
             label="User"
-            value={currentBill.user}
-            onChange={(user) => setCurrentBill({ ...currentBill, user })}
+            value={billRequest.user}
+            onChange={(user) => setBillRequest({ ...billRequest, user })}
           />
           <TextInput
             required
             label="Title"
-            value={currentBill.bill.title}
+            value={billRequest.bill.title}
             onChange={(title) =>
-              setCurrentBill({
-                ...currentBill,
-                bill: { ...currentBill.bill, title },
+              setBillRequest({
+                ...billRequest,
+                bill: { ...billRequest.bill, title },
               })
             }
           />
           <TextInput
             required
             label="Seller"
-            value={currentBill.bill.seller}
+            value={billRequest.bill.seller}
             onChange={(seller) =>
-              setCurrentBill({
-                ...currentBill,
-                bill: { ...currentBill.bill, seller },
+              setBillRequest({
+                ...billRequest,
+                bill: { ...billRequest.bill, seller },
               })
             }
           />
           <TextInput
             required
             label="Purchaser"
-            value={currentBill.bill.purchaser}
+            value={billRequest.bill.purchaser}
             onChange={(purchaser) =>
-              setCurrentBill({
-                ...currentBill,
-                bill: { ...currentBill.bill, purchaser },
+              setBillRequest({
+                ...billRequest,
+                bill: { ...billRequest.bill, purchaser },
               })
             }
           />
@@ -165,7 +169,7 @@ export default function BillGenerator() {
 
         <div className={styles.BillGenerator_productList}>
           <ProductList
-            products={currentBill.bill.products}
+            products={billRequest.bill.products}
             onAddProduct={handleAddProduct}
             onRemoveProduct={handleRemoveProduct}
           />
@@ -173,7 +177,7 @@ export default function BillGenerator() {
 
         <div className={styles.BillGenerator_pdfConfiguration}>
           <PdfConfiguration
-            config={currentBill.config}
+            config={billRequest.config}
             onChangeConfig={handleChangeConfig}
           />
         </div>
@@ -186,7 +190,7 @@ export default function BillGenerator() {
               target="_blank"
               rel="noreferrer"
             >
-              <AcceptButton type="button" onClick={() => setBillId(undefined)}>
+              <AcceptButton type="button">
                 <span>Download generated bill</span>
                 <DownloadIcon />
               </AcceptButton>

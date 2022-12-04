@@ -1,6 +1,7 @@
 import { String, Array, Record, Static } from "runtypes";
 import BillRequest from "./BillRequest";
-import { getDefaultConfig, PdfConfigSchema } from "./PdfConfig";
+import { getDefaultPdfConfig } from "./PdfConfig";
+import { PdfConfigDtoSchema, toPdfConfig } from "./PdfConfigDto";
 import Product from "./Product";
 import { ProductDtoSchema, toProduct } from "./ProductDto";
 
@@ -12,7 +13,7 @@ export const BillRequestDtoSchema = Record({
     purchaser: String.withConstraint((purchaser) => purchaser.length > 0),
     products: Array(ProductDtoSchema),
   }),
-  config: PdfConfigSchema,
+  config: PdfConfigDtoSchema,
 });
 
 type BillRequestDto = Static<typeof BillRequestDtoSchema>;
@@ -24,8 +25,8 @@ export const toBillRequest = (dto: BillRequestDto): BillRequest => {
   );
 
   const config = {
-    ...getDefaultConfig(),
-    ...dto.config,
+    ...getDefaultPdfConfig(),
+    ...toPdfConfig(dto.config),
   };
 
   return {

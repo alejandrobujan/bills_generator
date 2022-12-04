@@ -1,6 +1,10 @@
 import { String, Array, Record, Static } from "runtypes";
 import BillRequestDto from "./BillRequestDto";
-import { getDefaultConfig, PdfConfigSchema } from "./PdfConfig";
+import {
+  getDefaultPdfConfig,
+  PdfConfigSchema,
+  toPdfConfigDto,
+} from "./PdfConfig";
 import { ProductSchema, toProductDto } from "./Product";
 import ProductDto from "./ProductDto";
 
@@ -27,7 +31,7 @@ export const getDefaultBillRequest = (): BillRequest => {
       purchaser: "",
       products: [],
     },
-    config: getDefaultConfig(),
+    config: getDefaultPdfConfig(),
   };
 };
 
@@ -36,11 +40,14 @@ export const toBillRequestDto = (bill: BillRequest): BillRequestDto => {
     toProductDto(product)
   );
 
+  const config = toPdfConfigDto(bill.config);
+
   return {
     ...bill,
     bill: {
       ...bill.bill,
       products,
     },
+    config,
   };
 };
