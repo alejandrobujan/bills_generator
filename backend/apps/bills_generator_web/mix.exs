@@ -24,7 +24,7 @@ defmodule BillsGeneratorWeb.MixProject do
   def application do
     [
       mod: {BillsGeneratorWeb.Application, []},
-      extra_applications: [:logger, :runtime_tools, :bills_generator]
+      extra_applications: [:logger, :runtime_tools]
     ]
   end
 
@@ -42,7 +42,6 @@ defmodule BillsGeneratorWeb.MixProject do
       {:phoenix_ecto, "~> 4.4"},
       {:telemetry_metrics, "~> 0.6"},
       {:telemetry_poller, "~> 1.0"},
-      {:bills_generator, in_umbrella: true},
       {:jason, "~> 1.2"},
       {:plug_cowboy, "~> 2.5"}
     ]

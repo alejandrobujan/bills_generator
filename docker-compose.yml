@@ -23,3 +23,5 @@ services:
     build: frontend/
     image: bills/frontend
     container_name: bills-frontend
+    ports:
+      - 3000:3000

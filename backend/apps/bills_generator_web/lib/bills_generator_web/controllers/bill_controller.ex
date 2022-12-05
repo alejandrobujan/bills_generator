@@ -1,6 +1,6 @@
 defmodule BillsGeneratorWeb.BillController do
   use Phoenix.Controller
-  alias BillsGenerator.Repository
+  alias BillsGenerator.Repository.{Repo, BillDao}
   import Ecto.Query, only: [from: 2]
   # This module is a service one, but using phoenix naming,
   # it should be called controller
@@ -14,7 +14,7 @@ defmodule BillsGeneratorWeb.BillController do
   end
 
   def get(conn, %{"id" => id}) do
-    bill = Repository.Repo.get!(Repository.Bill, id)
+    bill = Repo.get!(BillDao, id)
 
     bill_map = %{
       id: bill.id,
@@ -31,7 +31,7 @@ defmodule BillsGeneratorWeb.BillController do
 
   def download(conn, %{"id" => id}) do
     bill =
-      case Repository.Repo.get(Repository.Bill, id) do
+      case Repo.get(BillDao, id) do
         nil -> conn |> send_resp(404, "Not found")
         bill -> bill
       end
@@ -47,8 +47,8 @@ defmodule BillsGeneratorWeb.BillController do
 
   def get_all(conn, %{"user" => user}) do
     bills =
-      Repository.Repo.all(
-        from(b in Repository.Bill,
+      Repo.all(
+        from(b in BillDao,
           select: {b.id, b.title, b.pdf, b.error, b.error_msg, b.updated_at},
           where: b.user == ^user,
           order_by: [desc: b.updated_at]

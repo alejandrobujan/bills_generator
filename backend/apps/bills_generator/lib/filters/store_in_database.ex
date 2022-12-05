@@ -1,6 +1,6 @@
 defmodule BillsGenerator.Filters.StoreInDatabase do
   alias BillsGenerator.Core.GenFilter
-  alias BillsGenerator.Repository
+  alias BillsGenerator.Repository.{Repo, BillDao}
   use GenFilter
 
   @impl GenFilter
@@ -8,9 +8,9 @@ defmodule BillsGenerator.Filters.StoreInDatabase do
     user = bill_request.user
     title = bill_request.bill.title
 
-    Repository.Repo.get!(Repository.Bill, bill_id)
+    Repo.get!(BillDao, bill_id)
     |> Ecto.Changeset.change(user: user, title: title, pdf: pdf, error: false)
-    |> Repository.Repo.update!()
+    |> Repo.update!()
 
     [bill_id: bill_id, user: user]
   end
@@ -36,8 +36,8 @@ defmodule BillsGenerator.Filters.StoreInDatabase do
       "catched error in #{__MODULE__.Worker}, error caused by filter #{caused_by}: #{error_msg}"
     )
 
-    Repository.Repo.get!(Repository.Bill, bill_id)
+    Repo.get!(BillDao, bill_id)
     |> Ecto.Changeset.change(error: true, error_msg: error_msg)
-    |> Repository.Repo.update!()
+    |> Repo.update!()
   end
 end

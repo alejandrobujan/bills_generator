@@ -17,6 +17,72 @@ defmodule BillsGenerator.Entities.Bill do
           total: nil | float()
         }
 
+  @doc """
+    ## Exemplos:
+        iex> BillsGenerator.Entities.Bill.new("A bill", "A purchaser", "A seller", [])
+        %BillsGenerator.Entities.Bill{
+          title: "A bill",
+          purchaser: "A purchaser",
+          seller: "A seller",
+          products: [],
+          total: nil
+        }
+  """
+  def new(title, purchaser, seller, products) do
+    %__MODULE__{
+      title: title,
+      purchaser: purchaser,
+      seller: seller,
+      products: products,
+      total: nil
+    }
+  end
+
+  @doc """
+    ## Exemplos:
+        iex> products = [
+        ...>   BillsGenerator.Entities.Product.new("A product", 15.0,2),
+        ...>   BillsGenerator.Entities.Product.new("Another product", 3.0,3)
+        ...> ]
+        iex> bill = BillsGenerator.Entities.Bill.new("A bill", "A purchaser", "A seller", products)
+        iex> BillsGenerator.Entities.Bill.update_total(bill)
+        %BillsGenerator.Entities.Bill{
+          title: "A bill",
+          purchaser: "A purchaser",
+          seller: "A seller",
+          products: [
+            %BillsGenerator.Entities.Product{
+              name: "A product",
+              price: 15.0,
+              quantity: 2,
+              total: 30.0
+            },
+            %BillsGenerator.Entities.Product{
+              name: "Another product",
+              price: 3.0,
+              quantity: 3,
+              total: 9.0
+            }
+          ],
+          total: 39.0
+        }
+  
+  """
+  def update_total(%__MODULE__{products: products} = bill) do
+    {updated_bill_products, total} = calculate_bill(products)
+    %__MODULE__{bill | products: updated_bill_products, total: total}
+  end
+
+  @doc """
+    ## Exemplos:
+        iex> products = [
+        ...>   BillsGenerator.Entities.Product.new("A product", 2, 15.0),
+        ...>   BillsGenerator.Entities.Product.new("Another product", 3, 3.0)
+        ...> ]
+        iex> bill = BillsGenerator.Entities.Bill.new("A bill", "A purchaser", "A seller", products)
+        iex> BillsGenerator.Entities.Bill.validate(bill)
+        :ok
+  """
   def validate(%__MODULE__{title: title, purchaser: purchaser, seller: seller, products: products}) do
     # returns only the first error that is found
     with :ok <- validate_title(title),
@@ -29,6 +95,22 @@ defmodule BillsGenerator.Entities.Bill do
     end
   end
 
+  defp calculate_bill([]), do: {[], 0}
+
+  defp calculate_bill(products), do: do_calculate_bill([], products, 0)
+
+  defp do_calculate_bill(acc, [], total), do: {Enum.reverse(acc), total}
+
+  defp do_calculate_bill(acc, [product | t], total) do
+    updated_product = Product.update_total(product)
+
+    do_calculate_bill(
+      [updated_product | acc],
+      t,
+      total + updated_product.total
+    )
+  end
+
   defp validate_title(title) when is_bitstring(title) do
     if String.length(title) > 0 do
       :ok
@@ -38,7 +120,7 @@ defmodule BillsGenerator.Entities.Bill do
   end
 
   defp validate_title(title) do
-    {:error, "Incorrect title value `#{title}`. Title must be a string."}
+    {:error, "Incorrect title value '#{title}'. Title must be a string."}
   end
 
   defp validate_purchaser(purchaser) when is_bitstring(purchaser) do
@@ -50,7 +132,7 @@ defmodule BillsGenerator.Entities.Bill do
   end
 
   defp validate_purchaser(purchaser) do
-    {:error, "Incorrect purchaser value `#{purchaser}`. Purchaser must be a string."}
+    {:error, "Incorrect purchaser value '#{purchaser}'. Purchaser must be a string."}
   end
 
   defp validate_seller(seller) when is_bitstring(seller) do
@@ -62,7 +144,7 @@ defmodule BillsGenerator.Entities.Bill do
   end
 
   defp validate_seller(seller) do
-    {:error, "Incorrect seller value `#{seller}`. Seller must be a string."}
+    {:error, "Incorrect seller value '#{seller}'. Seller must be a string."}
   end
 
   defp validate_products(products) when is_list(products) do
@@ -80,6 +162,6 @@ defmodule BillsGenerator.Entities.Bill do
   end
 
   defp validate_products(products) do
-    {:error, "Incorrect products value `#{products}`. Products must be a list."}
+    {:error, "Incorrect products value '#{products}'. Products must be a list."}
   end
 end

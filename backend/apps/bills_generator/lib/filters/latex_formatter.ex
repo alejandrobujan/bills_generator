@@ -49,7 +49,7 @@ defmodule BillsGenerator.Filters.LatexFormatter do
   defp format_bill([], 0), do: ""
 
   defp format_bill(products, total) do
-    do_format_bill("", Enum.reverse(products), total)
+    do_format_bill("", products, total)
   end
 
   defp do_format_bill(acc, [], total) do

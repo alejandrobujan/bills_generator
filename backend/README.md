@@ -56,4 +56,4 @@ Para ver los logs de la base de datos: `docker-compose logs`
 
 Tenemos táctica de repuesto en los workers, debido a que si uno peta, el leader también peta al estar linkeado, y también petaría el supervisor. Entonces, se volvería a lanzar el líder y funcionaría bien.
 
-Al modificar algún campo de input en el front, se tiene que quitar el botón de download bill. Además, una vez se le de al botón, no debería quitarse y poner generate, ya que la bill debería ser la misma y no hace falta volver a generarla.
+En la base de datos solo se permite guardar errores hasta 255 chars...

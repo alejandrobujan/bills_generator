@@ -10,6 +10,8 @@ RUN npm install
 
 COPY ./ ./
 
+ENV API_HOST backend
+
 RUN npm run build
 
 USER node
