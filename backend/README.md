@@ -33,7 +33,7 @@ Para ver los logs de la base de datos: `docker-compose logs`
 
 - [ ] Mejorar el latex generado en el formatter. Estaría bien incluír divisas, precio con y sin tasas, descuento aplicado por ítem o en global...Añadir logo de la empresa? no sé como iría en el json... Podría ir un link a una imagen, y que en un filtro se descargase? No me convence mucho.
 
-- [ ] Internationalization en el latex? puede ser un requisito no funcional
+- [ ] Internationalization en el latex formatter? puede ser un requisito no funcional.
 
 - [ ] Diagramas c4 y documentación de las funciones
 
