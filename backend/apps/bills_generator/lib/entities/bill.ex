@@ -28,6 +28,8 @@ defmodule BillsGenerator.Entities.Bill do
           total: nil
         }
   """
+  def new(title, purchaser, seller, nil), do: new(title, purchaser, seller, [])
+
   def new(title, purchaser, seller, products) do
     %__MODULE__{
       title: title,
@@ -157,11 +159,11 @@ defmodule BillsGenerator.Entities.Bill do
         end
       end)
     else
-      {:error, "Products can't be empty."}
+      {:error, "Products list can't be empty."}
     end
   end
 
   defp validate_products(products) do
-    {:error, "Incorrect products value '#{products}'. Products must be a list."}
+    {:error, "Incorrect products value '#{products}'. Products must be a list of products."}
   end
 end

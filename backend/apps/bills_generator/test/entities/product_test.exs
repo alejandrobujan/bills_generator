@@ -21,6 +21,11 @@ defmodule ProductTest do
     assert Product.validate(product) == :ok
   end
 
+  test "validate/1 returns error when product is not a Product type" do
+    product = "not a product"
+    assert Product.validate(product) == {:error, "Incorrect product value. Not a Product type."}
+  end
+
   test "validate/1 returns error when product name is empty" do
     product = Product.new("", 10.0, 2)
     assert Product.validate(product) == {:error, "Product name can't be empty."}

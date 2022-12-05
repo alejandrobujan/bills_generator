@@ -67,6 +67,8 @@ defmodule BillsGenerator.Entities.Product do
     end
   end
 
+  def validate(_), do: {:error, "Incorrect product value. Not a Product type."}
+
   defp calculate_total(%__MODULE__{price: price, quantity: quantity}) do
     price * quantity
   end
