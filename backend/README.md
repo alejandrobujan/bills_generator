@@ -33,6 +33,8 @@ Para ver los logs de la base de datos: `docker-compose logs`
 
 - [ ] Mejorar el latex generado en el formatter. Estaría bien incluír divisas, precio con y sin tasas, descuento aplicado por ítem o en global...Añadir logo de la empresa? no sé como iría en el json... Podría ir un link a una imagen, y que en un filtro se descargase? No me convence mucho.
 
+- [ ] Internationalization en el latex? puede ser un requisito no funcional
+
 - [ ] Diagramas c4 y documentación de las funciones
 
 - [ ] Hacer tests, tanto de integración, como de cada filtro individualmente. Para algunos de integración/unitarios, podemos consultar los que tengo hecho para mi lider-trabajador (práctica anterior). Hacer muchos tests para validar las facturas correctas, ese trabajo lo hace el filtro BillValidator. Podemos hacer esto último de dos maneras, coger el valor que sale del filtro y testear eso, pero para eso necesitaríamos simular todo lo anterior. O bien, hacer que se procese el filtro al completo y consultar el valor introducido en la base de datos. El primero sería más bien un test unitario de ese filtro, y el segundo un test de integración completa.
@@ -53,6 +55,11 @@ Para ver los logs de la base de datos: `docker-compose logs`
 - [ ] Paginar las peticiones a /bills? Pueden ser muchas para ser mandadas el front... Si da mucho trabajo, mejor pasar de esto. Permitir más parámetros? por ejemplo, filtrar las bills por rango de fecha...
 
 # Notas
+
+Permitir borrar el 0 en los input de cantidad...@frontend
+
+Limitar el número de trabajadores a los threads del procesador? Si hay demasiados, puede
+ir aún más lento...
 
 Tenemos táctica de repuesto en los workers, debido a que si uno peta, el leader también peta al estar linkeado, y también petaría el supervisor. Entonces, se volvería a lanzar el líder y funcionaría bien.
 
