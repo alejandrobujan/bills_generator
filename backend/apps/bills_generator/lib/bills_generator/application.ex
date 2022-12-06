@@ -40,7 +40,7 @@ defmodule BillsGenerator.Application do
     # Esto lo debería hacer un filtro?
     {:ok, stored_bill} = Repo.insert(%BillDao{})
     bill_id = stored_bill.id
-    BillParser.process_filter(bill_id: bill_id, json_bill: json_bill)
+    BillParser.process_filter(%{bill_id: bill_id, json_bill: json_bill})
     # We have to return bill_id in order to let client which bill is generating
     bill_id
   end

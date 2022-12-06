@@ -36,6 +36,8 @@ defmodule BillsGenerator.MixProject do
   # Type `mix help deps` for examples and options.
   defp deps do
     [
+      {:benchee, "~> 1.0", only: :test},
+      {:benchee_html, "~> 1.0", only: :test},
       {:poison, "~> 5.0"},
       {:iona, "~> 0.4"},
       {:phoenix_pubsub, "~> 2.0"},

@@ -4,7 +4,7 @@ defmodule BillsGenerator.Filters.BillValidator do
   use GenFilter
 
   @impl GenFilter
-  def worker_action([bill_id: _bill_id, bill_request: bill_request] = input_data) do
+  def worker_action(%{bill_id: _bill_id, bill_request: bill_request} = input_data) do
     validate_request!(bill_request)
     input_data
   end

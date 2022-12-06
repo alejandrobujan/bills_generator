@@ -3,8 +3,8 @@ defmodule BillsGenerator.Filters.LatexToPdf do
   use GenFilter
 
   @impl GenFilter
-  def worker_action(bill_id: bill_id, bill_request: bill_request, latex: latex),
-    do: [bill_id: bill_id, bill_request: bill_request, pdf: generate_pdf!(latex)]
+  def worker_action(%{bill_id: bill_id, bill_request: bill_request, latex: latex}),
+    do: %{bill_id: bill_id, bill_request: bill_request, pdf: generate_pdf!(latex)}
 
   @impl GenFilter
   def next_action(output_data),

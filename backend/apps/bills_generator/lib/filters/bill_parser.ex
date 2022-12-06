@@ -4,8 +4,8 @@ defmodule BillsGenerator.Filters.BillParser do
   use GenFilter
 
   @impl GenFilter
-  def worker_action(bill_id: bill_id, json_bill: json_bill),
-    do: [bill_id: bill_id, bill_request: parse_json(json_bill)]
+  def worker_action(%{bill_id: bill_id, json_bill: json_bill}),
+    do: %{bill_id: bill_id, bill_request: parse_json(json_bill)}
 
   @impl GenFilter
   def next_action(output_data),

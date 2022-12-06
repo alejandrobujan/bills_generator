@@ -4,8 +4,8 @@ defmodule BillsGenerator.Filters.BillCalculator do
   use GenFilter
 
   @impl GenFilter
-  def worker_action(bill_id: bill_id, bill_request: bill_request),
-    do: [bill_id: bill_id, bill_request: update_bill(bill_request)]
+  def worker_action(%{bill_id: bill_id, bill_request: bill_request}),
+    do: %{bill_id: bill_id, bill_request: update_bill(bill_request)}
 
   @impl GenFilter
   def next_action(output_data),

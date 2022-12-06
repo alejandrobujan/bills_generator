@@ -4,7 +4,7 @@ defmodule BillsGenerator.Filters.StoreInDatabase do
   use GenFilter
 
   @impl GenFilter
-  def worker_action(bill_id: bill_id, bill_request: bill_request, pdf: pdf) do
+  def worker_action(%{bill_id: bill_id, bill_request: bill_request, pdf: pdf}) do
     user = bill_request.user
     title = bill_request.bill.title
 
@@ -12,27 +12,23 @@ defmodule BillsGenerator.Filters.StoreInDatabase do
     |> Ecto.Changeset.change(user: user, title: title, pdf: pdf, error: false)
     |> Repo.update!()
 
-    [bill_id: bill_id, user: user]
+    %{bill_id: bill_id, user: user}
   end
 
   # Handle error on leaders. This could be useful for loggin errors
   @impl GenFilter
   def next_action({:error, module, error_msg, _input_data}),
-    do: Logger.error("error in module #{module}: #{error_msg}")
+    do: Logger.info("error in module #{module}: #{error_msg}")
 
   @impl GenFilter
-  def next_action(bill_id: bill_id, user: user),
+  def next_action(%{bill_id: bill_id, user: user}),
     do: Logger.info("PDF for user #{user} with bill id #{bill_id} successfully generated")
 
-  # All filters has a bill_id field in the input_data keyword, so we can
-  # access it if error happens in any filter.
-  # We could get the input_data of bill_validator, and it would contain
-  # the user & title, but we don't know for sure that that user & title
-  # would be valid. In filters latex_to_pdf and latex_formatter, we know
-  # that these 2 fields are valid, but if an error happens in those
-  # modules, it is not relevant to the user generating the bill.
-  def on_error(caused_by, error_msg, [bill_id: bill_id] ++ _rest) do
-    Logger.error(
+  # We use a map for input_data, so we can catch any input_data that has
+  # at least the bill_id field. This helps us to catch errors from any
+  # filter, since their input data contains at least the bill_id field.
+  def on_error(caused_by, error_msg, %{bill_id: bill_id}) do
+    Logger.info(
       "catched error in #{__MODULE__.Worker}, error caused by filter #{caused_by}: #{error_msg}"
     )
 
