@@ -21,10 +21,10 @@ json_bill = """
 	"config": {
 		"font_size" : 10,
 		"font_style" : "times",
-		"paper_size" : "b5paper",
+		"paper_size" : "b5aper",
 		"landscape" : true
 	}
 }
 """
 
-BillsGenerator.Application.generate_bill(json_bill)
+bill_id = BillsGenerator.Application.generate_bill(json_bill)

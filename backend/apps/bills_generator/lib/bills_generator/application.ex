@@ -44,4 +44,9 @@ defmodule BillsGenerator.Application do
     # We have to return bill_id in order to let client which bill is generating
     bill_id
   end
+
+  # Aux function for console requests to application. Wrapper for Repo.get!
+  def get_bill(bill_id) do
+    Repo.get!(BillDao, bill_id)
+  end
 end
