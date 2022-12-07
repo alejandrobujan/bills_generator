@@ -1,22 +1,22 @@
-import { String, Array, Record, Static } from "runtypes";
-import BillRequest from "./BillRequest";
+import { z } from "zod";
+import BillRequest, { BillRequestSchema } from "./BillRequest";
 import { getDefaultPdfConfig } from "./PdfConfig";
 import { PdfConfigDtoSchema, toPdfConfig } from "./PdfConfigDto";
 import Product from "./Product";
 import { ProductDtoSchema, toProduct } from "./ProductDto";
 
-export const BillRequestDtoSchema = Record({
-  user: String.withConstraint((user) => user.length > 0),
-  bill: Record({
-    title: String.withConstraint((title) => title.length > 0),
-    seller: String.withConstraint((seller) => seller.length > 0),
-    purchaser: String.withConstraint((purchaser) => purchaser.length > 0),
-    products: Array(ProductDtoSchema),
+export const BillRequestDtoSchema = z.object({
+  user: z.string(),
+  bill: z.object({
+    title: z.string(),
+    seller: z.string(),
+    purchaser: z.string(),
+    products: z.array(ProductDtoSchema),
   }),
   config: PdfConfigDtoSchema,
 });
 
-type BillRequestDto = Static<typeof BillRequestDtoSchema>;
+type BillRequestDto = z.infer<typeof BillRequestDtoSchema>;
 export default BillRequestDto;
 
 export const toBillRequest = (dto: BillRequestDto): BillRequest => {
@@ -29,12 +29,12 @@ export const toBillRequest = (dto: BillRequestDto): BillRequest => {
     ...toPdfConfig(dto.config),
   };
 
-  return {
+  return BillRequestSchema.parse({
     user: dto.user,
     bill: {
       ...dto.bill,
       products,
     },
     config,
-  };
+  });
 };

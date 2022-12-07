@@ -1,30 +1,36 @@
-import { Number, Record, Static, Union, Literal, Boolean } from "runtypes";
-import PdfConfigDto, { FontStyleSchema, PaperSizeSchema } from "./PdfConfigDto";
+import { z } from "zod";
+import PdfConfigDto, {
+  FontStyleSchema,
+  PaperSizeSchema,
+  PdfConfigDtoSchema,
+} from "./PdfConfigDto";
 
-export const PdfConfigSchema = Record({
-  fontSize: Number.withConstraint((font_size) => font_size > 0).optional(),
-  fontStyle: FontStyleSchema.optional(),
-  paperSize: PaperSizeSchema.optional(),
-  landscape: Boolean.optional(),
-});
+export const PdfConfigSchema = z
+  .object({
+    fontStyle: FontStyleSchema.optional(),
+    fontSize: z.number().optional(),
+    paperSize: PaperSizeSchema.optional(),
+    landscape: z.boolean().optional(),
+  })
+  .strict();
 
-type PdfConfig = Static<typeof PdfConfigSchema>;
+type PdfConfig = z.infer<typeof PdfConfigSchema>;
 export default PdfConfig;
 
 export const getDefaultPdfConfig = () => {
-  return {
+  return PdfConfigSchema.parse({
     fontStyle: "latex" as const,
     fontSize: 12,
     paperSize: "a4paper" as const,
     landscape: false,
-  };
+  });
 };
 
 export const toPdfConfigDto = (config: PdfConfig): PdfConfigDto => {
-  return {
+  return PdfConfigDtoSchema.parse({
     font_size: config.fontSize,
     font_style: config.fontStyle,
     paper_size: config.paperSize,
     landscape: config.landscape,
-  };
+  });
 };

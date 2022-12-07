@@ -1,5 +1,5 @@
 import Bill from "../entities/Bill";
-import BillDto, { toBill } from "../entities/BillDto";
+import BillDto, { BillDtoSchema, toBill } from "../entities/BillDto";
 import BillRequestDto from "../entities/BillRequestDto";
 
 export default abstract class BillService {
@@ -22,7 +22,11 @@ export default abstract class BillService {
       method: "GET",
     })
       .then((res) => res.json())
-      .then((res) => toBill(res));
+      .then((res) => {
+        const billDto = BillDtoSchema.parse(res);
+        console.log(billDto);
+        return toBill(res);
+      });
   }
 
   static getBills(user: BillRequestDto["user"]): Promise<Bill[]> {

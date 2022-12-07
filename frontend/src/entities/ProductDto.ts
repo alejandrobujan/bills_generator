@@ -1,35 +1,31 @@
-import { Number, String, Record, Static } from "runtypes";
+import { z } from "zod";
 import { v4 } from "uuid";
-import Product from "./Product";
+import Product, { ProductSchema } from "./Product";
 
-export const ProductDtoSchema = Record({
-  name: String.withConstraint(
-    (name) => name.length > 0 || "Name must be at least 1 character long"
-  ),
-  price: Number.withConstraint(
-    (price) => price >= 0 || "Price must be greater than or equal to 0"
-  ),
-  quantity: Number.withConstraint(
-    (quantity) => quantity >= 0 || "Quantity must be greater than or equal to 0"
-  ),
-});
+export const ProductDtoSchema = z
+  .object({
+    name: z.string(),
+    price: z.number(),
+    quantity: z.number(),
+  })
+  .strict();
 
-type ProductDto = Static<typeof ProductDtoSchema>;
+type ProductDto = z.infer<typeof ProductDtoSchema>;
 export default ProductDto;
 
 export const getDefaultProductDto = (): ProductDto => {
-  return {
+  return ProductDtoSchema.parse({
     name: "",
     price: 0,
     quantity: 0,
-  };
+  });
 };
 
 export const toProduct = (dto: ProductDto): Product => {
-  return {
+  return ProductSchema.parse({
     id: v4(),
     name: dto.name,
     price: dto.price,
     quantity: dto.quantity,
-  };
+  });
 };

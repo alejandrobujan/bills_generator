@@ -1,7 +1,17 @@
+import { ZodError } from "zod";
+
 export default abstract class Utils {
-  static getValidationErrorMessage(error: any): string {
-    const completeMessage = Object.values(error.details)[0] as string;
-    const message = completeMessage.split(":")[1].trim();
-    return message;
+  static getZodErrorMessages(error: ZodError): string[] {
+    const messages: string[] = [];
+
+    for (const errorItem of error.errors) {
+      if (errorItem.path.length > 0) {
+        messages.push(`${errorItem.path.join(".")}, ${errorItem.message}`);
+      } else {
+        messages.push(errorItem.message);
+      }
+    }
+
+    return messages;
   }
 }

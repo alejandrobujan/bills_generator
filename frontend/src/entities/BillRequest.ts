@@ -1,5 +1,5 @@
-import { String, Array, Record, Static } from "runtypes";
-import BillRequestDto from "./BillRequestDto";
+import { z } from "zod";
+import BillRequestDto, { BillRequestDtoSchema } from "./BillRequestDto";
 import {
   getDefaultPdfConfig,
   PdfConfigSchema,
@@ -8,22 +8,24 @@ import {
 import { ProductSchema, toProductDto } from "./Product";
 import ProductDto from "./ProductDto";
 
-export const BillRequestSchema = Record({
-  user: String.withConstraint((user) => user.length > 0),
-  bill: Record({
-    title: String.withConstraint((title) => title.length > 0),
-    seller: String.withConstraint((seller) => seller.length > 0),
-    purchaser: String.withConstraint((purchaser) => purchaser.length > 0),
-    products: Array(ProductSchema),
-  }),
-  config: PdfConfigSchema,
-});
+export const BillRequestSchema = z
+  .object({
+    user: z.string(),
+    bill: z.object({
+      title: z.string(),
+      seller: z.string(),
+      purchaser: z.string(),
+      products: z.array(ProductSchema),
+    }),
+    config: PdfConfigSchema,
+  })
+  .strict();
 
-type BillRequest = Static<typeof BillRequestSchema>;
+type BillRequest = z.infer<typeof BillRequestSchema>;
 export default BillRequest;
 
 export const getDefaultBillRequest = (): BillRequest => {
-  return {
+  return BillRequestSchema.parse({
     user: "",
     bill: {
       title: "",
@@ -32,7 +34,7 @@ export const getDefaultBillRequest = (): BillRequest => {
       products: [],
     },
     config: getDefaultPdfConfig(),
-  };
+  });
 };
 
 export const toBillRequestDto = (bill: BillRequest): BillRequestDto => {
@@ -42,12 +44,12 @@ export const toBillRequestDto = (bill: BillRequest): BillRequestDto => {
 
   const config = toPdfConfigDto(bill.config);
 
-  return {
+  return BillRequestDtoSchema.parse({
     ...bill,
     bill: {
       ...bill.bill,
       products,
     },
     config,
-  };
+  });
 };

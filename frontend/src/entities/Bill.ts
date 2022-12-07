@@ -1,14 +1,16 @@
-import { String, Number, Record, Static, InstanceOf, Boolean } from "runtypes";
+import { z } from "zod";
 
-export const BillSchema = Record({
-  id: Number,
-  user: String,
-  title: String.withConstraint((title) => title.length > 0),
-  createdAt: InstanceOf(Date),
-  isAvailable: Boolean,
-  error: Boolean,
-  errorMessage: String,
-});
+export const BillSchema = z
+  .object({
+    id: z.number(),
+    user: z.string(),
+    title: z.string(),
+    createdAt: z.date(),
+    isAvailable: z.boolean(),
+    error: z.boolean(),
+    errorMessage: z.string(),
+  })
+  .strict();
 
-type Bill = Static<typeof BillSchema>;
+type Bill = z.infer<typeof BillSchema>;
 export default Bill;

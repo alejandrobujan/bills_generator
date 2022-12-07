@@ -1,15 +1,19 @@
-import { Number, Record, Static, Union, Literal, Boolean } from "runtypes";
-import PdfConfig from "./PdfConfig";
+import { z } from "zod";
+import PdfConfig, { PdfConfigSchema } from "./PdfConfig";
 
-export const FontStyleSchema = Union(Literal("latex"), Literal("times"));
-export const PaperSizeSchema = Union(
-  Literal("a4paper"),
-  Literal("a5paper"),
-  Literal("b5paper"),
-  Literal("executivepaper"),
-  Literal("legalpaper"),
-  Literal("letterpaper")
-);
+export const FontStyleSchema = z.union([
+  z.literal("latex"),
+  z.literal("times"),
+]);
+
+export const PaperSizeSchema = z.union([
+  z.literal("a4paper"),
+  z.literal("a5paper"),
+  z.literal("b5paper"),
+  z.literal("executivepaper"),
+  z.literal("legalpaper"),
+  z.literal("letterpaper"),
+]);
 
 export const fontStyleMap = new Map([
   ["latex", "latex" as const],
@@ -25,21 +29,23 @@ export const paperSizeMap = new Map([
   ["letterpaper", "letterpaper" as const],
 ]);
 
-export const PdfConfigDtoSchema = Record({
-  font_size: Number.withConstraint((font_size) => font_size > 0).optional(),
-  font_style: FontStyleSchema.optional(),
-  paper_size: PaperSizeSchema.optional(),
-  landscape: Boolean.optional(),
-});
+export const PdfConfigDtoSchema = z
+  .object({
+    font_size: z.number().optional(),
+    font_style: FontStyleSchema.optional(),
+    paper_size: PaperSizeSchema.optional(),
+    landscape: z.boolean().optional(),
+  })
+  .strict();
 
-type PdfConfigDto = Static<typeof PdfConfigDtoSchema>;
+type PdfConfigDto = z.infer<typeof PdfConfigDtoSchema>;
 export default PdfConfigDto;
 
 export const toPdfConfig = (dto: PdfConfigDto): PdfConfig => {
-  return {
+  return PdfConfigSchema.parse({
     fontSize: dto.font_size,
     fontStyle: dto.font_style,
     paperSize: dto.paper_size,
     landscape: dto.landscape,
-  };
+  });
 };

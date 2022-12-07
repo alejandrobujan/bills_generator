@@ -24,6 +24,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import DownloadIcon from "@mui/icons-material/Download";
 import AcceptButton from "../Buttton/AcceptButton";
 import ExportIcon from "@mui/icons-material/IosShare";
+import Utils from "../../utils/utils";
 
 export default function BillGenerator() {
   const { createErrorNotification, createSuccessNotification } =
@@ -40,15 +41,19 @@ export default function BillGenerator() {
     file
       .text()
       .then((jsonString) => {
-        try {
-          const billRequestDto: BillRequestDto = BillRequestDtoSchema.check(
-            JSON.parse(jsonString)
-          );
-          setBillRequest(toBillRequest(billRequestDto));
-        } catch (error: any) {
-          createErrorNotification("Invalid bill specification", 8000);
+        const result = BillRequestDtoSchema.safeParse(JSON.parse(jsonString));
+        console.log(result);
+
+        if (!result.success) {
+          const message = Utils.getZodErrorMessages(result.error)[0];
+          console.log(message);
+          createErrorNotification(`Invalid bill specification: ${message}`);
           return;
         }
+
+        setBillRequest(toBillRequest(result.data));
+        createSuccessNotification("Bill imported successfully", 3000);
+        return;
       })
       .catch(() => createErrorNotification("Error while importing file", 8000));
   }
@@ -59,7 +64,7 @@ export default function BillGenerator() {
     element.setAttribute(
       "href",
       "data:text/plain;charset=utf-8," +
-        encodeURIComponent(JSON.stringify(billRequestDto))
+        encodeURIComponent(JSON.stringify(billRequestDto, null, 2))
     );
     element.setAttribute("download", "bill.json");
     element.style.display = "none";
