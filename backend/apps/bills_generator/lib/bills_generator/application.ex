@@ -14,7 +14,7 @@ defmodule BillsGenerator.Application do
     StoreInDatabase
   }
 
-  alias BillsGenerator.Monitor.PipelineMonitor
+  alias BillsGenerator.Tactics.{PipelineMonitor, FilterStash}
 
   alias BillsGenerator.Repository.{Repo, BillDao}
 
@@ -27,6 +27,7 @@ defmodule BillsGenerator.Application do
       {Phoenix.PubSub, name: BillsGenerator.PubSub},
       # Start a worker by calling: BillsGenerator.Worker.start_link(arg)
       # {BillsGenerator.Worker, arg}
+      FilterStash,
       BillParser,
       BillValidator,
       BillCalculator,

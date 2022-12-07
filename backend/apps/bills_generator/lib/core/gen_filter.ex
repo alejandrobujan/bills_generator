@@ -70,6 +70,7 @@ defmodule BillsGenerator.Core.GenFilter do
   defmacro __using__(_) do
     quote do
       alias __MODULE__, as: LeaderModule
+      alias BillsGenerator.Tactics.FilterStash
 
       defmodule Worker do
         alias BillsGenerator.Core.GenFilterWorker
@@ -132,7 +133,7 @@ defmodule BillsGenerator.Core.GenFilter do
 
       @impl GenFilter
       def process_filter(input_data) do
-        GenServer.cast(__MODULE__, {:process_filter, input_data, self()})
+        GenServer.cast(__MODULE__, {:process_filter, input_data})
       end
 
       @impl GenFilter
@@ -156,15 +157,31 @@ defmodule BillsGenerator.Core.GenFilter do
         end
       end
 
+      # By default, do not handle error
+      @impl GenFilter
+      def on_error(caused_by, error_msg, input_data) do
+        :ok
+      end
+
       # GenServer callbacks
 
       @impl GenServer
       def init(__init_args) do
         Logger.debug("#{__MODULE__} initialized")
 
-        # We can call to worker module, since it is relative from current module, and
-        # defined at first lines of this using
-        service_handler = ServiceHandler.new(__MODULE__, Worker, 1)
+        # Restore tactic for availability improvement
+        stored_handler = FilterStash.get_handler(__MODULE__)
+
+        service_handler =
+          if stored_handler != nil do
+            Logger.debug("Restoring handler from FilterStash in module #{__MODULE__}")
+            ServiceHandler.restore(stored_handler)
+          else
+            # We can call to worker module, since it is relative from current module, and
+            # defined at first lines of this using
+            Logger.debug("Creating new handler in #{__MODULE__}")
+            ServiceHandler.new(__MODULE__, Worker, 1)
+          end
 
         {:ok, _pid} = Task.start(fn -> check_services_worload(@workload_check_period) end)
 
@@ -172,20 +189,24 @@ defmodule BillsGenerator.Core.GenFilter do
       end
 
       @impl GenServer
-      def handle_cast({:process_filter, input_data, client}, service_handler) do
+      def handle_cast({:process_filter, input_data}, service_handler) do
         new_service_handler =
           if ServiceHandler.all_workers_busy?(service_handler) do
-            ServiceHandler.enqueue_request(service_handler, {client, input_data})
+            ServiceHandler.enqueue_request(service_handler, input_data)
           else
-            ServiceHandler.assign_job(service_handler, {client, input_data})
+            ServiceHandler.assign_job(service_handler, input_data)
           end
 
         {:noreply, new_service_handler}
       end
 
       @impl GenServer
-      def handle_cast({:redirect, worker, output_data}, service_handler) do
-        {client, new_service_handler} = ServiceHandler.free_worker(service_handler, worker)
+      def handle_cast(
+            {:redirect, worker, output_data},
+            service_handler = %ServiceHandler{busy_workers: busy_workers}
+          )
+          when is_map_key(busy_workers, worker) do
+        new_service_handler = ServiceHandler.free_worker(service_handler, worker)
 
         next_action(output_data)
 
@@ -199,6 +220,15 @@ defmodule BillsGenerator.Core.GenFilter do
           end
 
         {:noreply, new_service_handler}
+      end
+
+      @impl GenServer
+      def handle_cast({:redirect, worker, output_data}, service_handler) do
+        # When a worker who is not registered on service handler calls to redirect, we ignore it
+        # This is specially useful when filter is restarted, so the handler is restored, but
+        # calls from older workers who had just been killed should be ignored, since the request
+        # they were processing will be handled by some of the new workers
+        {:noreply, service_handler}
       end
 
       @impl GenServer
@@ -223,6 +253,17 @@ defmodule BillsGenerator.Core.GenFilter do
         {:noreply, new_service_handler}
       end
 
+      # When crashed or stopped, store handler to FilterStash, so when the filter
+      # is restarted, it can restore the last state.
+      @impl GenServer
+      def terminate(_reason, service_handler) do
+        Logger.debug("#{__MODULE__} terminated")
+
+        # Save handler to FilterStash
+        FilterStash.put_handler(__MODULE__, service_handler)
+        Logger.debug("Handler from #{__MODULE__} saved to FilterStash")
+      end
+
       defp check_services_worload(period) do
         Process.sleep(period)
         send(__MODULE__, {:check, period})
@@ -239,23 +280,19 @@ defmodule BillsGenerator.Core.GenFilter do
         #   "Excessive workload trigger for #{worker_module}: there are #{total_workers} workers and #{total_free_workers} free workers. #{workload_rate * 100}% workload"
         # )
 
-        # If services are >90% workloaded, we will lower it to <80%.
+        # If services are >@workload_trigger_max% workloaded, we will lower it to <=@workload_interval_max%.
         rate_diff = workload_rate - @workload_interval_max
-        # We have to spawn rate_diff*total_workers workers
         workers_to_spawn = ceil(rate_diff * total_workers)
 
         # Logger.info("Spawning #{workers_to_spawn} workers for #{worker_module}")
 
-        new_service_handler = ServiceHandler.spawn_workers(service_handler, workers_to_spawn)
         # We have to assign the new workers to the pending clients, but no more
-        # than total_pending_clients or total_free_workers
-        jobs_to_reasssign =
-          min(
-            ServiceHandler.total_pending_requests(new_service_handler),
-            ServiceHandler.total_free_workers(new_service_handler)
+        # than total_pending_clients or workers_to_spawn
+        new_service_handler =
+          ServiceHandler.spawn_and_assign_workers(
+            service_handler,
+            workers_to_spawn
           )
-
-        new_service_handler = ServiceHandler.assign_jobs(new_service_handler, jobs_to_reasssign)
 
         new_service_handler
       end
@@ -271,7 +308,7 @@ defmodule BillsGenerator.Core.GenFilter do
         #   "Low workload trigger for #{worker_module}: there are #{total_workers} workers and #{total_free_workers} free workers. #{workload_rate * 100}% workload"
         # )
 
-        # If services are <20% workloaded, we will raise it to >30%.
+        # If services are <@workload_trigger_min% workloaded, we will raise it to >=@workload_interval_min%.
         rate_diff = @workload_interval_min - workload_rate
 
         # We have to kill rate_diff*total_workers workers, but no more than available free_workers
@@ -279,27 +316,12 @@ defmodule BillsGenerator.Core.GenFilter do
         max_workers_to_kill = min(total_workers - min_workers, total_free_workers)
         workers_to_kill = min(ceil(rate_diff * total_workers), max_workers_to_kill)
 
-        new_service_handler =
-          case workers_to_kill do
-            0 ->
-              # Logger.debug("Not killing any workers for #{worker_module}")
-              service_handler
-
-            n ->
-              # Logger.info("Killing #{n} workers for #{worker_module}")
-              ServiceHandler.kill_workers(service_handler, n)
-          end
+        new_service_handler = ServiceHandler.kill_workers(service_handler, workers_to_kill)
 
         new_service_handler
       end
 
       defp handle_workload_rate(service_handler, _workload_rate), do: service_handler
-
-      # By default, do not handle error
-      @impl GenFilter
-      def on_error(caused_by, error_msg, input_data) do
-        :ok
-      end
 
       defoverridable(on_error: 3)
     end

@@ -1,4 +1,4 @@
-defmodule BillsGenerator.Monitor.PipelineMonitor do
+defmodule BillsGenerator.Tactics.PipelineMonitor do
   alias BillsGenerator.Filters.{
     BillParser,
     BillCalculator,
@@ -38,7 +38,7 @@ defmodule BillsGenerator.Monitor.PipelineMonitor do
   @impl GenServer
   def init(_args) do
     Logger.debug("#{__MODULE__} initialized")
-    filters_info = @filters |> Enum.map(fn filter -> {filter, 0} end) |> Map.new()
+    filters_info = @filters |> Enum.map(fn filter -> {filter, nil} end) |> Map.new()
     {:ok, _pid} = Task.start(fn -> check_filters(3000) end)
     {:ok, filters_info}
   end

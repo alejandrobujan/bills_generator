@@ -1,7 +1,7 @@
 services:
   db:
     image: postgres
-    container_name: bills-database
+    container_name: bills-database-dev
     environment:
       POSTGRES_PASSWORD: postgres
     ports:

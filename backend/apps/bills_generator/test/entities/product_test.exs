@@ -1,4 +1,4 @@
-defmodule ProductTest do
+defmodule BillsGenerator.Test.ProductTest do
   alias BillsGenerator.Entities.Product
   use ExUnit.Case
   doctest Product

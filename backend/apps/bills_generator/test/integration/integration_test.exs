@@ -1,7 +1,8 @@
-defmodule IntegrationTest do
+defmodule BillsGenerator.Test.IntegrationTest do
   alias BillsGenerator.Application
+  alias BillsGenerator.Test.Utils
   alias BillsGenerator.Repository.{Repo, BillDao}
-  use BillsGenerator.DataCase
+  use BillsGenerator.Test.DataCase
 
   @valid_bill_request """
   {
@@ -102,5 +103,49 @@ defmodule IntegrationTest do
 
     assert bill.error_msg ==
              "Font style 'not a font style' not supported. Available font styles are: latex, times."
+  end
+
+  test "filter restores previous number of workers when crashed" do
+    target_filter = BillsGenerator.Filters.LatexToPdf
+    number_of_bills = 500
+
+    # Generate some workload
+    1..number_of_bills |> Enum.each(fn _ -> Application.generate_bill(@valid_bill_request) end)
+
+    # sleep for 10s in order to ensure workload changes number of workers
+    Process.sleep(10000)
+    number_of_workers_before_crash = target_filter.get_num_workers()
+
+    target_filter.stop()
+    # Sleep to ensure filter is restarted by supervisor
+    Process.sleep(500)
+    number_of_workers_after_crash = target_filter.get_num_workers()
+
+    assert number_of_workers_before_crash == number_of_workers_after_crash
+
+    Utils.restart_application()
+  end
+
+  test "filter does not lose requests when crashed" do
+    target_filter = BillsGenerator.Filters.LatexToPdf
+    number_of_bills_requested = 500
+
+    # Generate some workload
+    1..number_of_bills_requested
+    |> Enum.each(fn _ -> Application.generate_bill(@valid_bill_request) end)
+
+    # sleep for 3s so some bills are generated
+    Process.sleep(3000)
+
+    # Filter crashed. But state should be restored from stash.
+    target_filter.stop()
+    # Sleep to ensure filter is restarted by supervisor
+    Process.sleep(500)
+
+    Utils.wait_until_bills_completed(number_of_bills_requested, 500)
+
+    number_of_bills_completed = Repo.one(from(b in BillDao, select: count(b.pdf)))
+    assert number_of_bills_completed == number_of_bills_requested
+    Utils.restart_application()
   end
 end

@@ -1,7 +1,7 @@
-defmodule BencheeUnitTest do
+defmodule BillsGenerator.Test.Benchmark do
   alias BillsGenerator.Repository.{Repo, BillDao}
-  import Ecto.Query, only: [from: 2]
-  use BillsGenerator.DataCase
+  alias BillsGenerator.Test.Utils
+  use BillsGenerator.Test.DataCase
 
   @valid_bill_request """
   {
@@ -33,63 +33,58 @@ defmodule BencheeUnitTest do
   """
   defp generate_and_wait(n, sample_freq) do
     1..n |> Enum.each(fn _x -> BillsGenerator.Application.generate_bill(@valid_bill_request) end)
-    wait_until(n, sample_freq)
-  end
-
-  # Query repo every `sample_freq ms`. The resulting time is at much, `sample_freq ms` more than the actual time.
-  # This query increases overhead, but it is the only way to check if all the bills have
-  # been generated. We could increase sleep time in order to reduce overhead.
-  defp wait_until(n, sample_freq) do
-    len = Repo.one(from(b in BillDao, select: count(b.pdf)))
-
-    if len < n do
-      Process.sleep(sample_freq)
-      wait_until(n, sample_freq)
-    else
-      Repo.delete_all(BillDao)
-      reset_application()
-    end
-  end
-
-  defp reset_application() do
-    Application.stop(:bills_generator)
-    Application.start(:bills_generator)
+    Utils.wait_until_bills_completed(n, sample_freq)
+    Repo.delete_all(BillDao)
+    Utils.restart_application()
   end
 
   defp seconds_to_nano(seconds) do
     seconds * 1_000_000_000
   end
 
-  defp nano_to_seconds(nano) do
-    nano / 1_000_000_000
-  end
-
   @tag :benchmark
   @tag timeout: :infinity
   test "test throughput: benchmark generate 500 bills takes less than 60s" do
-    IO.puts("\nTesting benchmarks, this may take a while...\n")
     # Ensure application has no previous workload and did not scale workers
-    reset_application()
+    Utils.restart_application()
 
     output =
-      Benchee.run(%{
-        "Generate 500 bills" => fn -> generate_and_wait(500, 1000) end
-      })
+      Benchee.run(
+        %{
+          "Generate 500 bills" => fn -> generate_and_wait(500, 1000) end
+        },
+        print: [
+          benchmarking: false,
+          configuration: false,
+          fast_warning: false
+        ],
+        # add Benchee.Formatters.Console to formatters if results need to be printed
+        formatters: []
+      )
 
     results = Enum.at(output.scenarios, 0)
     assert results.run_time_data.statistics.average <= seconds_to_nano(60)
   end
 
-  test "test latency: benchmark generate 1 bill takes less than 300ms" do
+  test "test latency: benchmark generate 1 bill takes less than 500ms" do
     # Ensure application has no previous workload and did not scale workers
-    reset_application()
+    Utils.restart_application()
 
     output =
-      Benchee.run(%{
-        "Generate 1 bill" => fn -> generate_and_wait(1, 10) end
-      })
+      Benchee.run(
+        %{
+          "Generate 1 bill" => fn -> generate_and_wait(1, 10) end
+        },
+        print: [
+          benchmarking: false,
+          configuration: false,
+          fast_warning: false
+        ],
+        # add Benchee.Formatters.Console to formatters if results need to be printed
+        formatters: []
+      )
 
     results = Enum.at(output.scenarios, 0)
-    assert results.run_time_data.statistics.average <= seconds_to_nano(0.3)
+    assert results.run_time_data.statistics.average <= seconds_to_nano(0.5)
   end
 end

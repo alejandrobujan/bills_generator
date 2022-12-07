@@ -1,4 +1,4 @@
-defmodule BillsGenerator.DataCase do
+defmodule BillsGenerator.Test.DataCase do
   @moduledoc """
   This module defines the setup for tests requiring
   access to the application's data layer.
@@ -23,12 +23,12 @@ defmodule BillsGenerator.DataCase do
       import Ecto
       import Ecto.Changeset
       import Ecto.Query
-      import BillsGenerator.DataCase
+      import BillsGenerator.Test.DataCase
     end
   end
 
   setup tags do
-    BillsGenerator.DataCase.setup_sandbox(tags)
+    BillsGenerator.Test.DataCase.setup_sandbox(tags)
     :ok
   end
 

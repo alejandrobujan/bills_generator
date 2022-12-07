@@ -61,8 +61,10 @@ Permitir borrar el 0 en los input de cantidad...@frontend
 Limitar el número de trabajadores a los threads del procesador? Si hay demasiados, puede
 ir aún más lento...
 
-Tenemos táctica de repuesto en los workers, debido a que si uno peta, el leader también peta al estar linkeado, y también petaría el supervisor. Entonces, se volvería a lanzar el líder y funcionaría bien.
+- Tenemos táctica de repuesto en los workers, debido a que si uno peta, el leader también peta al estar linkeado, y también petaría el supervisor. Entonces, se volvería a lanzar el líder y funcionaría bien. Además, se guarda el estado del líder cuando peta en FilterStash, para que cuando se reinicia, no se pierda ni el número de trabajadores ni los clientes pendientes
 
-En la base de datos solo se permite guardar errores hasta 255 chars...
+- He implementado la estrategia de respuesto, con el FilterStash. Solo guardo el estado
+  cuando el genserver llama a terminate, debería hacerlo más amenudo? Por ejemplo, cada X segundos? Por ejemplo,
+  para no perder ninguna request, se debería mandar la copia del estado al Stash cada vez que nos llega alguna request?
 
-Poner un número máximo de workers? Con muchos parece que se va más lento...
+- El test de crash (en integration_test), debería hacerse con filter.stop()? o con que función?

@@ -21,7 +21,7 @@ json_bill = """
 	"config": {
 		"font_size" : 10,
 		"font_style" : "times",
-		"paper_size" : "b5aper",
+		"paper_size" : "b5paper",
 		"landscape" : true
 	}
 }
