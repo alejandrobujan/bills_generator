@@ -1,4 +1,7 @@
 defmodule BillsGenerator.Test.DataCase do
+  alias BillsGenerator.Test.Utils
+  alias BillsGenerator.Repository.{Repo, BillDao}
+
   @moduledoc """
   This module defines the setup for tests requiring
   access to the application's data layer.
@@ -29,6 +32,7 @@ defmodule BillsGenerator.Test.DataCase do
 
   setup tags do
     BillsGenerator.Test.DataCase.setup_sandbox(tags)
+    Utils.restart_application()
     :ok
   end
 
@@ -36,12 +40,16 @@ defmodule BillsGenerator.Test.DataCase do
   Sets up the sandbox based on the test tags.
   """
   def setup_sandbox(tags) do
+    Repo.delete_all(BillDao)
+
     pid =
-      Ecto.Adapters.SQL.Sandbox.start_owner!(BillsGenerator.Repository.Repo,
+      Ecto.Adapters.SQL.Sandbox.start_owner!(Repo,
         shared: not tags[:async]
       )
 
-    on_exit(fn -> Ecto.Adapters.SQL.Sandbox.stop_owner(pid) end)
+    on_exit(fn ->
+      Ecto.Adapters.SQL.Sandbox.stop_owner(pid)
+    end)
   end
 
   @doc """

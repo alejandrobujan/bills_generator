@@ -169,6 +169,9 @@ defmodule BillsGenerator.Core.GenFilter do
       def init(__init_args) do
         Logger.debug("#{__MODULE__} initialized")
 
+        # Trap exit of workers, so we can store the state when a worker dies, and restart the filter
+        Process.flag(:trap_exit, true)
+
         # Restore tactic for availability improvement
         stored_handler = FilterStash.get_handler(__MODULE__)
 
@@ -253,8 +256,19 @@ defmodule BillsGenerator.Core.GenFilter do
         {:noreply, new_service_handler}
       end
 
+      # When a worker dies, store handler to FilterStash and terminate filter
+      # This is neccessary, since if a son process dies, the terminate/2 function
+      # of GenServer will not be called.
+      @impl GenServer
+      def handle_info({:EXIT, _dead_worker, reason}, service_handler) do
+        Logger.debug("#{__MODULE__} received a worker death. Restarting it.")
+        FilterStash.put_handler(__MODULE__, service_handler)
+        {:stop, reason, service_handler}
+      end
+
       # When crashed or stopped, store handler to FilterStash, so when the filter
-      # is restarted, it can restore the last state.
+      # is restarted, it can restore the last state. This function is not called
+      # when a son process dies, only when the current process crashes or is stopped.
       @impl GenServer
       def terminate(_reason, service_handler) do
         Logger.debug("#{__MODULE__} terminated")
