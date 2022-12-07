@@ -1,7 +1,3 @@
-# BillsGenerator.Umbrella
-
-Esto está aún en pruebas. El código en la app BillsGenerator es una copia de bills_pipeline.
-
 # Development
 
 Instalar docker y docker-compose.
