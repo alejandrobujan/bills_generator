@@ -14,6 +14,8 @@ defmodule BillsGenerator.Application do
     StoreInDatabase
   }
 
+  alias BillsGenerator.Monitor.PipelineMonitor
+
   alias BillsGenerator.Repository.{Repo, BillDao}
 
   @impl true
@@ -30,7 +32,8 @@ defmodule BillsGenerator.Application do
       BillCalculator,
       LatexFormatter,
       LatexToPdf,
-      StoreInDatabase
+      StoreInDatabase,
+      PipelineMonitor
     ]
 
     Supervisor.start_link(children, strategy: :one_for_one, name: BillsGenerator.Supervisor)

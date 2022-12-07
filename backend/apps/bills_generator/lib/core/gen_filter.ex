@@ -58,6 +58,10 @@ defmodule BillsGenerator.Core.GenFilter do
 
   @callback worker_action(any()) :: any()
 
+  @callback get_num_workers() :: non_neg_integer()
+
+  @callback alive?() :: boolean()
+
   # Callback to execute code if needed on worker
   @callback on_error(caused_by :: module(), error_msg :: any(), input_data :: any()) :: :ok
 
@@ -136,6 +140,22 @@ defmodule BillsGenerator.Core.GenFilter do
         GenServer.cast(__MODULE__, {:redirect, worker, output_data})
       end
 
+      @impl GenFilter
+      def get_num_workers() do
+        GenServer.call(__MODULE__, :get_num_workers)
+      end
+
+      @impl GenFilter
+      def alive?() do
+        pid = Process.whereis(__MODULE__)
+
+        if pid == nil do
+          false
+        else
+          Process.alive?(pid)
+        end
+      end
+
       # GenServer callbacks
 
       @impl GenServer
@@ -179,6 +199,11 @@ defmodule BillsGenerator.Core.GenFilter do
           end
 
         {:noreply, new_service_handler}
+      end
+
+      @impl GenServer
+      def handle_call(:get_num_workers, _from, service_handler) do
+        {:reply, ServiceHandler.total_workers(service_handler), service_handler}
       end
 
       @impl GenServer

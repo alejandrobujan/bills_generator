@@ -36,6 +36,8 @@ defmodule BillsGenerator.MixProject do
   # Type `mix help deps` for examples and options.
   defp deps do
     [
+      # Pretty print maps as tables
+      {:scribe, "~> 0.10"},
       {:benchee, "~> 1.0"},
       {:benchee_html, "~> 1.0"},
       {:poison, "~> 5.0"},
