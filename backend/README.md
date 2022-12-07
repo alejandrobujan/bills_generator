@@ -23,6 +23,9 @@ Se debería poder ver el frontend en `localhost:3000`.
 
 Para ver los logs de la base de datos: `docker-compose logs`
 
+## IMPORTANTE
+Lanzar siempre los tests antes de hacer un commit en el que se toquen componentes
+que puedan fallar.
 # TO-DO
 
 - [ ] Mejorar configs (más configs, y más valores permitidos de las que ya hay)
