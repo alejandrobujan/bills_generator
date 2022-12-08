@@ -1,0 +1,112 @@
+@startuml BillsGenerator.C3
+
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
+!define FONTAWESOME https://raw.githubusercontent.com/tupadr3/plantuml-icon-font-sprites/master/font-awesome-5
+!define DEVICONS https://raw.githubusercontent.com/tupadr3/plantuml-icon-font-sprites/master/devicons2
+
+!include DEVICONS/phoenix.puml
+!include DEVICONS/postgresql.puml
+!include DEVICONS/elixir.puml
+!include FONTAWESOME/euro_sign.puml
+
+HIDE_STEREOTYPE()
+LAYOUT_WITH_LEGEND()
+
+
+title BillsGenerator\nB<$euro_sign>G
+
+
+
+
+Person_Ext(cliente, "Cliente", "Quere usar BillsGenerator")
+System_Ext(frontend,"Frontend","Web Fwk",$sprite="phoenix")
+
+System_Boundary(sistema, "BillsGenerator\n Backend\n<$elixir>") {
+
+'System(backend, "Backend", "Xestiona facturas a nome dun cliente polo compra de distintos produtos",$sprite="elixir",$tags="Branco"){
+Component(filtroValidatorM,"Validator","GenFilter")
+Component(filtroParserM,"Parser","GenFilter")
+Component(filtroUpdateM,"Updater","GenFilter")
+Component(filtroGenerateLatexM,"Latex","GenFilter")
+Component(filtroGeneratePdfM,"Pdf","GenFilter")
+Component(filtroStoreM,"Storer","GenFilter")
+
+frame "TFV" {
+Component(filtroValidatorW,"T1","GenFilterWorker")
+Component(filtroValidatorWN,"TN","GenFilterWorker")
+}
+
+frame "TFP" {
+Component(filtroParserW,"T1","GenFilterWorker")
+Component(filtroParserWN,"TN","GenFilterWorker")
+}
+
+frame "TFU" {
+Component(filtroUpdateW,"T1","GenFilterWorker")
+Component(filtroUpdateWN,"TN","GenFilterWorker")
+}
+
+frame "TFL" {
+Component(filtroGenerateLatexW,"T1","GenFilterWorker")
+Component(filtroGenerateLatexWN,"TN","GenFilterWorker")
+}
+
+frame "TFPdf" {
+Component(filtroGeneratePdfW,"T1","GenFilterWorker")
+Component(filtroGeneratePdfWN,"TN","GenFilterWorker")
+}
+
+frame "TFS" {
+Component(filtroStoreW,"T1","GenFilterWorker")
+Component(filtroStoreWN,"TN","GenFilterWorker")
+}
+ ' }
+  
+    System(persistencia,"Almacenamento\n<$elixir>","Module"){
+    ComponentDb(bd,"BD","Ecto",$sprite="postgresql")
+  }
+  
+}
+
+Rel_D(cliente, sistema, "Usa", "REST")
+Rel_D(frontend,sistema,"Solicitude","API/json")
+'Rel_U(backend,frontend,"Resposta","API/json")
+Rel_R(filtroStoreM,persistencia,"Almacena","binary")
+Rel_D(persistencia,frontend,"Resposta","API/bin")
+Rel_U(frontend,persistencia,"Petición","API/json")
+
+Rel_R(filtroValidatorM,filtroParserM,"Envía","Json",$tags="Branco")
+Rel_R(filtroParserM,filtroUpdateM,"Envía","Elixir Map",$tags="Branco")
+Rel_R(filtroUpdateM,filtroGenerateLatexM,"Envía","Elixir Map",$tags="Branco")
+Rel_R(filtroGenerateLatexM,filtroGeneratePdfM,"Envía","Latex",$tags="Branco")
+Rel_R(filtroGeneratePdfM,filtroStoreM,"Envía","Binary",$tags="Branco")
+
+
+BiRel_D(filtroValidatorM,filtroValidatorW,"1",)
+BiRel_D(filtroValidatorM,filtroValidatorWN,"N",)
+
+BiRel_D(filtroParserM,filtroParserW,"1")
+BiRel_D(filtroParserM,filtroParserWN,"N")
+
+BiRel_D(filtroUpdateM,filtroUpdateW,"1")
+BiRel_D(filtroUpdateM,filtroUpdateWN,"N")
+
+BiRel_D(filtroGenerateLatexM,filtroGenerateLatexW,"1")
+BiRel_D(filtroGenerateLatexM,filtroGenerateLatexWN,"N")
+
+BiRel_D(filtroGeneratePdfM,filtroGeneratePdfW,"1")
+BiRel_D(filtroGeneratePdfM,filtroGeneratePdfWN,"N")
+
+BiRel_D(filtroStoreM,filtroStoreW,"1")
+BiRel_D(filtroStoreM,filtroStoreWN,"N")
+
+
+
+filtroValidatorW . filtroValidatorWN
+filtroParserW . filtroParserWN
+filtroUpdateW . filtroUpdateWN
+filtroGenerateLatexW . filtroGenerateLatexWN
+filtroGeneratePdfW . filtroGeneratePdfWN
+filtroStoreW . filtroStoreWN
+
+@enduml 

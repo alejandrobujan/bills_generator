@@ -1,0 +1,36 @@
+@startuml BillsGeneratorC1
+
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Context.puml
+!define FONTAWESOME https://raw.githubusercontent.com/tupadr3/plantuml-icon-font-sprites/master/font-awesome-5
+!define DEVICONS https://raw.githubusercontent.com/tupadr3/plantuml-icon-font-sprites/master/devicons2
+
+!include DEVICONS/phoenix.puml
+!include DEVICONS/postgresql.puml
+!include DEVICONS/elixir.puml
+!include DEVICONS/docker.puml
+
+!include FONTAWESOME/euro_sign.puml
+
+HIDE_STEREOTYPE()
+LAYOUT_WITH_LEGEND()
+
+
+title BillsGenerator\nB<$euro_sign>G
+
+Person_Ext(cliente, "Cliente", "Quere usar BillsGenerator")
+
+
+System_Boundary(sistema, "BillsGenerator\nRuns on <$docker>") {
+  System(frontend,"Frontend","UI para a xeración e descarga de facturas",$sprite="phoenix")
+  System(backend, "Backend", "Xestiona facturas a nome dun cliente polo compra de distintos produtos",$sprite="elixir")
+  'System(persistencia,"Almacenamento\n<$elixir>"){
+  '  SystemDb(bd,"BD","Almacena as facturas xeradas",$sprite="postgresql")
+  '}
+}
+
+Rel(cliente, frontend, "Interactúa", "a través dunha páxina web")
+Rel_R(frontend,backend,"Solicitude")
+Rel_L(backend,frontend,"Resposta")
+'Rel(backend,persistencia,"Solicitude")
+'Rel(persistencia,backend,"Resposta")
+@enduml 

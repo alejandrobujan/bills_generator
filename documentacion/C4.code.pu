@@ -1,0 +1,17 @@
+@startuml BillsGenerator.C4
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
+!define FONTAWESOME https://raw.githubusercontent.com/tupadr3/plantuml-icon-font-sprites/master/font-awesome-5
+!define DEVICONS https://raw.githubusercontent.com/tupadr3/plantuml-icon-font-sprites/master/devicons2
+
+!include DEVICONS/phoenix.puml
+!include DEVICONS/postgresql.puml
+!include DEVICONS/elixir.puml
+!include FONTAWESOME/euro_sign.puml
+
+HIDE_STEREOTYPE()
+LAYOUT_WITH_LEGEND()
+
+
+
+
+@enduml 
