@@ -28,7 +28,8 @@ defmodule BillsGenerator.Test.IntegrationTest do
       "font_size" : 10,
       "font_style" : "times",
       "paper_size" : "b5paper",
-      "landscape" : true
+      "landscape" : true,
+      "currency" : "euro"
     }
   }
   """
@@ -84,7 +85,8 @@ defmodule BillsGenerator.Test.IntegrationTest do
         "font_size" : 10,
         "font_style" : "not a font style",
         "paper_size" : "b5paper",
-        "landscape" : true
+        "landscape" : true,
+        "currency" : "euro"
       }
     }
     """

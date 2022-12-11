@@ -12,7 +12,7 @@ defmodule BillsGenerator.Test.BillRequestTest do
     Product.new("Another product", 3.0, 3)
   ]
   @bill Bill.new(@title, @purchaser, @seller, @products)
-  @bill_config BillConfig.new(11, "latex", "a4paper", true)
+  @bill_config BillConfig.new(11, "latex", "a4paper", true, "euro")
 
   test "new/4 returns a new BillRequest struct" do
     bill_request = BillRequest.new(@user, @bill, @bill_config)

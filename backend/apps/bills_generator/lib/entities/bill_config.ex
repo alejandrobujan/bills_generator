@@ -14,7 +14,9 @@ defmodule BillsGenerator.Entities.BillConfig do
     "executivepaper"
   ]
 
-  defstruct font_size: 10, font_style: "latex", paper_size: "a4paper", landscape: false
+  @available_currencies ["euro", "dollar"]
+
+  defstruct font_size: 10, font_style: "latex", paper_size: "a4paper", landscape: false, currency: "euro"
 
   @typedoc """
   Struct que representa os parámetros de configuración dunha factura.
@@ -23,34 +25,37 @@ defmodule BillsGenerator.Entities.BillConfig do
           font_size: non_neg_integer(),
           font_style: String.t(),
           paper_size: String.t(),
-          landscape: boolean()
+          landscape: boolean(),
+          currency: String.t()
         }
 
   @doc """
     ## Exemplos:
-        iex> BillsGenerator.Entities.BillConfig.new(11,"latex","a4paper",true)
+        iex> BillsGenerator.Entities.BillConfig.new(11,"latex","a4paper",true,"euro")
         %BillsGenerator.Entities.BillConfig{
           font_size: 11,
           font_style: "latex",
           paper_size: "a4paper",
-          landscape: true
+          landscape: true,
+          currency: "euro"
         }
   """
-  def new(font_size \\ 10, font_style \\ "latex", paper_size \\ "a4paper", landscape \\ false) do
+  def new(font_size \\ 10, font_style \\ "latex", paper_size \\ "a4paper", landscape \\ false, currency \\ "euro") do
     %__MODULE__{
       font_size: font_size,
       font_style: font_style,
       paper_size: paper_size,
-      landscape: landscape
+      landscape: landscape,
+      currency: currency
     }
   end
 
   @doc """
   Valida a configuración da factura e devolve ':ok' se a configuración é válida ou unha tupla
   con '{:error, reason}' se a configuración non é válida.
-  
+
   ## Exemplos:
-      iex> config = BillsGenerator.Entities.BillConfig.new(11,"latex","a4paper",true)
+      iex> config = BillsGenerator.Entities.BillConfig.new(11,"latex","a4paper",true,"euro")
       iex> BillsGenerator.Entities.BillConfig.validate(config)
       :ok
   """
@@ -58,13 +63,15 @@ defmodule BillsGenerator.Entities.BillConfig do
         font_size: font_size,
         font_style: font_style,
         paper_size: paper_size,
-        landscape: landscape
+        landscape: landscape,
+        currency: currency
       }) do
     # returns only the first error that is found
     with :ok <- validate_font_size(font_size),
          :ok <- validate_font_style(font_style),
          :ok <- validate_paper_size(paper_size),
-         :ok <- validate_landscape(landscape) do
+         :ok <- validate_landscape(landscape),
+         :ok <- validate_currency(currency) do
       :ok
     else
       {:error, reason} -> {:error, reason}
@@ -114,4 +121,16 @@ defmodule BillsGenerator.Entities.BillConfig do
 
   defp validate_landscape(landscape),
     do: {:error, "Incorrect landscape value '#{landscape}'. Landscape must be a boolean."}
+
+  defp validate_currency(currency) when is_bitstring(currency) do
+    if currency in @available_currencies do
+      :ok
+    else
+      {:error,
+      "Currency: '#{currency}' not supported. Available currencies are: #{Enum.join(@available_currencies, ", ")}."}
+    end
+  end
+
+  defp validate_currency(currency),
+    do: {:error, "Incorrect currency value '#{currency}'. Currency must be a string."}
 end

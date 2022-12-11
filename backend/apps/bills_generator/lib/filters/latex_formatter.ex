@@ -15,7 +15,8 @@ defmodule BillsGenerator.Filters.LatexFormatter do
   @spec generate_latex(BillRequest.t()) :: String.t()
   defp generate_latex(bill_request) do
     """
-    #{latex_styler(bill_request.config)}\\usepackage{longtable}\\usepackage{array}
+    #{latex_styler(bill_request.config)}\\usepackage{longtable}\\usepackage{array}\\usepackage{eurosym}
+    \\newcommand{\\currency}{#{currency_symbol(bill_request.config.currency)}}
     \\address{#{String.replace(bill_request.bill.seller, ",", ", \\\\ \n")}}
     \\begin{document}
     \\begin{letter}
@@ -39,7 +40,9 @@ defmodule BillsGenerator.Filters.LatexFormatter do
   end
 
   defp latex_styler(config) do
-    "\\documentclass[#{config.paper_size}, #{config.font_size}pt#{landscape?(config.landscape)}#{font_styler(config.font_style)}"
+    """
+    \\documentclass[#{config.paper_size}, #{config.font_size}pt#{landscape?(config.landscape)}#{font_styler(config.font_style)}
+    """
   end
 
   defp font_styler("latex"), do: ""
@@ -47,6 +50,9 @@ defmodule BillsGenerator.Filters.LatexFormatter do
 
   defp landscape?(false), do: "]{letter}\n"
   defp landscape?(true), do: ", landscape]{letter}\n\\usepackage[margin=1cm]{geometry}\n"
+
+  defp currency_symbol("euro"), do: "\\euro"
+  defp currency_symbol("dollar"), do: "\\$"
 
   defp format_bill([], 0), do: ""
 
@@ -57,16 +63,16 @@ defmodule BillsGenerator.Filters.LatexFormatter do
   defp do_format_bill(acc, [], total) do
     acc <>
       """
-      \\multicolumn{2}{c}{} & \\multicolumn{1}{c}{\\textbf{Dto.}} & \\multicolumn{1}{c}{XX\\%} & \\multicolumn{1}{c}{-5} \\\\ \\cline{3-5}
-      \\multicolumn{2}{c}{} & \\multicolumn{1}{c}{\\textbf{IVA}} & \\multicolumn{1}{c}{XX\\%} & \\multicolumn{1}{c}{5} \\\\ \\cline{3-5}
-      \\multicolumn{2}{c}{} & \\multicolumn{2}{c}{\\textbf{TOTAL}} & \\multicolumn{1}{c}{#{:erlang.float_to_binary(total * 1.0, decimals: 2)}} \\\\ \\cline{3-5}
+      \\multicolumn{2}{c}{} & \\multicolumn{1}{c}{\\textbf{Dto.}} & \\multicolumn{1}{c}{XX\\%} & \\multicolumn{1}{c}{-5\\currency} \\\\ \\cline{3-5}
+      \\multicolumn{2}{c}{} & \\multicolumn{1}{c}{\\textbf{IVA}} & \\multicolumn{1}{c}{XX\\%} & \\multicolumn{1}{c}{5\\currency} \\\\ \\cline{3-5}
+      \\multicolumn{2}{c}{} & \\multicolumn{2}{c}{\\textbf{TOTAL}} & \\multicolumn{1}{c}{#{:erlang.float_to_binary(total * 1.0, decimals: 2)}\\$} \\\\ \\cline{3-5}
       """
   end
 
   defp do_format_bill(acc, [product | t], total) do
     do_format_bill(
       acc <>
-        "\\multicolumn{2}{p{3cm}}{#{product.name}} & \\multicolumn{1}{>{\\centering}p{3cm}}{#{product.quantity}} & \\multicolumn{1}{>{\\centering}p{3cm}}{#{:erlang.float_to_binary(product.price * 1.0, decimals: 2)}} & \\multicolumn{1}{>{\\centering}p{3cm}}{#{:erlang.float_to_binary(product.total * 1.0, decimals: 2)}} \\\\ \\hline \n",
+        "\\multicolumn{2}{p{3cm}}{#{product.name}} & \\multicolumn{1}{>{\\centering}p{3cm}}{#{product.quantity}} & \\multicolumn{1}{>{\\centering}p{3cm}}{#{:erlang.float_to_binary(product.price * 1.0, decimals: 2)}\\currency} & \\multicolumn{1}{>{\\centering}p{3cm}}{#{:erlang.float_to_binary(product.total * 1.0, decimals: 2)}\\currency} \\\\ \\hline \n",
       t,
       total
     )
