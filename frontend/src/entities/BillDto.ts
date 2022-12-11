@@ -4,12 +4,12 @@ import Bill, { BillSchema } from "./Bill";
 export const BillDtoSchema = z
   .object({
     id: z.number(),
-    user: z.string(),
-    title: z.string(),
-    created_at: z.date(),
+    user: z.string().nullable(),
+    title: z.string().nullable(),
+    created_at: z.string(),
     is_available: z.boolean(),
     error: z.boolean(),
-    error_msg: z.string(),
+    error_msg: z.string().nullable(),
   })
   .strict();
 

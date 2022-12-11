@@ -9,7 +9,6 @@ import DeleteIcon from "@mui/icons-material/DeleteOutline";
 import { useNotifications } from "../NotificationManager/NotificationManager";
 import { AnimatePresence, motion } from "framer-motion";
 import { v4 } from "uuid";
-import { ValidationError } from "runtypes";
 import Utils from "../../utils/utils";
 import ProductDto, {
   getDefaultProductDto,
@@ -66,11 +65,11 @@ export default function ProductList({
 
   function handleClick(_: MouseEvent<HTMLButtonElement>) {
     try {
-      const product: Product = ProductSchema.check(toProduct(currentProduct));
+      const product: Product = ProductSchema.parse(toProduct(currentProduct));
       setCurrentProduct(getDefaultProductDto());
       onAddProduct(product);
     } catch (error: any) {
-      const message = Utils.getValidationErrorMessage(error);
+      const message = Utils.getZodErrorMessages(error);
       createErrorNotification(`Invalid product: ${message}`, 8000);
     }
   }

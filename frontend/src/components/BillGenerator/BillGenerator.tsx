@@ -41,19 +41,16 @@ export default function BillGenerator() {
     file
       .text()
       .then((jsonString) => {
-        const result = BillRequestDtoSchema.safeParse(JSON.parse(jsonString));
-        console.log(result);
-
-        if (!result.success) {
-          const message = Utils.getZodErrorMessages(result.error)[0];
-          console.log(message);
+        try {
+          const billRequestDto: BillRequestDto = BillRequestDtoSchema.parse(
+            JSON.parse(jsonString)
+          );
+          setBillRequest(toBillRequest(billRequestDto));
+          createSuccessNotification("Bill imported successfully", 3000);
+        } catch (error: any) {
+          const message = Utils.getZodErrorMessages(error)[0];
           createErrorNotification(`Invalid bill specification: ${message}`);
-          return;
         }
-
-        setBillRequest(toBillRequest(result.data));
-        createSuccessNotification("Bill imported successfully", 3000);
-        return;
       })
       .catch(() => createErrorNotification("Error while importing file", 8000));
   }
@@ -79,7 +76,7 @@ export default function BillGenerator() {
       .then((bill) => {
         if (bill.error) {
           setIsGenerating(false);
-          createErrorNotification(bill.errorMessage, 5000);
+          createErrorNotification(bill.errorMessage!, 5000);
           return;
         }
         if (!bill.isAvailable) {
@@ -90,7 +87,8 @@ export default function BillGenerator() {
         setBillId(id);
         setIsGenerating(false);
       })
-      .catch(() => {
+      .catch((e) => {
+        console.error(e);
         setIsGenerating(false);
         setBillId(undefined);
         createErrorNotification("Error while generating bill", 5000);
@@ -112,7 +110,7 @@ export default function BillGenerator() {
             5000
           );
         });
-    }, 500);
+    }, 200);
   }
 
   function handleAddProduct(product: Product) {
