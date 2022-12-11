@@ -195,6 +195,7 @@ export default function BillGenerator() {
 
         <div className={styles.BillGenerator_productList}>
           <ProductList
+            currency={billRequest.config.currency}
             products={billRequest.bill.products}
             onAddProduct={handleAddProduct}
             onRemoveProduct={handleRemoveProduct}

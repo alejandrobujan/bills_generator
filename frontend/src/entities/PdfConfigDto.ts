@@ -1,36 +1,14 @@
 import { z } from "zod";
+import {
+  CurrencySchema,
+  FontStyleSchema,
+  PaperSizeSchema,
+} from "./ConfigSchemas";
 import PdfConfig, { PdfConfigSchema } from "./PdfConfig";
-
-export const FontStyleSchema = z.union([
-  z.literal("latex"),
-  z.literal("times"),
-]);
-
-export const PaperSizeSchema = z.union([
-  z.literal("a4paper"),
-  z.literal("a5paper"),
-  z.literal("b5paper"),
-  z.literal("executivepaper"),
-  z.literal("legalpaper"),
-  z.literal("letterpaper"),
-]);
-
-export const fontStyleMap = new Map([
-  ["latex", "latex" as const],
-  ["times", "times" as const],
-]);
-
-export const paperSizeMap = new Map([
-  ["a4paper", "a4paper" as const],
-  ["a5paper", "a5paper" as const],
-  ["b5paper", "b5paper" as const],
-  ["executivepaper", "executivepaper" as const],
-  ["legalpaper", "legalpaper" as const],
-  ["letterpaper", "letterpaper" as const],
-]);
 
 export const PdfConfigDtoSchema = z
   .object({
+    currency: CurrencySchema.optional(),
     font_size: z.number().optional(),
     font_style: FontStyleSchema.optional(),
     paper_size: PaperSizeSchema.optional(),
@@ -41,8 +19,19 @@ export const PdfConfigDtoSchema = z
 type PdfConfigDto = z.infer<typeof PdfConfigDtoSchema>;
 export default PdfConfigDto;
 
+export const getDefaultPdfConfigDto = (): PdfConfigDto => {
+  return PdfConfigDtoSchema.parse({
+    currency: "euro" as const,
+    font_size: 12,
+    font_style: "latex" as const,
+    paper_size: "a4paper" as const,
+    landscape: false,
+  });
+};
+
 export const toPdfConfig = (dto: PdfConfigDto): PdfConfig => {
   return PdfConfigSchema.parse({
+    currency: dto.currency,
     fontSize: dto.font_size,
     fontStyle: dto.font_style,
     paperSize: dto.paper_size,

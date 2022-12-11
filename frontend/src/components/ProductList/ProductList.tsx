@@ -14,20 +14,22 @@ import ProductDto, {
   getDefaultProductDto,
   toProduct,
 } from "../../entities/ProductDto";
-import { SubdirectoryArrowLeftSharp } from "@mui/icons-material";
+import { Currency, getCurrencySymbol } from "../../entities/ConfigSchemas";
 
 interface Props {
+  currency: Currency;
   products: Product[];
   onAddProduct: (product: Product) => void;
   onRemoveProduct: (product: Product["id"]) => void;
 }
 
 interface ItemProps {
+  currency: Currency;
   product: Product;
   onRemoveProduct: (product: Product["id"]) => void;
 }
 
-function ListItem({ product, onRemoveProduct }: ItemProps) {
+function ListItem({ currency, product, onRemoveProduct }: ItemProps) {
   return (
     <motion.div
       layout
@@ -40,8 +42,10 @@ function ListItem({ product, onRemoveProduct }: ItemProps) {
       <div className={styles.ProductList_row}>
         <span>{product.name}</span>
         <span>{product.quantity}</span>
-        <span>{product.price}€</span>
-        {product.discount ? <span>{product.discount}%</span> : <span>No</span>}
+        <span>{`${product.price}${getCurrencySymbol(currency)}`}</span>
+        <span className={styles.ProductList_discount}>
+          {product.discount ? `${product.discount}%` : "No"}
+        </span>
       </div>
       <NormalButton
         className={styles.ProductList_removeButton}
@@ -55,6 +59,7 @@ function ListItem({ product, onRemoveProduct }: ItemProps) {
 }
 
 export default function ProductList({
+  currency,
   products,
   onAddProduct,
   onRemoveProduct,
@@ -145,6 +150,7 @@ export default function ProductList({
               {products.map((product, index) => (
                 <ListItem
                   key={index}
+                  currency={currency}
                   product={product}
                   onRemoveProduct={onRemoveProduct}
                 />

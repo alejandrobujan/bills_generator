@@ -1,7 +1,10 @@
 import { z } from "zod";
 import BillRequest, { BillRequestSchema } from "./BillRequest";
-import { getDefaultPdfConfig } from "./PdfConfig";
-import { PdfConfigDtoSchema, toPdfConfig } from "./PdfConfigDto";
+import {
+  getDefaultPdfConfigDto,
+  PdfConfigDtoSchema,
+  toPdfConfig,
+} from "./PdfConfigDto";
 import Product from "./Product";
 import { ProductDtoSchema, toProduct } from "./ProductDto";
 
@@ -24,10 +27,10 @@ export const toBillRequest = (dto: BillRequestDto): BillRequest => {
     toProduct(product)
   );
 
-  const config = {
-    ...getDefaultPdfConfig(),
-    ...toPdfConfig(dto.config),
-  };
+  const config = toPdfConfig({
+    ...getDefaultPdfConfigDto(),
+    ...dto.config,
+  });
 
   return BillRequestSchema.parse({
     user: dto.user,
