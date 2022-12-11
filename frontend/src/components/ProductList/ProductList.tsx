@@ -89,7 +89,7 @@ export default function ProductList({
         <span>Product name</span>
         <span>Quantity</span>
         <span>Price</span>
-        <span className={styles.ProductList_discount}>Discount</span>
+        <span className={styles.ProductList_discount}>Discount (%)</span>
       </div>
 
       <div className={styles.ProductList_formWrapper}>
