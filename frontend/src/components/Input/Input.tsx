@@ -10,6 +10,7 @@ interface Props {
   checked?: boolean;
   onChange: (e: ChangeEvent<HTMLInputElement>) => void;
   ignoreEnter?: boolean;
+  className?: string;
 }
 
 export default function Input({
@@ -21,11 +22,15 @@ export default function Input({
   checked,
   required = false,
   ignoreEnter = false,
+  className = "",
 }: Props) {
   const [isSelected, setIsSelected] = useState(false);
 
   return (
-    <div className={styles.Input_wrapper} data-is_selected={isSelected}>
+    <div
+      className={`${styles.Input_wrapper} ${className}`}
+      data-is_selected={isSelected}
+    >
       <label className={styles.Input_label}>{label}</label>
       <input
         onKeyDown={(e) => {
@@ -36,7 +41,7 @@ export default function Input({
         className={styles.Input_input}
         type={type}
         placeholder={placeholder}
-        value={value}
+        value={value?.toString()}
         onChange={onChange}
         onFocus={() => setIsSelected(true)}
         onBlur={() => setIsSelected(false)}

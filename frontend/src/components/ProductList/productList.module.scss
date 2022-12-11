@@ -28,6 +28,15 @@
     font-weight: 300;
     font-size: 1rem;
   }
+
+  .ProductList_discount {
+    width: 6rem;
+    max-width: 10vw;
+  }
+  .ProductList_discount > input {
+    width: 6rem;
+    max-width: 10vw;
+  }
 }
 
 .ProductList_formWrapper {

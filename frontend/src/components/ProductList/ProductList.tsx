@@ -14,6 +14,7 @@ import ProductDto, {
   getDefaultProductDto,
   toProduct,
 } from "../../entities/ProductDto";
+import { SubdirectoryArrowLeftSharp } from "@mui/icons-material";
 
 interface Props {
   products: Product[];
@@ -40,6 +41,7 @@ function ListItem({ product, onRemoveProduct }: ItemProps) {
         <span>{product.name}</span>
         <span>{product.quantity}</span>
         <span>{product.price}€</span>
+        {product.discount ? <span>{product.discount}%</span> : <span>No</span>}
       </div>
       <NormalButton
         className={styles.ProductList_removeButton}
@@ -82,6 +84,7 @@ export default function ProductList({
         <span>Product name</span>
         <span>Quantity</span>
         <span>Price</span>
+        <span className={styles.ProductList_discount}>Discount</span>
       </div>
 
       <div className={styles.ProductList_formWrapper}>
@@ -103,6 +106,14 @@ export default function ProductList({
             value={currentProduct.price}
             onChange={(price) =>
               setCurrentProduct({ ...currentProduct, price })
+            }
+          />
+          <NumberInput
+            ignoreEnter
+            value={currentProduct.discount}
+            className={styles.ProductList_discount}
+            onChange={(discount) =>
+              setCurrentProduct({ ...currentProduct, discount })
             }
           />
         </div>
