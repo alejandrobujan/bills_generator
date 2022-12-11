@@ -71,7 +71,7 @@ defmodule BillsGenerator.Filters.LatexFormatter do
   defp do_format_bill(acc, [product | t], total) do
     do_format_bill(
       acc <>
-        "\\multicolumn{1}{p{3cm}}{#{product.name}} & \\multicolumn{1}{>{\\centering}p{3cm}}{#{product.quantity}} & \\multicolumn{1}{>{\\centering}p{3cm}}{#{:erlang.float_to_binary(product.price * 1.0, decimals: 2)}\\currency} & \\multicolumn{1}{>{\\centering}p{3cm}}{-2\\currency} & \\multicolumn{1}{>{\\centering}p{3cm}}{#{:erlang.float_to_binary(product.total * 1.0, decimals: 2)}\\currency} \\\\ \\hline \n",
+        "\\multicolumn{1}{p{3cm}}{#{product.name}} & \\multicolumn{1}{>{\\centering}p{3cm}}{#{product.quantity}} & \\multicolumn{1}{>{\\centering}p{3cm}}{#{:erlang.float_to_binary(product.price * 1.0, decimals: 2)}\\currency} & \\multicolumn{1}{>{\\centering}p{3cm}}{-#{:erlang.float_to_binary(product.discounted_amount * 1.0, decimals: 2)}\\currency} & \\multicolumn{1}{>{\\centering}p{3cm}}{#{:erlang.float_to_binary(product.total * 1.0, decimals: 2)}\\currency} \\\\ \\hline \n",
       t,
       total
     )

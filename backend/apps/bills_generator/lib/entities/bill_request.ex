@@ -35,6 +35,8 @@ defmodule BillsGenerator.Entities.BillRequest do
               name: "A product",
               price: 15.0,
               quantity: 2,
+              discount: nil,
+              discounted_amount: nil,
               total: nil
             }
           ],
