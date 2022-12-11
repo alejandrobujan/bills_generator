@@ -24,9 +24,9 @@ defmodule BillsGenerator.Filters.LatexFormatter do
     \\opening{}
     \\begin{center}
     \\renewcommand{\\arraystretch}{2}
-    \\begin{longtable}{ p{3cm} p{3cm} p{3cm} p{3cm} p{3cm} }
+    \\begin{longtable}{@{\\extracolsep{\\fill}} c c c c c }
     \\hline
-    \\multicolumn{1}{>{\\centering}p{3cm}}{\\textbf{Product}} & \\multicolumn{1}{>{\\centering}p{3cm}}{\\textbf{Quantity}} & \\multicolumn{1}{>{\\centering}p{3cm}}{\\textbf{Price}} & \\multicolumn{1}{>{\\centering}p{3cm}}{\\textbf{Discount}} & \\multicolumn{1}{>{\\centering}p{3cm}}{\\textbf{Amount}} \\\\ \\hline
+    \\multicolumn{1}{c}{\\textbf{Product}} & \\multicolumn{1}{c}{\\textbf{Quantity}} & \\multicolumn{1}{c}{\\textbf{Price}} & \\multicolumn{1}{c}{\\textbf{Discount}} & \\multicolumn{1}{c}{\\textbf{Amount}} \\\\ \\hline
     """ <>
       format_bill(bill_request.bill.products, bill_request.bill.total) <>
       """
@@ -71,7 +71,7 @@ defmodule BillsGenerator.Filters.LatexFormatter do
   defp do_format_bill(acc, [product | t], total) do
     do_format_bill(
       acc <>
-        "\\multicolumn{1}{p{3cm}}{#{product.name}} & \\multicolumn{1}{>{\\centering}p{3cm}}{#{product.quantity}} & \\multicolumn{1}{>{\\centering}p{3cm}}{#{:erlang.float_to_binary(product.price * 1.0, decimals: 2)}\\currency} & \\multicolumn{1}{>{\\centering}p{3cm}}{-#{:erlang.float_to_binary(product.discounted_amount * 1.0, decimals: 2)}\\currency} & \\multicolumn{1}{>{\\centering}p{3cm}}{#{:erlang.float_to_binary(product.total * 1.0, decimals: 2)}\\currency} \\\\ \\hline \n",
+        "\\multicolumn{1}{c}{#{product.name}} & \\multicolumn{1}{c}{#{product.quantity}} & \\multicolumn{1}{c}{#{:erlang.float_to_binary(product.price * 1.0, decimals: 2)}\\currency} & \\multicolumn{1}{c}{-#{:erlang.float_to_binary(product.discounted_amount * 1.0, decimals: 2)}\\currency} & \\multicolumn{1}{c}{#{:erlang.float_to_binary(product.total * 1.0, decimals: 2)}\\currency} \\\\ \\hline \n",
       t,
       total
     )

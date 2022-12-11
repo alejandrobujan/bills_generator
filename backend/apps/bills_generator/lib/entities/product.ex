@@ -134,11 +134,11 @@ defmodule BillsGenerator.Entities.Product do
     if discount >= 0 and discount <= 100 do
       :ok
     else
-      {:error, "Product discount must be greater or equal than 0."}
+      {:error, "Product discount must be between 0 and 100 (or nil)."}
     end
   end
 
   defp validate_discount(discount) do
-    {:error, "Incorrect discount value '#{discount}'. Product discount must be a number or nill."}
+    {:error, "Incorrect discount value '#{discount}'. Product discount must be a number or nil."}
   end
 end

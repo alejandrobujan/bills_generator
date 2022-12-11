@@ -8,6 +8,7 @@ defmodule BillsGenerator.Test.ProductTest do
     assert product.name == "A product"
     assert product.price == 10.0
     assert product.quantity == 2
+    assert product.discount == nil
   end
 
   test "update_total/1 returns a product with total" do
@@ -61,4 +62,22 @@ defmodule BillsGenerator.Test.ProductTest do
     assert Product.validate(product) ==
              {:error, "Incorrect product quantity value '2'. Product quantity must be a number."}
   end
+
+  test "validate/1 returns error when product discount is lesser than 0" do
+    product = Product.new("A product", 10.0, 2, -4)
+    assert Product.validate(product) == {:error, "Product discount must be between 0 and 100 (or nil)."}
+  end
+
+  test "validate/1 returns error when product discount is greater than 100" do
+    product = Product.new("A product", 10.0, 2, 104)
+    assert Product.validate(product) == {:error, "Product discount must be between 0 and 100 (or nil)."}
+  end
+
+  test "validate/1 returns error when product discount is neither a number nor nil" do
+    product = Product.new("A product", 10.0, 2, "2")
+
+    assert Product.validate(product) ==
+             {:error, "Incorrect discount value '2'. Product discount must be a number or nil."}
+  end
+
 end
