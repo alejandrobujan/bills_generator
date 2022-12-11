@@ -26,7 +26,7 @@ defmodule BillsGenerator.Filters.LatexFormatter do
     \\renewcommand{\\arraystretch}{2}
     \\begin{longtable}{ p{3cm} p{3cm} p{3cm} p{3cm} p{3cm} }
     \\hline
-    \\multicolumn{2}{>{\\centering}p{3cm}}{\\textbf{Product}} & \\multicolumn{1}{>{\\centering}p{3cm}}{\\textbf{Quantity}} & \\multicolumn{1}{>{\\centering}p{3cm}}{\\textbf{Price}} & \\multicolumn{1}{>{\\centering}p{3cm}}{\\textbf{Amount}} \\\\ \\hline
+    \\multicolumn{1}{>{\\centering}p{3cm}}{\\textbf{Product}} & \\multicolumn{1}{>{\\centering}p{3cm}}{\\textbf{Quantity}} & \\multicolumn{1}{>{\\centering}p{3cm}}{\\textbf{Price}} & \\multicolumn{1}{>{\\centering}p{3cm}}{\\textbf{Discount}} & \\multicolumn{1}{>{\\centering}p{3cm}}{\\textbf{Amount}} \\\\ \\hline
     """ <>
       format_bill(bill_request.bill.products, bill_request.bill.total) <>
       """
@@ -63,16 +63,15 @@ defmodule BillsGenerator.Filters.LatexFormatter do
   defp do_format_bill(acc, [], total) do
     acc <>
       """
-      \\multicolumn{2}{c}{} & \\multicolumn{1}{c}{\\textbf{Dto.}} & \\multicolumn{1}{c}{XX\\%} & \\multicolumn{1}{c}{-5\\currency} \\\\ \\cline{3-5}
-      \\multicolumn{2}{c}{} & \\multicolumn{1}{c}{\\textbf{IVA}} & \\multicolumn{1}{c}{XX\\%} & \\multicolumn{1}{c}{5\\currency} \\\\ \\cline{3-5}
-      \\multicolumn{2}{c}{} & \\multicolumn{2}{c}{\\textbf{TOTAL}} & \\multicolumn{1}{c}{#{:erlang.float_to_binary(total * 1.0, decimals: 2)}\\$} \\\\ \\cline{3-5}
+      \\multicolumn{2}{c}{} & \\multicolumn{1}{r}{\\textbf{Taxes}} & \\multicolumn{1}{c}{XX\\%} & \\multicolumn{1}{c}{5\\currency} \\\\ \\cline{3-5}
+      \\multicolumn{2}{c}{} & \\multicolumn{1}{r}{\\textbf{TOTAL}} && \\multicolumn{1}{c}{#{:erlang.float_to_binary(total * 1.0, decimals: 2)}\\$} \\\\ \\cline{3-5}
       """
   end
 
   defp do_format_bill(acc, [product | t], total) do
     do_format_bill(
       acc <>
-        "\\multicolumn{2}{p{3cm}}{#{product.name}} & \\multicolumn{1}{>{\\centering}p{3cm}}{#{product.quantity}} & \\multicolumn{1}{>{\\centering}p{3cm}}{#{:erlang.float_to_binary(product.price * 1.0, decimals: 2)}\\currency} & \\multicolumn{1}{>{\\centering}p{3cm}}{#{:erlang.float_to_binary(product.total * 1.0, decimals: 2)}\\currency} \\\\ \\hline \n",
+        "\\multicolumn{1}{p{3cm}}{#{product.name}} & \\multicolumn{1}{>{\\centering}p{3cm}}{#{product.quantity}} & \\multicolumn{1}{>{\\centering}p{3cm}}{#{:erlang.float_to_binary(product.price * 1.0, decimals: 2)}\\currency} & \\multicolumn{1}{>{\\centering}p{3cm}}{-2\\currency} & \\multicolumn{1}{>{\\centering}p{3cm}}{#{:erlang.float_to_binary(product.total * 1.0, decimals: 2)}\\currency} \\\\ \\hline \n",
       t,
       total
     )
