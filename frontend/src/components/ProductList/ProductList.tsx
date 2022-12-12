@@ -45,7 +45,7 @@ function ListItem({ currency, product, onRemoveProduct }: ItemProps) {
         <span>{product.quantity}</span>
         <span>{`${product.price} ${getCurrencySymbol(currency)}`}</span>
         <span className={styles.ProductList_discount}>
-          {product.discount ? `${product.discount}%` : "No"}
+          {product.discount ? `${product.discount}%` : "-"}
         </span>
       </div>
       <NormalButton
@@ -77,7 +77,7 @@ export default function ProductList({
       setCurrentProduct(getDefaultProductDto());
       onAddProduct(product);
     } catch (error: any) {
-      const message = Utils.getZodErrorMessages(error);
+      const message = Utils.getZodErrorMessages(error)[0];
       createErrorNotification(`Invalid product: ${message}`, 8000);
     }
   }
