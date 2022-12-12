@@ -19,7 +19,7 @@ export const getDefaultProductDto = (): ProductDto => {
     name: "",
     price: 0,
     quantity: 0,
-    discount: undefined,
+    discount: 0,
   });
 };
 
