@@ -11,7 +11,7 @@ defmodule BillsGenerator.Entities.Product do
           name: String.t(),
           price: number(),
           quantity: number(),
-          discount: nil | number(),
+          discount:  number(),
           discounted_amount: nil | number(),
           total: nil | number()
         }
@@ -23,12 +23,12 @@ defmodule BillsGenerator.Entities.Product do
           name: "A product",
           price: 10.0,
           quantity: 2,
-          discount: nil,
+          discount: 0.0,
           discounted_amount: nil,
           total: nil
         }
   """
-  def new(name, price, quantity, discount \\ nil) do
+  def new(name, price, quantity, discount \\ 0.0) do
     %__MODULE__{name: name, price: price, quantity: quantity, discount: discount, discounted_amount: nil, total: nil}
   end
 
@@ -36,16 +36,16 @@ defmodule BillsGenerator.Entities.Product do
   Actualiza o total do produto e devolve unha tupla co producto e o total.
 
     ## Exemplos:
-        iex> product = BillsGenerator.Entities.Product.new("A product", 10.0, 2)
+        iex> product = BillsGenerator.Entities.Product.new("A product", 10.0, 2, 10.0)
         iex> product = BillsGenerator.Entities.Product.update_total(product)
         iex> product
         %BillsGenerator.Entities.Product{
           name: "A product",
           price: 10.0,
           quantity: 2,
-          discount: nil,
-          discounted_amount: 0,
-          total: 20.0
+          discount: 10.0,
+          discounted_amount: 2.0,
+          total: 18.0
         }
   """
   @spec update_total(t()) :: t()
@@ -60,7 +60,7 @@ defmodule BillsGenerator.Entities.Product do
   con '{:error, reason}' se o producto non é válido.
 
   ## Exemplos:
-      iex> product = BillsGenerator.Entities.Product.new("A product", 10.0, 2, 5)
+      iex> product = BillsGenerator.Entities.Product.new("A product", 10.0, 2, 10.0)
       iex> BillsGenerator.Entities.Product.validate(product)
       :ok
   """
@@ -127,18 +127,15 @@ defmodule BillsGenerator.Entities.Product do
     {:error, "Incorrect product quantity value '#{quantity}'. Product quantity must be a number."}
   end
 
-  defp validate_discount(discount) when is_nil(discount),
-    do: :ok
-
   defp validate_discount(discount) when is_number(discount) do
     if discount >= 0 and discount <= 100 do
       :ok
     else
-      {:error, "Product discount must be between 0 and 100 (or nil)."}
+      {:error, "Product discount must be between 0 and 100."}
     end
   end
 
   defp validate_discount(discount) do
-    {:error, "Incorrect discount value '#{discount}'. Product discount must be a number or nil."}
+    {:error, "Incorrect discount value '#{discount}'. Product discount must be a number."}
   end
 end

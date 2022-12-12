@@ -63,15 +63,24 @@ defmodule BillsGenerator.Filters.LatexFormatter do
   defp do_format_bill(acc, [], total) do
     acc <>
       """
-      \\multicolumn{2}{c}{} & \\multicolumn{1}{r}{\\textbf{Taxes}} & \\multicolumn{1}{c}{XX\\%} & \\multicolumn{1}{c}{5\\currency} \\\\ \\cline{3-5}
-      \\multicolumn{2}{c}{} & \\multicolumn{1}{r}{\\textbf{TOTAL}} && \\multicolumn{1}{c}{#{:erlang.float_to_binary(total * 1.0, decimals: 2)}\\$} \\\\ \\cline{3-5}
+      \\multicolumn{2}{c}{} & \\multicolumn{1}{r}{\\textbf{Taxes}} & \\multicolumn{1}{c}{XX\\%} & \\multicolumn{1}{c}{5 \\currency} \\\\ \\cline{3-5}
+      \\multicolumn{2}{c}{} & \\multicolumn{1}{r}{\\textbf{TOTAL}} && \\multicolumn{1}{c}{#{:erlang.float_to_binary(total * 1.0, decimals: 2)} \\currency} \\\\ \\cline{3-5}
       """
+  end
+
+  defp do_format_bill(acc, [(%{discounted_amount: 0.0} = product) | t], total) do
+    do_format_bill(
+      acc <>
+        "\\multicolumn{1}{c}{#{product.name}} & \\multicolumn{1}{c}{#{product.quantity}} & \\multicolumn{1}{c}{#{:erlang.float_to_binary(product.price * 1.0, decimals: 2)} \\currency} & \\multicolumn{1}{c}{-} & \\multicolumn{1}{c}{#{:erlang.float_to_binary(product.total * 1.0, decimals: 2)} \\currency} \\\\ \\hline \n",
+      t,
+      total
+    )
   end
 
   defp do_format_bill(acc, [product | t], total) do
     do_format_bill(
       acc <>
-        "\\multicolumn{1}{c}{#{product.name}} & \\multicolumn{1}{c}{#{product.quantity}} & \\multicolumn{1}{c}{#{:erlang.float_to_binary(product.price * 1.0, decimals: 2)}\\currency} & \\multicolumn{1}{c}{-#{:erlang.float_to_binary(product.discounted_amount * 1.0, decimals: 2)}\\currency} & \\multicolumn{1}{c}{#{:erlang.float_to_binary(product.total * 1.0, decimals: 2)}\\currency} \\\\ \\hline \n",
+        "\\multicolumn{1}{c}{#{product.name}} & \\multicolumn{1}{c}{#{product.quantity}} & \\multicolumn{1}{c}{#{:erlang.float_to_binary(product.price * 1.0, decimals: 2)} \\currency} & \\multicolumn{1}{c}{-#{:erlang.float_to_binary(product.discounted_amount * 1.0, decimals: 2)} \\currency} & \\multicolumn{1}{c}{#{:erlang.float_to_binary(product.total * 1.0, decimals: 2)} \\currency} \\\\ \\hline \n",
       t,
       total
     )

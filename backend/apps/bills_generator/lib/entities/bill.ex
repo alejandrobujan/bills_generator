@@ -44,7 +44,7 @@ defmodule BillsGenerator.Entities.Bill do
     ## Exemplos:
         iex> products = [
         ...>   BillsGenerator.Entities.Product.new("A product", 15.0,2),
-        ...>   BillsGenerator.Entities.Product.new("Another product", 3.0,3, 10)
+        ...>   BillsGenerator.Entities.Product.new("Another product", 3.0,3, 10.0)
         ...> ]
         iex> bill = BillsGenerator.Entities.Bill.new("A bill", "A purchaser", "A seller", products)
         iex> BillsGenerator.Entities.Bill.update_total(bill)
@@ -57,15 +57,15 @@ defmodule BillsGenerator.Entities.Bill do
               name: "A product",
               price: 15.0,
               quantity: 2,
-              discount: nil,
-              discounted_amount: 0,
+              discount: 0.0,
+              discounted_amount: 0.0,
               total: 30.0
             },
             %BillsGenerator.Entities.Product{
               name: "Another product",
               price: 3.0,
               quantity: 3,
-              discount: 10,
+              discount: 10.0,
               discounted_amount: 0.9,
               total: 8.1
             }
@@ -83,7 +83,7 @@ defmodule BillsGenerator.Entities.Bill do
     ## Exemplos:
         iex> products = [
         ...>   BillsGenerator.Entities.Product.new("A product", 2, 15.0),
-        ...>   BillsGenerator.Entities.Product.new("Another product", 3, 3.0, 10)
+        ...>   BillsGenerator.Entities.Product.new("Another product", 3, 3.0, 10.0)
         ...> ]
         iex> bill = BillsGenerator.Entities.Bill.new("A bill", "A purchaser", "A seller", products)
         iex> BillsGenerator.Entities.Bill.validate(bill)

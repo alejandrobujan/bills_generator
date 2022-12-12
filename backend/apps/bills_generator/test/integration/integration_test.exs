@@ -15,12 +15,14 @@ defmodule BillsGenerator.Test.IntegrationTest do
         {
           "name": "A product",
           "price": 1.5,
-          "quantity": 30
+          "quantity": 30,
+          "discount": 0.0
         },
         {
           "name": "Another product",
           "price": 15,
-          "quantity": 2
+          "quantity": 2,
+          "discount": 10.0
         }
       ]
     },
@@ -72,12 +74,14 @@ defmodule BillsGenerator.Test.IntegrationTest do
           {
             "name": "A product",
             "price": 1.5,
-            "quantity": 30
+            "quantity": 30,
+            "discount": 0.0
           },
           {
             "name": "Another product",
             "price": 15,
-            "quantity": 2
+            "quantity": 2,
+            "discount": 10.0
           }
         ]
       },
