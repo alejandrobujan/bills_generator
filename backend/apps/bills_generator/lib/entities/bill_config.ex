@@ -119,7 +119,7 @@ defmodule BillsGenerator.Entities.BillConfig do
       :ok
     else
       {:error,
-       "Paper size: '#{paper_size}' not supported. Available paper sizes are: #{Enum.join(@available_paper_sizes, ", ")}."}
+       "Paper size '#{paper_size}' not supported. Available paper sizes are: #{Enum.join(@available_paper_sizes, ", ")}."}
     end
   end
 
@@ -137,7 +137,7 @@ defmodule BillsGenerator.Entities.BillConfig do
       :ok
     else
       {:error,
-       "Currency: '#{currency}' not supported. Available currencies are: #{Enum.join(@available_currencies, ", ")}."}
+       "Currency '#{currency}' not supported. Available currencies are: #{Enum.join(@available_currencies, ", ")}."}
     end
   end
 

@@ -51,7 +51,7 @@ defmodule BillsGenerator.Test.BillConfigTest do
     config = BillConfig.new(11, "latex", "not_a_paper_size", true, "euro")
 
     assert {:error,
-            "Paper size: 'not_a_paper_size' not supported. Available paper sizes are: a4paper, a5paper, b5paper, letterpaper, legalpaper, executivepaper."} =
+            "Paper size 'not_a_paper_size' not supported. Available paper sizes are: a4paper, a5paper, b5paper, letterpaper, legalpaper, executivepaper."} =
              BillConfig.validate(config)
   end
 
@@ -73,7 +73,7 @@ defmodule BillsGenerator.Test.BillConfigTest do
     config = BillConfig.new(11, "latex", "a4paper", true, "not_a_currency")
 
     assert {:error,
-            "Currency: 'not_a_currency' not supported. Available currencies are: euro, dollar."} =
+            "Currency 'not_a_currency' not supported. Available currencies are: euro, dollar."} =
              BillConfig.validate(config)
   end
 
