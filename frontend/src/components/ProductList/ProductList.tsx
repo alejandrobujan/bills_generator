@@ -14,17 +14,18 @@ import ProductDto, {
   getDefaultProductDto,
   toProduct,
 } from "../../entities/ProductDto";
-import { Currency, getCurrencySymbol } from "../../entities/ConfigSchemas";
+import PdfConfig from "../../entities/PdfConfig";
+import { getCurrencySymbol } from "../../entities/ConfigSchemas";
 
 interface Props {
-  currency: Currency;
+  currency: PdfConfig["currency"];
   products: Product[];
   onAddProduct: (product: Product) => void;
   onRemoveProduct: (product: Product["id"]) => void;
 }
 
 interface ItemProps {
-  currency: Currency;
+  currency: PdfConfig["currency"];
   product: Product;
   onRemoveProduct: (product: Product["id"]) => void;
 }
@@ -42,7 +43,7 @@ function ListItem({ currency, product, onRemoveProduct }: ItemProps) {
       <div className={styles.ProductList_row}>
         <span>{product.name}</span>
         <span>{product.quantity}</span>
-        <span>{`${product.price}${getCurrencySymbol(currency)}`}</span>
+        <span>{`${product.price} ${getCurrencySymbol(currency)}`}</span>
         <span className={styles.ProductList_discount}>
           {product.discount ? `${product.discount}%` : "No"}
         </span>
