@@ -25,7 +25,8 @@
 	  "font_style": "latex",
 	  "paper_size": "a4paper",
 	  "landscape": true,
-	  "currency": "euro"
+	  "currency": "euro",
+	  "language": "gl"
 	}
   }
   

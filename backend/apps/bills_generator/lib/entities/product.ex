@@ -82,7 +82,7 @@ defmodule BillsGenerator.Entities.Product do
     price * quantity
   end
 
-  defp calculate_discount(%__MODULE__{discount: nil}, total),
+  defp calculate_discount(%__MODULE__{discount: nil}, _total),
     do: 0
 
   defp calculate_discount(%__MODULE__{discount: discount}, total) do
