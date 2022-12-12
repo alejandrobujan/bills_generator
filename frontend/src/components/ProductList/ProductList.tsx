@@ -37,7 +37,7 @@ function ListItem({ currency, product, onRemoveProduct }: ItemProps) {
       transition={{ type: "spring", bounce: 0, duration: 0.4 }}
       initial={{ left: "-20%", opacity: 0 }}
       animate={{ left: 0, opacity: 1 }}
-      exit={{ left: "-20%", opacity: 0 }}
+      exit={{ opacity: 0 }}
       className={styles.ProductList_item}
     >
       <div className={styles.ProductList_row}>
