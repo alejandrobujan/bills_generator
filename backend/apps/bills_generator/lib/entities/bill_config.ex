@@ -16,7 +16,11 @@ defmodule BillsGenerator.Entities.BillConfig do
 
   @available_currencies ["euro", "dollar"]
 
-  defstruct font_size: 10, font_style: "latex", paper_size: "a4paper", landscape: false, currency: "euro"
+  defstruct font_size: 10,
+            font_style: "latex",
+            paper_size: "a4paper",
+            landscape: false,
+            currency: "euro"
 
   @typedoc """
   Struct que representa os parámetros de configuración dunha factura.
@@ -40,7 +44,13 @@ defmodule BillsGenerator.Entities.BillConfig do
           currency: "euro"
         }
   """
-  def new(font_size \\ 10, font_style \\ "latex", paper_size \\ "a4paper", landscape \\ false, currency \\ "euro") do
+  def new(
+        font_size \\ 10,
+        font_style \\ "latex",
+        paper_size \\ "a4paper",
+        landscape \\ false,
+        currency \\ "euro"
+      ) do
     %__MODULE__{
       font_size: font_size,
       font_style: font_style,
@@ -53,7 +63,7 @@ defmodule BillsGenerator.Entities.BillConfig do
   @doc """
   Valida a configuración da factura e devolve ':ok' se a configuración é válida ou unha tupla
   con '{:error, reason}' se a configuración non é válida.
-
+  
   ## Exemplos:
       iex> config = BillsGenerator.Entities.BillConfig.new(11,"latex","a4paper",true,"euro")
       iex> BillsGenerator.Entities.BillConfig.validate(config)
@@ -127,7 +137,7 @@ defmodule BillsGenerator.Entities.BillConfig do
       :ok
     else
       {:error,
-      "Currency: '#{currency}' not supported. Available currencies are: #{Enum.join(@available_currencies, ", ")}."}
+       "Currency: '#{currency}' not supported. Available currencies are: #{Enum.join(@available_currencies, ", ")}."}
     end
   end
 

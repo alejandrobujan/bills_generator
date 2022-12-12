@@ -5,7 +5,6 @@ defmodule BillsGeneratorWeb.BillController do
   # This module is a service one, but using phoenix naming,
   # it should be called controller
 
-  # We have parsers plug deactivated, so
   def generate(conn, _params) do
     {:ok, body, _conn} = Plug.Conn.read_body(conn)
     bill_id = BillsGenerator.Application.generate_bill(body)
