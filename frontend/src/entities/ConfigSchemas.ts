@@ -1,4 +1,5 @@
 import { z } from "zod";
+import PdfConfig from "./PdfConfig";
 
 export const FontStyleSchema = z.union([
   z.literal("latex"),
@@ -15,7 +16,14 @@ export const PaperSizeSchema = z.union([
 ]);
 
 export const CurrencySchema = z.union([z.literal("euro"), z.literal("dollar")]);
-export type Currency = z.infer<typeof CurrencySchema>;
+
+export const LanguageSchema = z.union([
+  z.literal("en"),
+  z.literal("es"),
+  z.literal("gl"),
+]);
+
+// Maps to get const strings from enum values
 
 export const fontStyleMap = new Map([
   ["latex", "latex" as const],
@@ -36,10 +44,16 @@ export const currencyMap = new Map([
   ["dollar", "dollar" as const],
 ]);
 
+export const languageMap = new Map([
+  ["en", "en" as const],
+  ["es", "es" as const],
+  ["gl", "gl" as const],
+]);
+
 const currencyToSymbolMap = new Map([
   ["euro", "€"],
   ["dollar", "$"],
 ]);
-export const getCurrencySymbol = (currency: Currency) => {
+export const getCurrencySymbol = (currency: PdfConfig["currency"]) => {
   return currencyToSymbolMap.get(currency);
 };

@@ -1,6 +1,7 @@
 import {
   currencyMap,
   fontStyleMap,
+  languageMap,
   paperSizeMap,
 } from "../../entities/ConfigSchemas";
 import PdfConfig from "../../entities/PdfConfig";
@@ -33,6 +34,21 @@ export default function PdfConfiguration({ config, onChangeConfig }: Props) {
         >
           <option value="euro">Euro</option>
           <option value="dollar">Dollar</option>
+        </SelectInput>
+
+        <SelectInput
+          label="Language"
+          value={config.language}
+          onChange={(language) => {
+            onChangeConfig({
+              ...config,
+              language: languageMap.get(language)!,
+            });
+          }}
+        >
+          <option value="en">English</option>
+          <option value="es">Spanish</option>
+          <option value="gl">Galician</option>
         </SelectInput>
 
         <SelectInput
