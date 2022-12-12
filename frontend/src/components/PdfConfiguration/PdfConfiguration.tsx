@@ -1,5 +1,6 @@
 import {
   currencyMap,
+  fontSizeMap,
   fontStyleMap,
   languageMap,
   paperSizeMap,
@@ -65,16 +66,20 @@ export default function PdfConfiguration({ config, onChangeConfig }: Props) {
           <option value="times">Times New Roman</option>
         </SelectInput>
 
-        <NumberInput
+        <SelectInput
           label="Font size"
-          value={config.fontSize}
-          onChange={(fontSize) =>
+          value={config.fontSize.toString()}
+          onChange={(fontSizeStr) =>
             onChangeConfig({
               ...config,
-              fontSize,
+              fontSize: fontSizeMap.get(fontSizeStr)!,
             })
           }
-        />
+        >
+          <option value="10">10</option>
+          <option value="11">11</option>
+          <option value="12">12</option>
+        </SelectInput>
 
         <SelectInput
           label="Paper size"

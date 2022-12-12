@@ -1,6 +1,7 @@
 import { z } from "zod";
 import {
   CurrencySchema,
+  FontSizeSchema,
   FontStyleSchema,
   LanguageSchema,
   PaperSizeSchema,
@@ -12,7 +13,7 @@ export const PdfConfigSchema = z
     currency: CurrencySchema,
     language: LanguageSchema,
     fontStyle: FontStyleSchema,
-    fontSize: z.number(),
+    fontSize: FontSizeSchema,
     paperSize: PaperSizeSchema,
     landscape: z.boolean(),
   })
@@ -26,7 +27,7 @@ export const getDefaultPdfConfig = () => {
     currency: "euro" as const,
     language: "en" as const,
     fontStyle: "latex" as const,
-    fontSize: 12,
+    fontSize: 12 as const,
     paperSize: "a4paper" as const,
     landscape: false,
   });

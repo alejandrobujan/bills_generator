@@ -6,6 +6,12 @@ export const FontStyleSchema = z.union([
   z.literal("times"),
 ]);
 
+export const FontSizeSchema = z.union([
+  z.literal(10),
+  z.literal(11),
+  z.literal(12),
+]);
+
 export const PaperSizeSchema = z.union([
   z.literal("a4paper"),
   z.literal("a5paper"),
@@ -28,6 +34,12 @@ export const LanguageSchema = z.union([
 export const fontStyleMap = new Map([
   ["latex", "latex" as const],
   ["times", "times" as const],
+]);
+
+export const fontSizeMap = new Map([
+  ["10", 10 as const],
+  ["11", 11 as const],
+  ["12", 12 as const],
 ]);
 
 export const paperSizeMap = new Map([
