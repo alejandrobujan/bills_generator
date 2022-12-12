@@ -25,6 +25,7 @@ import DownloadIcon from "@mui/icons-material/Download";
 import AcceptButton from "../Buttton/AcceptButton";
 import ExportIcon from "@mui/icons-material/IosShare";
 import Utils from "../../utils/utils";
+import NumberInput from "../Input/NumberInput";
 
 export default function BillGenerator() {
   const { createErrorNotification, createSuccessNotification } =
@@ -188,6 +189,17 @@ export default function BillGenerator() {
               setBillRequest({
                 ...billRequest,
                 bill: { ...billRequest.bill, purchaser },
+              })
+            }
+          />
+          <NumberInput
+            required
+            label="Taxes (%)"
+            value={billRequest.bill.taxes}
+            onChange={(taxes) =>
+              setBillRequest({
+                ...billRequest,
+                bill: { ...billRequest.bill, taxes },
               })
             }
           />

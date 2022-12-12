@@ -16,6 +16,7 @@ export const BillRequestSchema = z
       seller: z.string(),
       purchaser: z.string(),
       products: z.array(ProductSchema),
+      taxes: z.number(),
     }),
     config: PdfConfigSchema,
   })
@@ -32,6 +33,7 @@ export const getDefaultBillRequest = (): BillRequest => {
       seller: "",
       purchaser: "",
       products: [],
+      taxes: 0,
     },
     config: getDefaultPdfConfig(),
   });

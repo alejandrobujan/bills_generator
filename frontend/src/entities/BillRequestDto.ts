@@ -15,6 +15,7 @@ export const BillRequestDtoSchema = z.object({
     seller: z.string(),
     purchaser: z.string(),
     products: z.array(ProductDtoSchema),
+    taxes: z.number(),
   }),
   config: PdfConfigDtoSchema,
 });
