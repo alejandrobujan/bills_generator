@@ -41,7 +41,7 @@ export default function Input({
         className={styles.Input_input}
         type={type}
         placeholder={placeholder}
-        value={value}
+        value={value?.toString()}
         onChange={onChange}
         onFocus={() => setIsSelected(true)}
         onBlur={() => setIsSelected(false)}
