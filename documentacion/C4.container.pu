@@ -20,7 +20,7 @@ Person_Ext(cliente, "Cliente", "Quere usar BillsGenerator")
 
 'AddRelTag("Branco", $textColor="white", $lineColor="white")
 AddElementTag("Branco",$bgColor="white")
-
+AddElementTag("Gris",$bgColor="grey")
 System_Boundary(sistema, "BillsGenerator") {
   System(frontend,"Frontend","UI para a xeración e descarga de facturas",$sprite="phoenix")
   System(backend, "Backend", "Xestiona facturas a nome dun cliente polo compra de distintos produtos",$sprite="elixir",$tags="branco"){
@@ -30,9 +30,9 @@ Container(filtroUpdate,"Updater","Filtro que actualiza os totais da factura")
 Container(filtroGenerateLatex,"Latex","Filtro que transforma a factura a Latex")
 Container(filtroGeneratePdf,"Pdf","Filtro que xera un pdf a partir dunha factura en latex")
 Container(filtroStore,"Storer","Filtro que almacena o pdf xerado nunha BD")
-  System(persistencia,"Almacenamento\n<$elixir>"){
+System(persistencia,"Almacenamento\n<$elixir>",$tags="Gris"){
     ContainerDb(bd,"BD","Almacena as facturas xeradas",$sprite="postgresql")
-  }
+}
 }  
 }
 

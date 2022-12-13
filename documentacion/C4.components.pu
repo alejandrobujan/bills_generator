@@ -15,11 +15,8 @@ LAYOUT_WITH_LEGEND()
 
 title BillsGenerator\nB<$euro_sign>G
 
-
-
-
 Person_Ext(cliente, "Cliente", "Quere usar BillsGenerator")
-System_Ext(frontend,"Frontend","Web Fwk",$sprite="phoenix")
+System_Ext(frontend,"Frontend","Web Fwk",$sprite="phoenix",$tags="branco")
 
 System_Boundary(sistema, "BillsGenerator\n Backend\n<$elixir>") {
 

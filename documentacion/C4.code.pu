@@ -24,23 +24,29 @@ interface GenServer{
 
 
 interface GenFilter{
+    service_handler:ServiceHandler()
+--
    @GenFilter
-    +start_link(any())
-    +process_filter(any())
+    +start_link()
+    +process_filter(input_data)
     +stop()
-    +redirect(pid(),any())
+    +redirect(worker,output_data)
     +get_num_workers()
     +alive?()
     +on_error(module(),any(),any())
     +worker_action(any())
     +next_action(any())
 --
+    @Macro --> GenFilterWorker
+        +do_process_filter(input_data | error)
+    
+--
     @GenServer
     #init()
-    #handle_cast(:process_filter)
-    #handle_cast(:redirect)
-    #handle_call(:get_num_workers)
-    #handle_info(:check)
+    #handle_cast({:process_filter,input_data,client},service_handler)
+    #handle_cast({:redirect,worker,output_data},service_handler)
+    #handle_call(:get_num_workers,service_handler)
+    #handle_info({:check,period},service_handler)
 --
     -check_services_worload(period)
     -handle_worload_rate(service_handler,worload_rate)  
@@ -50,14 +56,14 @@ interface GenFilter{
 
 interface GenFilterWorker{
 @GenFilterWorker
-    +start_link(atom(),atom())
-    +process_filter(GenServer.server(),any())
-    +stop(GenServer.server())
+    +start_link(leader,name)
+    +process_filter(server,input_data)
+    +stop(worker)
     +do_process_filter(any())
 --
 @GenServer
     #init({leader,name})
-    #handle_cast(:process_filter)    
+    #handle_cast({:process_filter,input_data},{leader,name})    
 }
 
 interface Ecto{
@@ -148,8 +154,8 @@ struct service_handler{
     worker_module: module()
     workers: List(GenServer.server())
     free_workers: Queue(GenServer.server())
-    busy_workser: Map(pid())
-    request_queue: Queue(pid(),any())
+    busy_workers: Map(GenServer.server())
+    request_queue: Queue(client,input_data)
     min_workers: pos_integer
     next_worker_id: pos_integer
 }
@@ -245,10 +251,10 @@ class BillDao{
 
 GenFilter -D-> GenServer
 GenFilterWorker -D-> GenServer
-Lay_R(GenFilterWorker,GenServer)
+'Lay_R(GenFilterWorker,GenServer)
+ServiceHandler *-L- GenFilterWorker
+GenFilter *-L- ServiceHandler
 
-GenFilter *-- ServiceHandler
-ServiceHandler *-- GenFilterWorker
 
 BillParser --> GenFilter
 BillValidator --> GenFilter
