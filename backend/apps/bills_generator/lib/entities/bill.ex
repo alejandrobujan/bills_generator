@@ -4,7 +4,18 @@ defmodule BillsGenerator.Entities.Bill do
   @moduledoc """
   Módulo que encapsula o struct que representa unha factura.
   """
-  defstruct [:title, :purchaser, :seller, :products, :total_bf_taxes, :taxes_amount, :total, date: Date.to_iso8601(Date.from_erl!(elem(:calendar.local_time(),0))), taxes: 0.0]
+  defstruct [
+    :title,
+    :purchaser,
+    :seller,
+    :products,
+    :total_before_taxes,
+    :taxes_amount,
+    :total,
+    # date now as a default
+    date: Date.to_iso8601(Date.from_erl!(elem(:calendar.local_time(), 0))),
+    taxes: 0.0
+  ]
 
   @typedoc """
   Struct que representa unha factura.
@@ -16,7 +27,7 @@ defmodule BillsGenerator.Entities.Bill do
           date: String.t(),
           products: list(Product),
           taxes: number(),
-          total_bf_taxes: nil | float(),
+          total_before_taxes: nil | float(),
           taxes_amount: nil | float(),
           total: nil | float()
         }
@@ -31,28 +42,11 @@ defmodule BillsGenerator.Entities.Bill do
           date: "2021-07-10",
           products: [],
           taxes: 20.0,
-          total_bf_taxes: nil,
+          total_before_taxes: nil,
           taxes_amount: nil,
           total: nil
         }
   """
-  def new(title, purchaser, seller, nil, nil, taxes), do: new(title, purchaser, seller, Date.to_iso8601(Date.from_erl!(elem(:calendar.local_time(),0))), [], taxes)
-
-  def new(title, purchaser, seller, date, nil, taxes), do: new(title, purchaser, seller, date, [], taxes)
-
-  def new(title, purchaser, seller, nil, products, taxes) do
-    %__MODULE__{
-      title: title,
-      purchaser: purchaser,
-      seller: seller,
-      date: Date.to_iso8601(Date.from_erl!(elem(:calendar.local_time(),0))),
-      products: products,
-      taxes: taxes,
-      total_bf_taxes: nil,
-      taxes_amount: nil,
-      total: nil
-    }
-  end
 
   def new(title, purchaser, seller, date, products, taxes) do
     %__MODULE__{
@@ -98,16 +92,23 @@ defmodule BillsGenerator.Entities.Bill do
             }
           ],
           taxes: 20.0,
-          total_bf_taxes: 38.1,
-          taxes_amount: 7.62,
+          total_before_taxes: 38.1,
+          taxes_amount: 7.619999999999997,
           total: 45.72
         }
-
+  
   """
   def update_total(%__MODULE__{products: products} = bill) do
-    {updated_bill_products, total_bf_taxes} = calculate_bill(products)
-    total = calculate_taxes(bill.taxes, total_bf_taxes)
-    %__MODULE__{bill | products: updated_bill_products, total_bf_taxes: total_bf_taxes, taxes_amount: (Kernel.round((total - total_bf_taxes) * 100) / 100), total: total}
+    {updated_bill_products, total_before_taxes} = calculate_bill(products)
+    total = calculate_taxes(bill.taxes, total_before_taxes)
+
+    %__MODULE__{
+      bill
+      | products: updated_bill_products,
+        total_before_taxes: total_before_taxes,
+        taxes_amount: total - total_before_taxes,
+        total: total
+    }
   end
 
   @doc """
@@ -120,7 +121,14 @@ defmodule BillsGenerator.Entities.Bill do
         iex> BillsGenerator.Entities.Bill.validate(bill)
         :ok
   """
-  def validate(%__MODULE__{title: title, purchaser: purchaser, seller: seller, date: date, products: products, taxes: taxes}) do
+  def validate(%__MODULE__{
+        title: title,
+        purchaser: purchaser,
+        seller: seller,
+        date: date,
+        products: products,
+        taxes: taxes
+      }) do
     # returns only the first error that is found
     with :ok <- validate_title(title),
          :ok <- validate_purchaser(purchaser),
@@ -150,8 +158,8 @@ defmodule BillsGenerator.Entities.Bill do
     )
   end
 
-  defp calculate_taxes(taxes, total_bf_taxes) do
-    (Kernel.round(total_bf_taxes *(taxes + 100))) / 100
+  defp calculate_taxes(taxes, total_before_taxes) do
+    total_before_taxes * (1 + taxes / 100)
   end
 
   defp validate_title(title) when is_bitstring(title) do

@@ -21,7 +21,7 @@ defmodule BillsGenerator.Test.BillTest do
     assert bill.date == @date
     assert bill.products == @products
     assert bill.taxes == @taxes
-    assert bill.total_bf_taxes == nil
+    assert bill.total_before_taxes == nil
     assert bill.taxes_amount == nil
     assert bill.total == nil
   end
@@ -35,7 +35,10 @@ defmodule BillsGenerator.Test.BillTest do
 
     bill = Bill.update_total(bill)
     [product1, product2] = bill.products
-    assert bill.total == 43.2
+    assert bill.total_before_taxes == 36.0
+
+    assert Kernel.round(bill.taxes_amount * 100) / 100 == 7.2
+    assert Kernel.round(bill.total * 100) / 100 == 43.2
     assert product1.total == 27.0
     assert product2.total == 9.0
   end
@@ -46,16 +49,8 @@ defmodule BillsGenerator.Test.BillTest do
     assert bill.products == []
 
     bill = Bill.update_total(bill)
-    assert bill.total == 0.0
-    assert bill.products == []
-  end
-
-  test "update_total/1 updates the total field with nil products" do
-    bill = Bill.new(@title, @purchaser, @seller, @date, nil, @taxes)
-    assert bill.total == nil
-    assert bill.products == []
-
-    bill = Bill.update_total(bill)
+    assert bill.total_before_taxes == 0.0
+    assert bill.taxes_amount == 0.0
     assert bill.total == 0.0
     assert bill.products == []
   end
@@ -111,8 +106,10 @@ defmodule BillsGenerator.Test.BillTest do
   end
 
   test "validate/1 returns error when products list is nil" do
-    bill = Bill.new(@title, @purchaser, @seller, @date, nil, @taxes)
-    assert Bill.validate(bill) == {:error, "Products list can't be empty."}
+    bill = Bill.new(@title, @purchaser, @seller, @date, 1, @taxes)
+
+    assert Bill.validate(bill) ==
+             {:error, "Incorrect products value '1'. Products must be a list of products."}
   end
 
   test "validate/1 returns error when products list is empty" do
@@ -132,7 +129,9 @@ defmodule BillsGenerator.Test.BillTest do
 
   test "validate/1 returns error when taxes value is not a number" do
     bill = Bill.new(@title, @purchaser, @seller, @date, @products, "14")
-    assert Bill.validate(bill) == {:error, "Incorrect taxes value '14'. Bill taxes must be a number."}
+
+    assert Bill.validate(bill) ==
+             {:error, "Incorrect taxes value '14'. Bill taxes must be a number."}
   end
 
   test "validate/1 returns error when taxes value is lesser than 0" do

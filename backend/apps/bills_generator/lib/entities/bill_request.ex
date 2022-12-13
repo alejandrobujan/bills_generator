@@ -17,7 +17,7 @@ defmodule BillsGenerator.Entities.BillRequest do
 
   @doc """
   Crea unha nova solicitude de factura.
-
+  
     ## Exemplos
       iex> user = "John Doe"
       iex> product = BillsGenerator.Entities.Product.new("A product", 15.0,2)
@@ -42,7 +42,7 @@ defmodule BillsGenerator.Entities.BillRequest do
             }
           ],
           taxes: 20.0,
-          total_bf_taxes: nil,
+          total_before_taxes: nil,
           taxes_amount: nil,
           total: nil
         },
@@ -65,7 +65,7 @@ defmodule BillsGenerator.Entities.BillRequest do
 
   @doc """
   Valida unha solicitude de factura.
-
+  
     ## Exemplos
       iex> user = "John Doe"
       iex> product = BillsGenerator.Entities.Product.new("A product", 15.0,2)

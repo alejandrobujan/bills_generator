@@ -8,7 +8,7 @@ defmodule GlobalResources do
     price: "Price",
     discount: "Discount",
     amount: "Amount",
-    total_bf_taxes: "Total before taxes",
+    total_before_taxes: "Total before taxes",
     total: "Total",
     sealorsignature: "Seal or signature"
   }

@@ -8,7 +8,7 @@ defmodule GlobalResourcesGL do
     price: "Prezo",
     discount: "Desconto",
     amount: "Importe",
-    total_bf_taxes: "Total antes de impostos",
+    total_before_taxes: "Total antes de impostos",
     total: "Total",
     sealorsignature: "Selo ou sinatura"
   }
