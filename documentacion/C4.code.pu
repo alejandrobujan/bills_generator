@@ -241,18 +241,6 @@ class BillDao{
 
 
 
-struct json_billRequest{
-    user
-    struct Bill{}
-    struct BillConfig{}
-}
-
-
-
-
-
-
-
 
 
 GenFilter -D-> GenServer
