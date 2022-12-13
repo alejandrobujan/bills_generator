@@ -21,7 +21,7 @@ defmodule BillsGenerator.Entities.BillRequest do
     ## Exemplos
       iex> user = "John Doe"
       iex> product = BillsGenerator.Entities.Product.new("A product", 15.0,2)
-      iex> bill = BillsGenerator.Entities.Bill.new("A bill", "A purchaser", "A seller", [product], 20.0)
+      iex> bill = BillsGenerator.Entities.Bill.new("A bill", "A purchaser", "A seller", "2021-07-10", [product], 20.0)
       iex> config = BillsGenerator.Entities.BillConfig.new(11,"latex","a4paper",true,"euro")
       iex> BillsGenerator.Entities.BillRequest.new(user, bill, config)
       %BillsGenerator.Entities.BillRequest{
@@ -30,6 +30,7 @@ defmodule BillsGenerator.Entities.BillRequest do
           title: "A bill",
           purchaser: "A purchaser",
           seller: "A seller",
+          date: "2021-07-10",
           products: [
             %BillsGenerator.Entities.Product{
               name: "A product",
@@ -68,7 +69,7 @@ defmodule BillsGenerator.Entities.BillRequest do
     ## Exemplos
       iex> user = "John Doe"
       iex> product = BillsGenerator.Entities.Product.new("A product", 15.0,2)
-      iex> bill = BillsGenerator.Entities.Bill.new("A bill", "A purchaser", "A seller", [product], 20.0)
+      iex> bill = BillsGenerator.Entities.Bill.new("A bill", "A purchaser", "A seller", "2021-07-10", [product], 20.0)
       iex> config = BillsGenerator.Entities.BillConfig.new(11,"latex","a4paper",true,"euro")
       iex> bill_request = BillsGenerator.Entities.BillRequest.new(user, bill, config)
       iex> BillsGenerator.Entities.BillRequest.validate(bill_request)

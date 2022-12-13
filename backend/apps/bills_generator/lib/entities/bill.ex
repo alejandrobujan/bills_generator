@@ -23,11 +23,12 @@ defmodule BillsGenerator.Entities.Bill do
 
   @doc """
     ## Exemplos:
-        iex> BillsGenerator.Entities.Bill.new("A bill", "A purchaser", "A seller", [], 20.0)
+        iex> BillsGenerator.Entities.Bill.new("A bill", "A purchaser", "A seller", "2021-07-10", [], 20.0)
         %BillsGenerator.Entities.Bill{
           title: "A bill",
           purchaser: "A purchaser",
           seller: "A seller",
+          date: "2021-07-10",
           products: [],
           taxes: 20.0,
           total_bf_taxes: nil,
@@ -53,13 +54,14 @@ defmodule BillsGenerator.Entities.Bill do
     }
   end
 
-  def new(title, purchaser, seller, date, products) do
+  def new(title, purchaser, seller, date, products, taxes) do
     %__MODULE__{
       title: title,
       purchaser: purchaser,
       seller: seller,
       date: date,
       products: products,
+      taxes: taxes,
       total: nil
     }
   end
@@ -70,12 +72,13 @@ defmodule BillsGenerator.Entities.Bill do
         ...>   BillsGenerator.Entities.Product.new("A product", 15.0,2),
         ...>   BillsGenerator.Entities.Product.new("Another product", 3.0,3, 10.0)
         ...> ]
-        iex> bill = BillsGenerator.Entities.Bill.new("A bill", "A purchaser", "A seller", products, 20.0)
+        iex> bill = BillsGenerator.Entities.Bill.new("A bill", "A purchaser", "A seller", "2021-07-10", products, 20.0)
         iex> BillsGenerator.Entities.Bill.update_total(bill)
         %BillsGenerator.Entities.Bill{
           title: "A bill",
           purchaser: "A purchaser",
           seller: "A seller",
+          date: "2021-07-10",
           products: [
             %BillsGenerator.Entities.Product{
               name: "A product",
@@ -113,7 +116,7 @@ defmodule BillsGenerator.Entities.Bill do
         ...>   BillsGenerator.Entities.Product.new("A product", 2, 15.0),
         ...>   BillsGenerator.Entities.Product.new("Another product", 3, 3.0, 10.0)
         ...> ]
-        iex> bill = BillsGenerator.Entities.Bill.new("A bill", "A purchaser", "A seller", products, 20.0)
+        iex> bill = BillsGenerator.Entities.Bill.new("A bill", "A purchaser", "A seller", "2021-07-10", products, 20.0)
         iex> BillsGenerator.Entities.Bill.validate(bill)
         :ok
   """

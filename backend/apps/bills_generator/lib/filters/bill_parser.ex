@@ -14,7 +14,7 @@ defmodule BillsGenerator.Filters.BillParser do
   # Private functions
 
   @spec parse_json(String.t()) :: BillRequest.t()
-  def parse_json(json_bill) do
+  defp parse_json(json_bill) do
     Poison.decode!(json_bill,
       as: %BillRequest{
         bill: %Bill{products: [%Product{}]},
