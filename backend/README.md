@@ -32,7 +32,7 @@ que puedan fallar.
 
 - [ ] Mejorar el latex generado en el formatter. Estaría bien incluír divisas, precio con y sin tasas, descuento aplicado por ítem o en global...Añadir logo de la empresa? no sé como iría en el json... Podría ir un link a una imagen, y que en un filtro se descargase? No me convence mucho.
 
-- [ ] Internationalization en el latex formatter? puede ser un requisito no funcional. Al menos podemos poner la moneda (en euros) hardcoded.
+- [x] Internationalization en el latex formatter? puede ser un requisito no funcional. Al menos podemos poner la moneda (en euros) hardcoded.
 
 - [ ] Diagramas c4 (y documentación de las funciones? No sé si hace falta)
 
