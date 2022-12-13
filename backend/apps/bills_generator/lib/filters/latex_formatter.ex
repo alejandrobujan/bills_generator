@@ -16,6 +16,7 @@ defmodule BillsGenerator.Filters.LatexFormatter do
   defp generate_latex(bill_request) do
     """
     #{latex_styler(bill_request.config)}\\usepackage{longtable}\\usepackage{array}\\usepackage{eurosym}
+    \\date{#{Calendar.strftime(Date.from_iso8601!(bill_request.bill.date), "%d/%m/%Y")}}
     \\newcommand{\\currency}{#{currency_symbol(bill_request.config.currency)}}
     \\address{#{Resources.get_global_resources(bill_request.config.language).seller}: \\\\ \n #{String.replace(bill_request.bill.seller, ",", ", \\\\ \n")}}
     \\begin{document}

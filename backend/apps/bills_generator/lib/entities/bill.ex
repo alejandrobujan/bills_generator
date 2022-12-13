@@ -4,7 +4,7 @@ defmodule BillsGenerator.Entities.Bill do
   @moduledoc """
   Módulo que encapsula o struct que representa unha factura.
   """
-  defstruct [:title, :purchaser, :seller, :products, :total]
+  defstruct [:title, :purchaser, :seller, :products, :total, date: Date.to_iso8601(Date.from_erl!(elem(:calendar.local_time(),0)))]
 
   @typedoc """
   Struct que representa unha factura.
@@ -13,6 +13,7 @@ defmodule BillsGenerator.Entities.Bill do
           title: String.t(),
           purchaser: String.t(),
           seller: String.t(),
+          date: String.t(),
           products: list(Product),
           total: nil | float()
         }
@@ -28,13 +29,27 @@ defmodule BillsGenerator.Entities.Bill do
           total: nil
         }
   """
-  def new(title, purchaser, seller, nil), do: new(title, purchaser, seller, [])
+  def new(title, purchaser, seller, nil, nil), do: new(title, purchaser, seller, Date.to_iso8601(Date.from_erl!(elem(:calendar.local_time(),0))), [])
 
-  def new(title, purchaser, seller, products) do
+  def new(title, purchaser, seller, date, nil), do: new(title, purchaser, seller, date, [])
+
+  def new(title, purchaser, seller, nil, products) do
     %__MODULE__{
       title: title,
       purchaser: purchaser,
       seller: seller,
+      date: Date.to_iso8601(Date.from_erl!(elem(:calendar.local_time(),0))),
+      products: products,
+      total: nil
+    }
+  end
+
+  def new(title, purchaser, seller, date, products) do
+    %__MODULE__{
+      title: title,
+      purchaser: purchaser,
+      seller: seller,
+      date: date,
       products: products,
       total: nil
     }
@@ -89,12 +104,13 @@ defmodule BillsGenerator.Entities.Bill do
         iex> BillsGenerator.Entities.Bill.validate(bill)
         :ok
   """
-  def validate(%__MODULE__{title: title, purchaser: purchaser, seller: seller, products: products}) do
+  def validate(%__MODULE__{title: title, purchaser: purchaser, seller: seller, date: date, products: products}) do
     # returns only the first error that is found
     with :ok <- validate_title(title),
          :ok <- validate_purchaser(purchaser),
          :ok <- validate_seller(seller),
-         :ok <- validate_products(products) do
+         :ok <- validate_products(products),
+         :ok <- validate_date(date) do
       :ok
     else
       {:error, reason} -> {:error, reason}
@@ -169,5 +185,13 @@ defmodule BillsGenerator.Entities.Bill do
 
   defp validate_products(products) do
     {:error, "Incorrect products value '#{products}'. Products must be a list of products."}
+  end
+
+  defp validate_date(date) do
+    case Date.from_iso8601(date) do
+      {:ok, _} -> :ok
+      {:error, :invalid_format} -> {:error, "Date must be formatted as iso8601 (yyyy-MM-dd)."}
+      {:error, :invalid_date} -> {:error, "Date must be a valid date."}
+    end
   end
 end
