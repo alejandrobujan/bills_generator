@@ -24,7 +24,8 @@ defmodule BillsGenerator.Test.IntegrationTest do
           "quantity": 2,
           "discount": 10.0
         }
-      ]
+      ],
+      "taxes": 20.0
     },
     "config": {
       "font_size" : 10,
@@ -83,7 +84,8 @@ defmodule BillsGenerator.Test.IntegrationTest do
             "quantity": 2,
             "discount": 10.0
           }
-        ]
+        ],
+        "taxes": 20.0
       },
       "config": {
         "font_size" : 10,

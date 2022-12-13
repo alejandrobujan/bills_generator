@@ -8,6 +8,7 @@ defmodule GlobalResourcesES do
     price: "Precio",
     discount: "Descuento",
     amount: "Importe",
+    total_bf_taxes: "Total antes de impuestos",
     total: "Total",
     sealorsignature: "Sello o firma"
   }
