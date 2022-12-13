@@ -29,7 +29,7 @@ defmodule BillsGenerator.Filters.LatexFormatter do
     \\hline
     \\multicolumn{1}{c}{\\textbf{#{Resources.get_global_resources(bill_request.config.language).product}}} & \\multicolumn{1}{c}{\\textbf{#{Resources.get_global_resources(bill_request.config.language).quantity}}} & \\multicolumn{1}{c}{\\textbf{#{Resources.get_global_resources(bill_request.config.language).price}}} & \\multicolumn{1}{c}{\\textbf{#{Resources.get_global_resources(bill_request.config.language).discount}}} & \\multicolumn{1}{c}{\\textbf{#{Resources.get_global_resources(bill_request.config.language).amount}}} \\\\ \\hline
     """ <>
-      format_bill(bill_request.bill.products, bill_request.bill.total, bill_request.config.language) <>
+      format_bill(bill_request.bill.products, bill_request.bill.total_bf_taxes, bill_request.bill.taxes, bill_request.bill.taxes_amount, bill_request.bill.total, bill_request.config.language) <>
       """
       \\end{longtable}
       \\renewcommand{\\arraystretch}{1}
@@ -55,35 +55,42 @@ defmodule BillsGenerator.Filters.LatexFormatter do
   defp currency_symbol("euro"), do: "\\euro"
   defp currency_symbol("dollar"), do: "\\$"
 
-  defp format_bill([], 0, _language), do: ""
+  defp format_bill([], _total_bf_taxes, _taxes, _taxes_amount, 0, _language), do: ""
 
-  defp format_bill(products, total, language) do
-    do_format_bill("", products, total, language)
+  defp format_bill(products, total_bf_taxes, taxes, taxes_amount, total, language) do
+    do_format_bill("", products, total_bf_taxes, taxes, taxes_amount, total, language)
   end
 
-  defp do_format_bill(acc, [], total, language) do
+  defp do_format_bill(acc, [], total_bf_taxes, taxes, taxes_amount, total, language) do
     acc <>
       """
-      \\multicolumn{2}{c}{} & \\multicolumn{1}{r}{\\textbf{#{Resources.get_global_resources(language).taxes}}} & \\multicolumn{1}{c}{XX\\%} & \\multicolumn{1}{c}{5 \\currency} \\\\ \\cline{3-5}
-      \\multicolumn{2}{c}{} & \\multicolumn{1}{r}{\\textbf{#{String.upcase(Resources.get_global_resources(language).total)}}} && \\multicolumn{1}{c}{#{:erlang.float_to_binary(total * 1.0, decimals: 2)} \\currency} \\\\ \\cline{3-5}
+      \\multicolumn{2}{c}{} & \\multicolumn{1}{r}{\\textbf{#{Resources.get_global_resources(language).total_bf_taxes}}} && \\multicolumn{1}{c}{#{:erlang.float_to_binary(total_bf_taxes * 1.0, decimals: 2)} \\currency} \\\\
+      \\multicolumn{2}{c}{} & \\multicolumn{1}{r}{\\textbf{#{Resources.get_global_resources(language).taxes}}} & \\multicolumn{1}{c}{#{:erlang.float_to_binary(taxes * 1.0, decimals: 2)} \\%} & \\multicolumn{1}{c}{#{:erlang.float_to_binary(taxes_amount * 1.0, decimals: 2)} \\currency} \\\\ \\cline{3-5}
+      \\multicolumn{2}{c}{} & \\multicolumn{1}{r}{\\textbf{#{String.upcase(Resources.get_global_resources(language).total)}}} && \\multicolumn{1}{c}{#{:erlang.float_to_binary(total * 1.0, decimals: 2)} \\currency} \\\\
       """
   end
 
-  defp do_format_bill(acc, [(%{discounted_amount: 0.0} = product) | t], total, language) do
+  defp do_format_bill(acc, [(%{discounted_amount: 0.0} = product) | t], total_bf_taxes, taxes, taxes_amount, total, language) do
     do_format_bill(
       acc <>
         "\\multicolumn{1}{c}{#{product.name}} & \\multicolumn{1}{c}{#{product.quantity}} & \\multicolumn{1}{c}{#{:erlang.float_to_binary(product.price * 1.0, decimals: 2)} \\currency} & \\multicolumn{1}{c}{-} & \\multicolumn{1}{c}{#{:erlang.float_to_binary(product.total * 1.0, decimals: 2)} \\currency} \\\\ \\hline \n",
       t,
+      total_bf_taxes,
+      taxes,
+      taxes_amount,
       total,
       language
     )
   end
 
-  defp do_format_bill(acc, [product | t], total, language) do
+  defp do_format_bill(acc, [product | t], total_bf_taxes, taxes, taxes_amount, total, language) do
     do_format_bill(
       acc <>
         "\\multicolumn{1}{c}{#{product.name}} & \\multicolumn{1}{c}{#{product.quantity}} & \\multicolumn{1}{c}{#{:erlang.float_to_binary(product.price * 1.0, decimals: 2)} \\currency} & \\multicolumn{1}{c}{-#{:erlang.float_to_binary(product.discounted_amount * 1.0, decimals: 2)} \\currency} & \\multicolumn{1}{c}{#{:erlang.float_to_binary(product.total * 1.0, decimals: 2)} \\currency} \\\\ \\hline \n",
       t,
+      total_bf_taxes,
+      taxes,
+      taxes_amount,
       total,
       language
     )

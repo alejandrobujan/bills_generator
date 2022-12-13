@@ -2,7 +2,7 @@ defmodule BillsGenerator.Entities.Product do
   @moduledoc """
   Módulo que encapsula o struct que representa un produto na factura.
   """
-  defstruct [:name, :price, :quantity, :discount, :discounted_amount, :total]
+  defstruct [:name, :price, :quantity, :discounted_amount, :total, discount: 0.0]
 
   @typedoc """
   Struct que representa un produto na factura.
@@ -86,7 +86,7 @@ defmodule BillsGenerator.Entities.Product do
     do: 0
 
   defp calculate_discount(%__MODULE__{discount: discount}, total) do
-    (discount / 100) * total
+    (Kernel.round(discount * total)) / 100
   end
 
   defp validate_name(name) when is_bitstring(name) do
