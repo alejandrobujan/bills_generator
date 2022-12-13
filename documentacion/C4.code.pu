@@ -11,7 +11,270 @@
 HIDE_STEREOTYPE()
 LAYOUT_WITH_LEGEND()
 
+interface GenServer{
+    +start_link/3
+    +call/2
+    +cast/2
+--
+    #init/1
+    #handle_call/3
+    #handle_cast/2
+    #handle_info/2
+}
+
+
+interface GenFilter{
+   @GenFilter
+    +start_link(any())
+    +process_filter(any())
+    +stop()
+    +redirect(pid(),any())
+    +get_num_workers()
+    +alive?()
+    +on_error(module(),any(),any())
+    +worker_action(any())
+    +next_action(any())
+--
+    @GenServer
+    #init()
+    #handle_cast(:process_filter)
+    #handle_cast(:redirect)
+    #handle_call(:get_num_workers)
+    #handle_info(:check)
+--
+    -check_services_worload(period)
+    -handle_worload_rate(service_handler,worload_rate)  
+}
 
 
 
-@enduml 
+interface GenFilterWorker{
+@GenFilterWorker
+    +start_link(atom(),atom())
+    +process_filter(GenServer.server(),any())
+    +stop(GenServer.server())
+    +do_process_filter(any())
+--
+@GenServer
+    #init({leader,name})
+    #handle_cast(:process_filter)    
+}
+
+interface Ecto{
+    Ecto.Repo
+    Ecto.Schema
+    Ecto.Changeset
+}
+
+
+
+struct billrequest{
+    user:String.t()
+    bill:bill.t()
+    config:billconfig.t()
+}
+
+
+class BillRequest{
+    billrequest billrequest
+--
+    +new(user,bill,config)
+    +validate(billrequest)
+    -validate_user(user)
+}
+
+
+
+struct billconfig{
+    font_size:non_neg_integer()
+    font_style:String.t()
+    paper_size:String.t()
+    landscape:boolean
+}
+
+class BillConfig{
+    billconfig billconfig
+--
+    +new(font_size,font_style,paper_size,landscape)
+    +validate(billconfig)
+    -validate_font_size(font_size)
+    -validate_font_style(font_style)
+    -validate_paper_size(paper_size)
+    -validate_landscape(landscape)
+}
+
+struct bill{
+    title:String.t()
+    purchaser:String.t()
+    seller:String.t()
+    products:list(Product)
+    total:float()
+}
+
+class Bill{
+    bill bill
+--
+    +new(title,purchaser,seller,products)
+    +update_total(bill)
+    +validate(bill)
+    -calculate_bill(products)
+    -validate_title(title)
+    -validate_purchaser(purchaser)
+    -validate_seller(seller)
+    -validate_products(products)
+}
+
+struct product{
+    name:String.t()
+    price:number()
+    quantity:number()
+    total: number()
+}
+
+class Product{
+    product product
+--
+    +new(name,price,quantity)
+    +update_total(product)
+    +validate(product)
+    -calculate_total(product)
+    -validate_name(name)
+    -validate_price(price)
+    -validate_quantity(quantity)
+}
+
+struct service_handler{
+    leader_module: module()
+    worker_module: module()
+    workers: List(GenServer.server())
+    free_workers: Queue(GenServer.server())
+    busy_workser: Map(pid())
+    request_queue: Queue(pid(),any())
+    min_workers: pos_integer
+    next_worker_id: pos_integer
+}
+
+class ServiceHandler{   
+    service_handler handler
+--
+    +new(leader_module,worker_module,min_workers)
+    +spawn_worker(handler)
+    +spawn_workers(handler,n)
+    +kill_worker(handler)
+    +kill_workers(handler,n)
+    +all_workers_busy?(handler)
+    +any_pending_request?(handler)
+    +enqueue_request(handler)
+    +dequeue_request(handler)
+    +assign_job(handler,{client,input_data}=request)
+    +assign_job(handler)
+    +assign_jobs(handler,n)
+    +free_worker(handler,worker)
+    +total_pending_request(handler)
+    +total_free_workers(handler)
+    +total_workers(handler)
+    +stop_workers(handler)
+}
+
+class Aplicacion{}
+
+
+class BillValidator{
+    +worker_action(input_data)
+    +next_action(output_data)
+    -validate_request!(bill_request)
+}
+
+
+class BillParser{
+    +worker_action(input_data)
+    +next_action(output_data)
+    -parse_json(json_bill)
+}
+
+class BillCalculator{
+    +worker_action(input_data)
+    +next_action(output_data)
+    -update_bill(bill_request)
+}
+
+class LatexFormatter{
+    +worker_action(input_data)
+    +next_action(output_data)
+    -generate_latex(bill_request)
+    -latex_styler(config)
+    -font_styler(font)
+    -landscape?(T/F)
+    -format_bill(products,total)
+}
+
+class LatexToPdf{
+    +worker_action(input_data)
+    +next_action(output_data)
+    -generate_pdf!(latex)
+}
+
+class StoreInDatabase{
+    +worker_action(input_data)
+    +next_action(output_data)
+    +on_error(caused_by,error_msg,bill_id)
+}
+
+
+'class BillValidatorW{}
+
+'class BillParserW{}
+
+'class BillCalculatorW{}
+
+'class LatexFormatterW{}
+
+'class LatexToPdfW{}
+
+'class StoreInDatabaseW{}
+
+
+class BillDao{
+    changeset(bill,attrs)
+}
+
+
+
+
+struct json_billRequest{
+    user
+    struct Bill{}
+    struct BillConfig{}
+}
+
+
+
+
+
+
+
+
+
+GenFilter -D-> GenServer
+GenFilterWorker -D-> GenServer
+Lay_R(GenFilterWorker,GenServer)
+
+GenFilter *-- ServiceHandler
+ServiceHandler *-- GenFilterWorker
+
+BillParser --> GenFilter
+BillValidator --> GenFilter
+BillCalculator  --> GenFilter
+LatexFormatter --> GenFilter
+LatexToPdf --> GenFilter
+StoreInDatabase --> GenFilter
+
+
+
+BillDao -- Ecto
+
+
+
+
+
+@enduml 5

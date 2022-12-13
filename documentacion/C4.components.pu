@@ -75,11 +75,11 @@ Rel_R(filtroStoreM,persistencia,"Almacena","binary")
 Rel_D(persistencia,frontend,"Resposta","API/bin")
 Rel_U(frontend,persistencia,"Petición","API/json")
 
-Rel_R(filtroValidatorM,filtroParserM,"Envía","Json",$tags="Branco")
-Rel_R(filtroParserM,filtroUpdateM,"Envía","Elixir Map",$tags="Branco")
-Rel_R(filtroUpdateM,filtroGenerateLatexM,"Envía","Elixir Map",$tags="Branco")
-Rel_R(filtroGenerateLatexM,filtroGeneratePdfM,"Envía","Latex",$tags="Branco")
-Rel_R(filtroGeneratePdfM,filtroStoreM,"Envía","Binary",$tags="Branco")
+Rel_R(filtroParserM,filtroValidatorM,"Envía","Json",)
+Rel_R(filtroValidatorM,filtroUpdateM,"Envía","Elixir Map")
+Rel_R(filtroUpdateM,filtroGenerateLatexM,"Envía","Elixir Map")
+Rel_R(filtroGenerateLatexM,filtroGeneratePdfM,"Envía","Latex")
+Rel_R(filtroGeneratePdfM,filtroStoreM,"Envía","Binary")
 
 
 BiRel_D(filtroValidatorM,filtroValidatorW,"1",)

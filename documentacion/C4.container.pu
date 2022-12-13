@@ -18,11 +18,12 @@ title BillsGenerator\nB<$euro_sign>G
 
 Person_Ext(cliente, "Cliente", "Quere usar BillsGenerator")
 
-AddRelTag("Branco", $textColor="white", $lineColor="white")
+'AddRelTag("Branco", $textColor="white", $lineColor="white")
+AddElementTag("Branco",$bgColor="white")
 
 System_Boundary(sistema, "BillsGenerator") {
   System(frontend,"Frontend","UI para a xeración e descarga de facturas",$sprite="phoenix")
-  System(backend, "Backend", "Xestiona facturas a nome dun cliente polo compra de distintos produtos",$sprite="elixir"){
+  System(backend, "Backend", "Xestiona facturas a nome dun cliente polo compra de distintos produtos",$sprite="elixir",$tags="branco"){
 Container(filtroValidator,"Validator","Filtro que valida unha factura")
 Container(filtroParser,"Parser","Filtro que parsea un json")
 Container(filtroUpdate,"Updater","Filtro que actualiza os totais da factura")
@@ -38,13 +39,13 @@ Container(filtroStore,"Storer","Filtro que almacena o pdf xerado nunha BD")
 Rel_D(cliente, frontend, "Usa", "REST")
 Rel_R(frontend,backend,"Solicitude","API/json")
 'Rel_U(backend,frontend,"Resposta","API/json")
-Rel_R(filtroStore,persistencia,"Almacena","binary",$tags="Branco")
+Rel_R(filtroStore,persistencia,"Almacena","binary")
 Rel_U(persistencia,frontend,"Resposta","API/bin")
 Rel_D(frontend,persistencia,"Petición","API/json")
-Rel_R(filtroValidator,filtroParser,"Envía","Json",$tags="Branco")
-Rel_R(filtroParser,filtroUpdate,"Envía","Elixir Map",$tags="Branco")
-Rel_R(filtroUpdate,filtroGenerateLatex,"Envía","Elixir Map",$tags="Branco")
-Rel_R(filtroGenerateLatex,filtroGeneratePdf,"Envía","Latex",$tags="Branco")
-Rel_R(filtroGeneratePdf,filtroStore,"Envía","Binary",$tags="Branco")
+Rel_R(filtroParser,filtroValidator,"Envía","Json")
+Rel_R(filtroValidator,filtroUpdate,"Envía","Elixir Map")
+Rel_R(filtroUpdate,filtroGenerateLatex,"Envía","Elixir Map")
+Rel_R(filtroGenerateLatex,filtroGeneratePdf,"Envía","Latex")
+Rel_R(filtroGeneratePdf,filtroStore,"Envía","Binary")
 
 @enduml 
