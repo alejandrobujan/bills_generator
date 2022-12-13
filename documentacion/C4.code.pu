@@ -11,6 +11,9 @@
 HIDE_STEREOTYPE()
 LAYOUT_WITH_LEGEND()
 
+System_Boundary(sistema, "BillsGenerator\n Backend\n<$elixir>") {
+
+
 interface GenServer{
     +start_link/3
     +call/2
@@ -72,24 +75,24 @@ interface Ecto{
     Ecto.Changeset
 }
 
-
-
 struct billrequest{
     user:String.t()
-    bill:bill.t()
-    config:billconfig.t()
+    bill:Bill
+    config:BillConfig
 }
+
+BillRequest  *-- Bill 
+BillRequest  *-- BillConfig
+Bill  *-- Product
 
 
 class BillRequest{
-    billrequest billrequest
+    billrequest:billrequest.t()
 --
     +new(user,bill,config)
     +validate(billrequest)
     -validate_user(user)
 }
-
-
 
 struct billconfig{
     font_size:non_neg_integer()
@@ -99,7 +102,7 @@ struct billconfig{
 }
 
 class BillConfig{
-    billconfig billconfig
+    billconfig: billconfig.t()
 --
     +new(font_size,font_style,paper_size,landscape)
     +validate(billconfig)
@@ -118,7 +121,7 @@ struct bill{
 }
 
 class Bill{
-    bill bill
+    bill:bill.t()
 --
     +new(title,purchaser,seller,products)
     +update_total(bill)
@@ -138,7 +141,7 @@ struct product{
 }
 
 class Product{
-    product product
+    product:product.t()
 --
     +new(name,price,quantity)
     +update_total(product)
@@ -161,7 +164,7 @@ struct service_handler{
 }
 
 class ServiceHandler{   
-    service_handler handler
+    handler:service_handler.t()
 --
     +new(leader_module,worker_module,min_workers)
     +spawn_worker(handler)
@@ -182,30 +185,31 @@ class ServiceHandler{
     +stop_workers(handler)
 }
 
+
 class Aplicacion{}
 
 
-class BillValidator{
-    +worker_action(input_data)
-    +next_action(output_data)
-    -validate_request!(bill_request)
-}
-
-
 class BillParser{
-    +worker_action(input_data)
+    +worker_action(%{bill_id,json_bill}=input_data)
     +next_action(output_data)
     -parse_json(json_bill)
 }
 
+
+class BillValidator{
+    +worker_action(%{bill_id,bill_request}=input_data)
+    +next_action(output_data)
+    -validate_request!(bill_request)
+}
+
 class BillCalculator{
-    +worker_action(input_data)
+    +worker_action(%{bill_id,bill_request}=input_data)
     +next_action(output_data)
     -update_bill(bill_request)
 }
 
 class LatexFormatter{
-    +worker_action(input_data)
+    +worker_action(%{bill_id,bill_request}=input_data)
     +next_action(output_data)
     -generate_latex(bill_request)
     -latex_styler(config)
@@ -215,14 +219,14 @@ class LatexFormatter{
 }
 
 class LatexToPdf{
-    +worker_action(input_data)
+    +worker_action(%{bill_id,bill_request,latex}=input_data)
     +next_action(output_data)
     -generate_pdf!(latex)
 }
 
 class StoreInDatabase{
-    +worker_action(input_data)
-    +next_action(output_data)
+    +worker_action(%{bill_id,bill_request,pdf}=input_data)
+    +next_action(output_data | error)
     +on_error(caused_by,error_msg,bill_id)
 }
 
@@ -241,18 +245,25 @@ class StoreInDatabase{
 
 
 class BillDao{
-    changeset(bill,attrs)
+    changeset(bill=[:user, :title, :pdf, :error, error_msg]},attrs)
 }
 
 
+BillValidator -- BillRequest : < usa
+BillCalculator -- BillRequest : < usa
+LatexFormatter -- BillRequest : < usa
+LatexToPdf -- BillRequest : < usa
+StoreInDatabase -- BillRequest : < usa
+StoreInDatabase -- BillDao : < usa 
 
-
+BillDao --> Ecto : < Schema
+Repo --> Ecto : < Repo
 
 
 GenFilter -D-> GenServer
 GenFilterWorker -D-> GenServer
 'Lay_R(GenFilterWorker,GenServer)
-ServiceHandler *-L- GenFilterWorker
+ServiceHandler *-R- GenFilterWorker
 GenFilter *-L- ServiceHandler
 
 
@@ -261,14 +272,19 @@ BillValidator --> GenFilter
 BillCalculator  --> GenFilter
 LatexFormatter --> GenFilter
 LatexToPdf --> GenFilter
+LatexToPdf --> GenFilter
 StoreInDatabase --> GenFilter
 
+billrequest -U- BillRequest
+billconfig -U- BillConfig
+bill -U- Bill
+service_handler -U- ServiceHandler
+product -U- Product
 
 
-BillDao -- Ecto
 
 
-
+}
 
 
 @enduml 5
