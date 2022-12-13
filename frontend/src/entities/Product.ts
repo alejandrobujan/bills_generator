@@ -4,9 +4,10 @@ import ProductDto, { ProductDtoSchema } from "./ProductDto";
 export const ProductSchema = z
   .object({
     id: z.string(),
-    name: z.string(),
-    price: z.number(),
-    quantity: z.number(),
+    name: z.string().min(1),
+    price: z.number().min(0),
+    quantity: z.number().min(1),
+    discount: z.number().min(0).max(100).optional(),
   })
   .strict();
 
@@ -18,5 +19,6 @@ export const toProductDto = (product: Product): ProductDto => {
     name: product.name,
     price: product.price,
     quantity: product.quantity,
+    discount: product.discount,
   });
 };

@@ -2,7 +2,7 @@ defmodule BillsGenerator.Entities.Product do
   @moduledoc """
   Módulo que encapsula o struct que representa un produto na factura.
   """
-  defstruct [:name, :price, :quantity, :total]
+  defstruct [:name, :price, :quantity, :discount, :discounted_amount, :total]
 
   @typedoc """
   Struct que representa un produto na factura.
@@ -11,6 +11,8 @@ defmodule BillsGenerator.Entities.Product do
           name: String.t(),
           price: number(),
           quantity: number(),
+          discount:  number(),
+          discounted_amount: nil | number(),
           total: nil | number()
         }
 
@@ -21,30 +23,36 @@ defmodule BillsGenerator.Entities.Product do
           name: "A product",
           price: 10.0,
           quantity: 2,
+          discount: 0.0,
+          discounted_amount: nil,
           total: nil
         }
   """
-  def new(name, price, quantity) do
-    %__MODULE__{name: name, price: price, quantity: quantity, total: nil}
+  def new(name, price, quantity, discount \\ 0.0) do
+    %__MODULE__{name: name, price: price, quantity: quantity, discount: discount, discounted_amount: nil, total: nil}
   end
 
   @doc """
   Actualiza o total do produto e devolve unha tupla co producto e o total.
 
     ## Exemplos:
-        iex> product = BillsGenerator.Entities.Product.new("A product", 10.0, 2)
+        iex> product = BillsGenerator.Entities.Product.new("A product", 10.0, 2, 10.0)
         iex> product = BillsGenerator.Entities.Product.update_total(product)
         iex> product
         %BillsGenerator.Entities.Product{
           name: "A product",
           price: 10.0,
           quantity: 2,
-          total: 20.0
+          discount: 10.0,
+          discounted_amount: 2.0,
+          total: 18.0
         }
   """
   @spec update_total(t()) :: t()
   def update_total(product) do
-    %__MODULE__{product | total: calculate_total(product)}
+    total = calculate_total(product)
+    disc_amount = calculate_discount(product, total)
+    %__MODULE__{product | discounted_amount: disc_amount, total: total - disc_amount}
   end
 
   @doc """
@@ -52,15 +60,16 @@ defmodule BillsGenerator.Entities.Product do
   con '{:error, reason}' se o producto non é válido.
 
   ## Exemplos:
-      iex> product = BillsGenerator.Entities.Product.new("A product", 10.0, 2)
+      iex> product = BillsGenerator.Entities.Product.new("A product", 10.0, 2, 10.0)
       iex> BillsGenerator.Entities.Product.validate(product)
       :ok
   """
-  def validate(%__MODULE__{name: name, price: price, quantity: quantity}) do
+  def validate(%__MODULE__{name: name, price: price, quantity: quantity, discount: discount}) do
     # returns only the first error that is found
     with :ok <- validate_name(name),
          :ok <- validate_price(price),
-         :ok <- validate_quantity(quantity) do
+         :ok <- validate_quantity(quantity),
+         :ok <- validate_discount(discount) do
       :ok
     else
       {:error, reason} -> {:error, reason}
@@ -71,6 +80,13 @@ defmodule BillsGenerator.Entities.Product do
 
   defp calculate_total(%__MODULE__{price: price, quantity: quantity}) do
     price * quantity
+  end
+
+  defp calculate_discount(%__MODULE__{discount: nil}, _total),
+    do: 0
+
+  defp calculate_discount(%__MODULE__{discount: discount}, total) do
+    (discount / 100) * total
   end
 
   defp validate_name(name) when is_bitstring(name) do
@@ -109,5 +125,17 @@ defmodule BillsGenerator.Entities.Product do
 
   defp validate_quantity(quantity) do
     {:error, "Incorrect product quantity value '#{quantity}'. Product quantity must be a number."}
+  end
+
+  defp validate_discount(discount) when is_number(discount) do
+    if discount >= 0 and discount <= 100 do
+      :ok
+    else
+      {:error, "Product discount must be between 0 and 100."}
+    end
+  end
+
+  defp validate_discount(discount) do
+    {:error, "Incorrect discount value '#{discount}'. Product discount must be a number."}
   end
 end

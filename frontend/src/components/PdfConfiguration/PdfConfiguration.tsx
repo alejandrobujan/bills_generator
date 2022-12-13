@@ -1,5 +1,12 @@
+import {
+  currencyMap,
+  fontSizeMap,
+  fontStyleMap,
+  languageMap,
+  paperSizeMap,
+} from "../../entities/ConfigSchemas";
 import PdfConfig from "../../entities/PdfConfig";
-import { fontStyleMap, paperSizeMap } from "../../entities/PdfConfigDto";
+import {} from "../../entities/PdfConfigDto";
 import CheckboxInput from "../Input/CheckboxInput";
 import NumberInput from "../Input/NumberInput";
 import SelectInput from "../Input/SelectInput";
@@ -17,12 +24,41 @@ export default function PdfConfiguration({ config, onChangeConfig }: Props) {
 
       <div className={styles.PdfConfiguration_form}>
         <SelectInput
+          label="Currency"
+          value={config.currency}
+          onChange={(currency) => {
+            onChangeConfig({
+              ...config,
+              currency: currencyMap.get(currency)!,
+            });
+          }}
+        >
+          <option value="euro">Euro</option>
+          <option value="dollar">Dollar</option>
+        </SelectInput>
+
+        <SelectInput
+          label="Language"
+          value={config.language}
+          onChange={(language) => {
+            onChangeConfig({
+              ...config,
+              language: languageMap.get(language)!,
+            });
+          }}
+        >
+          <option value="en">English</option>
+          <option value="es">Spanish</option>
+          <option value="gl">Galician</option>
+        </SelectInput>
+
+        <SelectInput
           label="Font style"
           value={config.fontStyle}
           onChange={(type) => {
             onChangeConfig({
               ...config,
-              fontStyle: fontStyleMap.get(type),
+              fontStyle: fontStyleMap.get(type)!,
             });
           }}
         >
@@ -30,16 +66,20 @@ export default function PdfConfiguration({ config, onChangeConfig }: Props) {
           <option value="times">Times New Roman</option>
         </SelectInput>
 
-        <NumberInput
+        <SelectInput
           label="Font size"
-          value={config.fontSize}
-          onChange={(fontSize) =>
+          value={config.fontSize.toString()}
+          onChange={(fontSizeStr) =>
             onChangeConfig({
               ...config,
-              fontSize,
+              fontSize: fontSizeMap.get(fontSizeStr)!,
             })
           }
-        />
+        >
+          <option value="10">10</option>
+          <option value="11">11</option>
+          <option value="12">12</option>
+        </SelectInput>
 
         <SelectInput
           label="Paper size"
@@ -47,7 +87,7 @@ export default function PdfConfiguration({ config, onChangeConfig }: Props) {
           onChange={(paper) => {
             onChangeConfig({
               ...config,
-              paperSize: paperSizeMap.get(paper),
+              paperSize: paperSizeMap.get(paper)!,
             });
           }}
         >

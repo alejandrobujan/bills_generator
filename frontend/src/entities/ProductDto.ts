@@ -7,6 +7,7 @@ export const ProductDtoSchema = z
     name: z.string(),
     price: z.number(),
     quantity: z.number(),
+    discount: z.number().optional(),
   })
   .strict();
 
@@ -18,6 +19,7 @@ export const getDefaultProductDto = (): ProductDto => {
     name: "",
     price: 0,
     quantity: 0,
+    discount: 0,
   });
 };
 
@@ -27,5 +29,6 @@ export const toProduct = (dto: ProductDto): Product => {
     name: dto.name,
     price: dto.price,
     quantity: dto.quantity,
+    discount: dto.discount,
   });
 };

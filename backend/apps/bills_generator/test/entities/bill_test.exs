@@ -7,7 +7,7 @@ defmodule BillsGenerator.Test.BillTest do
   @purchaser "A purchaser"
   @seller "A seller"
   @products [
-    Product.new("A product", 15.0, 2),
+    Product.new("A product", 15.0, 2, 10.0),
     Product.new("Another product", 3.0, 3)
   ]
 
@@ -29,8 +29,8 @@ defmodule BillsGenerator.Test.BillTest do
 
     bill = Bill.update_total(bill)
     [product1, product2] = bill.products
-    assert bill.total == 39.0
-    assert product1.total == 30.0
+    assert bill.total == 36.0
+    assert product1.total == 27.0
     assert product2.total == 9.0
   end
 

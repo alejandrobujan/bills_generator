@@ -7,6 +7,7 @@ interface Props {
   checked?: boolean;
   onChange: (value: boolean) => void;
   ignoreEnter?: boolean;
+  className?: string;
 }
 
 export default function CheckboxInput({ onChange, ...props }: Props) {

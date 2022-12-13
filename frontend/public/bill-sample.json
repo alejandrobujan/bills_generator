@@ -15,7 +15,8 @@
         "quantity": 1,
         "price": 1.5
       }
-    ]
+    ],
+    "taxes": 21
   },
   "config": {
     "font_size": 12,

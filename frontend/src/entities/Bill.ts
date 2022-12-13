@@ -3,12 +3,12 @@ import { z } from "zod";
 export const BillSchema = z
   .object({
     id: z.number(),
-    user: z.string(),
-    title: z.string(),
+    user: z.string().nullable(),
+    title: z.string().nullable(),
     createdAt: z.date(),
     isAvailable: z.boolean(),
     error: z.boolean(),
-    errorMessage: z.string(),
+    errorMessage: z.string().nullable(),
   })
   .strict();
 

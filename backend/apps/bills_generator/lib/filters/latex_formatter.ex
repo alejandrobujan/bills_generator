@@ -15,29 +15,35 @@ defmodule BillsGenerator.Filters.LatexFormatter do
   @spec generate_latex(BillRequest.t()) :: String.t()
   defp generate_latex(bill_request) do
     """
-    #{latex_styler(bill_request.config)}\\usepackage{longtable}
-    \\address{#{String.replace(bill_request.bill.seller, ",", ", \\\\ \n")}}
+    #{latex_styler(bill_request.config)}\\usepackage{longtable}\\usepackage{array}\\usepackage{eurosym}
+    \\date{#{Calendar.strftime(Date.from_iso8601!(bill_request.bill.date), "%d/%m/%Y")}}
+    \\newcommand{\\currency}{#{currency_symbol(bill_request.config.currency)}}
+    \\address{#{Resources.get_global_resources(bill_request.config.language).seller}: \\\\ \n #{String.replace(bill_request.bill.seller, ",", ", \\\\ \n")}}
     \\begin{document}
     \\begin{letter}
-    {#{String.replace(bill_request.bill.purchaser, ",", ", \\\\ \n")}}
+    {#{Resources.get_global_resources(bill_request.config.language).purchaser}: \\\\ \n #{String.replace(bill_request.bill.purchaser, ",", ", \\\\ \n")}}
     \\opening{}
     \\begin{center}
-    \\begin{longtable}{| p{7cm} | l | l | l |}
+    \\renewcommand{\\arraystretch}{2}
+    \\begin{longtable}{@{\\extracolsep{\\fill}} c c c c c }
     \\hline
-    Description & Quantity & Price & Amount \\\\ \\hline
+    \\multicolumn{1}{c}{\\textbf{#{Resources.get_global_resources(bill_request.config.language).product}}} & \\multicolumn{1}{c}{\\textbf{#{Resources.get_global_resources(bill_request.config.language).quantity}}} & \\multicolumn{1}{c}{\\textbf{#{Resources.get_global_resources(bill_request.config.language).price}}} & \\multicolumn{1}{c}{\\textbf{#{Resources.get_global_resources(bill_request.config.language).discount}}} & \\multicolumn{1}{c}{\\textbf{#{Resources.get_global_resources(bill_request.config.language).amount}}} \\\\ \\hline
     """ <>
-      format_bill(bill_request.bill.products, bill_request.bill.total) <>
+      format_bill(bill_request.bill.products, bill_request.bill.total, bill_request.config.language) <>
       """
       \\end{longtable}
+      \\renewcommand{\\arraystretch}{1}
       \\end{center}
-      \\closing{Seal or signature:}
+      \\closing{#{Resources.get_global_resources(bill_request.config.language).sealorsignature}:}
       \\end{letter}
       \\end{document}
       """
   end
 
   defp latex_styler(config) do
-    "\\documentclass[#{config.paper_size}, #{config.font_size}pt#{landscape?(config.landscape)}#{font_styler(config.font_style)}"
+    """
+    \\documentclass[#{config.paper_size}, #{config.font_size}pt#{landscape?(config.landscape)}#{font_styler(config.font_style)}
+    """
   end
 
   defp font_styler("latex"), do: ""
@@ -46,23 +52,40 @@ defmodule BillsGenerator.Filters.LatexFormatter do
   defp landscape?(false), do: "]{letter}\n"
   defp landscape?(true), do: ", landscape]{letter}\n\\usepackage[margin=1cm]{geometry}\n"
 
-  defp format_bill([], 0), do: ""
+  defp currency_symbol("euro"), do: "\\euro"
+  defp currency_symbol("dollar"), do: "\\$"
 
-  defp format_bill(products, total) do
-    do_format_bill("", products, total)
+  defp format_bill([], 0, _language), do: ""
+
+  defp format_bill(products, total, language) do
+    do_format_bill("", products, total, language)
   end
 
-  defp do_format_bill(acc, [], total) do
+  defp do_format_bill(acc, [], total, language) do
     acc <>
-      "\\multicolumn{3}{|c|}{TOTAL} & #{:erlang.float_to_binary(total * 1.0, decimals: 2)} \\\\ \\hline\n"
+      """
+      \\multicolumn{2}{c}{} & \\multicolumn{1}{r}{\\textbf{#{Resources.get_global_resources(language).taxes}}} & \\multicolumn{1}{c}{XX\\%} & \\multicolumn{1}{c}{5 \\currency} \\\\ \\cline{3-5}
+      \\multicolumn{2}{c}{} & \\multicolumn{1}{r}{\\textbf{#{String.upcase(Resources.get_global_resources(language).total)}}} && \\multicolumn{1}{c}{#{:erlang.float_to_binary(total * 1.0, decimals: 2)} \\currency} \\\\ \\cline{3-5}
+      """
   end
 
-  defp do_format_bill(acc, [product | t], total) do
+  defp do_format_bill(acc, [(%{discounted_amount: 0.0} = product) | t], total, language) do
     do_format_bill(
       acc <>
-        "#{product.name} & #{product.quantity} & #{:erlang.float_to_binary(product.price * 1.0, decimals: 2)} & #{:erlang.float_to_binary(product.total * 1.0, decimals: 2)} \\\\ \\hline \n",
+        "\\multicolumn{1}{c}{#{product.name}} & \\multicolumn{1}{c}{#{product.quantity}} & \\multicolumn{1}{c}{#{:erlang.float_to_binary(product.price * 1.0, decimals: 2)} \\currency} & \\multicolumn{1}{c}{-} & \\multicolumn{1}{c}{#{:erlang.float_to_binary(product.total * 1.0, decimals: 2)} \\currency} \\\\ \\hline \n",
       t,
-      total
+      total,
+      language
+    )
+  end
+
+  defp do_format_bill(acc, [product | t], total, language) do
+    do_format_bill(
+      acc <>
+        "\\multicolumn{1}{c}{#{product.name}} & \\multicolumn{1}{c}{#{product.quantity}} & \\multicolumn{1}{c}{#{:erlang.float_to_binary(product.price * 1.0, decimals: 2)} \\currency} & \\multicolumn{1}{c}{-#{:erlang.float_to_binary(product.discounted_amount * 1.0, decimals: 2)} \\currency} & \\multicolumn{1}{c}{#{:erlang.float_to_binary(product.total * 1.0, decimals: 2)} \\currency} \\\\ \\hline \n",
+      t,
+      total,
+      language
     )
   end
 end

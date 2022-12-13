@@ -9,38 +9,44 @@ import DeleteIcon from "@mui/icons-material/DeleteOutline";
 import { useNotifications } from "../NotificationManager/NotificationManager";
 import { AnimatePresence, motion } from "framer-motion";
 import { v4 } from "uuid";
-import { ValidationError } from "runtypes";
 import Utils from "../../utils/utils";
 import ProductDto, {
   getDefaultProductDto,
   toProduct,
 } from "../../entities/ProductDto";
+import PdfConfig from "../../entities/PdfConfig";
+import { getCurrencySymbol } from "../../entities/ConfigSchemas";
 
 interface Props {
+  currency: PdfConfig["currency"];
   products: Product[];
   onAddProduct: (product: Product) => void;
   onRemoveProduct: (product: Product["id"]) => void;
 }
 
 interface ItemProps {
+  currency: PdfConfig["currency"];
   product: Product;
   onRemoveProduct: (product: Product["id"]) => void;
 }
 
-function ListItem({ product, onRemoveProduct }: ItemProps) {
+function ListItem({ currency, product, onRemoveProduct }: ItemProps) {
   return (
     <motion.div
       layout
       transition={{ type: "spring", bounce: 0, duration: 0.4 }}
       initial={{ left: "-20%", opacity: 0 }}
       animate={{ left: 0, opacity: 1 }}
-      exit={{ left: "-20%", opacity: 0 }}
+      exit={{ opacity: 0 }}
       className={styles.ProductList_item}
     >
       <div className={styles.ProductList_row}>
         <span>{product.name}</span>
         <span>{product.quantity}</span>
-        <span>{product.price}€</span>
+        <span>{`${product.price} ${getCurrencySymbol(currency)}`}</span>
+        <span className={styles.ProductList_discount}>
+          {product.discount ? `${product.discount}%` : "-"}
+        </span>
       </div>
       <NormalButton
         className={styles.ProductList_removeButton}
@@ -54,6 +60,7 @@ function ListItem({ product, onRemoveProduct }: ItemProps) {
 }
 
 export default function ProductList({
+  currency,
   products,
   onAddProduct,
   onRemoveProduct,
@@ -66,11 +73,11 @@ export default function ProductList({
 
   function handleClick(_: MouseEvent<HTMLButtonElement>) {
     try {
-      const product: Product = ProductSchema.check(toProduct(currentProduct));
+      const product: Product = ProductSchema.parse(toProduct(currentProduct));
       setCurrentProduct(getDefaultProductDto());
       onAddProduct(product);
     } catch (error: any) {
-      const message = Utils.getValidationErrorMessage(error);
+      const message = Utils.getZodErrorMessages(error)[0];
       createErrorNotification(`Invalid product: ${message}`, 8000);
     }
   }
@@ -83,6 +90,7 @@ export default function ProductList({
         <span>Product name</span>
         <span>Quantity</span>
         <span>Price</span>
+        <span className={styles.ProductList_discount}>Discount (%)</span>
       </div>
 
       <div className={styles.ProductList_formWrapper}>
@@ -104,6 +112,14 @@ export default function ProductList({
             value={currentProduct.price}
             onChange={(price) =>
               setCurrentProduct({ ...currentProduct, price })
+            }
+          />
+          <NumberInput
+            ignoreEnter
+            value={currentProduct.discount}
+            className={styles.ProductList_discount}
+            onChange={(discount) =>
+              setCurrentProduct({ ...currentProduct, discount })
             }
           />
         </div>
@@ -135,6 +151,7 @@ export default function ProductList({
               {products.map((product, index) => (
                 <ListItem
                   key={index}
+                  currency={currency}
                   product={product}
                   onRemoveProduct={onRemoveProduct}
                 />

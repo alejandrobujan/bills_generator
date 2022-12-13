@@ -1,16 +1,21 @@
 import { z } from "zod";
-import PdfConfigDto, {
+import {
+  CurrencySchema,
+  FontSizeSchema,
   FontStyleSchema,
+  LanguageSchema,
   PaperSizeSchema,
-  PdfConfigDtoSchema,
-} from "./PdfConfigDto";
+} from "./ConfigSchemas";
+import PdfConfigDto, { PdfConfigDtoSchema } from "./PdfConfigDto";
 
 export const PdfConfigSchema = z
   .object({
-    fontStyle: FontStyleSchema.optional(),
-    fontSize: z.number().optional(),
-    paperSize: PaperSizeSchema.optional(),
-    landscape: z.boolean().optional(),
+    currency: CurrencySchema,
+    language: LanguageSchema,
+    fontStyle: FontStyleSchema,
+    fontSize: FontSizeSchema,
+    paperSize: PaperSizeSchema,
+    landscape: z.boolean(),
   })
   .strict();
 
@@ -19,8 +24,10 @@ export default PdfConfig;
 
 export const getDefaultPdfConfig = () => {
   return PdfConfigSchema.parse({
+    currency: "euro" as const,
+    language: "en" as const,
     fontStyle: "latex" as const,
-    fontSize: 12,
+    fontSize: 12 as const,
     paperSize: "a4paper" as const,
     landscape: false,
   });
@@ -28,6 +35,8 @@ export const getDefaultPdfConfig = () => {
 
 export const toPdfConfigDto = (config: PdfConfig): PdfConfigDto => {
   return PdfConfigDtoSchema.parse({
+    currency: config.currency,
+    language: config.language,
     font_size: config.fontSize,
     font_style: config.fontStyle,
     paper_size: config.paperSize,

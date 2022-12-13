@@ -17,12 +17,12 @@ defmodule BillsGenerator.Entities.BillRequest do
 
   @doc """
   Crea unha nova solicitude de factura.
-  
+
     ## Exemplos
       iex> user = "John Doe"
       iex> product = BillsGenerator.Entities.Product.new("A product", 15.0,2)
       iex> bill = BillsGenerator.Entities.Bill.new("A bill", "A purchaser", "A seller", [product])
-      iex> config = BillsGenerator.Entities.BillConfig.new(11,"latex","a4paper",true)
+      iex> config = BillsGenerator.Entities.BillConfig.new(11,"latex","a4paper",true,"euro")
       iex> BillsGenerator.Entities.BillRequest.new(user, bill, config)
       %BillsGenerator.Entities.BillRequest{
         user: "John Doe",
@@ -35,6 +35,8 @@ defmodule BillsGenerator.Entities.BillRequest do
               name: "A product",
               price: 15.0,
               quantity: 2,
+              discount: 0.0,
+              discounted_amount: nil,
               total: nil
             }
           ],
@@ -44,7 +46,8 @@ defmodule BillsGenerator.Entities.BillRequest do
           font_size: 11,
           font_style: "latex",
           paper_size: "a4paper",
-          landscape: true
+          landscape: true,
+          currency: "euro"
         }
       }
   """
@@ -58,12 +61,12 @@ defmodule BillsGenerator.Entities.BillRequest do
 
   @doc """
   Valida unha solicitude de factura.
-  
+
     ## Exemplos
       iex> user = "John Doe"
       iex> product = BillsGenerator.Entities.Product.new("A product", 15.0,2)
       iex> bill = BillsGenerator.Entities.Bill.new("A bill", "A purchaser", "A seller", [product])
-      iex> config = BillsGenerator.Entities.BillConfig.new(11,"latex","a4paper",true)
+      iex> config = BillsGenerator.Entities.BillConfig.new(11,"latex","a4paper",true,"euro")
       iex> bill_request = BillsGenerator.Entities.BillRequest.new(user, bill, config)
       iex> BillsGenerator.Entities.BillRequest.validate(bill_request)
       :ok

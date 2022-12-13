@@ -7,6 +7,7 @@ interface Props {
   required?: boolean;
   onChange: (value: number) => void;
   ignoreEnter?: boolean;
+  className?: string;
 }
 
 export default function NumberInput({ onChange, ...props }: Props) {
