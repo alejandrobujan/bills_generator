@@ -39,7 +39,7 @@ interface GenFilter{
     +on_error(module(),any(),any())
     +worker_action(any())
     +next_action(any())
---
+
     @Macro --> GenFilterWorker
         +do_process_filter(input_data | error)
     
@@ -50,6 +50,7 @@ interface GenFilter{
     #handle_cast({:redirect,worker,output_data},service_handler)
     #handle_call(:get_num_workers,service_handler)
     #handle_info({:check,period},service_handler)
+    #handle_info({:EXIT, _dead_worker, reason}, service_handler)
 --
     -check_services_worload(period)
     -handle_worload_rate(service_handler,worload_rate)  
@@ -107,13 +108,25 @@ class ServiceHandler{
 
 frame "Tactics"{
 class FilterStash{
-    +start_link
-    +stop
+    +start_link()
+    +stop(server)
     +put_handler(filter,handler)
-    +get_handler(filter,handler)
+    +get_handler(handler)
 @genserver
 #init()
 #handle_call(:put_handler|:get_handler)  
+}
+
+class PipelineMonitor{
+    +start_link()
+    +stop(server)
+    +get_filter_info
+@GenServer
+    #init()
+    #handle_info({sample_filters_workers, period},filters_info)
+--
+    -check_filters(period)
+    -print_filters_info(filters_info)
 }
 
 }
@@ -216,6 +229,7 @@ class Product{
 
 class Aplicacion{}
 
+
 frame "Filters"{
 class BillParser{
     +worker_action(%{bill_id,json_bill}=input_data)
@@ -271,6 +285,9 @@ class BillDao{
 }
 }
 
+entity "Phoenix"{
+    PubSub System
+}
 
 BillValidator -- BillRequest : < usa
 BillCalculator -- BillRequest : < usa
@@ -291,6 +308,11 @@ GenFilter *-L- ServiceHandler
 
 FilterStash -D-> GenServer
 GenFilter -- FilterStash: < usa
+
+Aplicacion -D- Filters : < xestiona 
+Aplicacion -D- Repository : < xestiona 
+Aplicacion -D- Tactics : < xestiona 
+Aplicacion -D- Phoenix : < xestiona 
 
 BillParser --> GenFilter
 BillValidator --> GenFilter
