@@ -41,7 +41,7 @@ defmodule BillsGenerator.Entities.Product do
 
   @doc """
   Actualiza o total do produto e devolve unha tupla co producto e o total.
-
+  
     ## Exemplos:
         iex> product = BillsGenerator.Entities.Product.new("A product", 10.0, 2, 10.0)
         iex> product = BillsGenerator.Entities.Product.update_total(product)
@@ -65,7 +65,7 @@ defmodule BillsGenerator.Entities.Product do
   @doc """
   Valida o producto e devolve ':ok' se o producto é válido ou unha tupla
   con '{:error, reason}' se o producto non é válido.
-
+  
   ## Exemplos:
       iex> product = BillsGenerator.Entities.Product.new("A product", 10.0, 2, 10.0)
       iex> BillsGenerator.Entities.Product.validate(product)

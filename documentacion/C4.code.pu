@@ -84,6 +84,7 @@ class ServiceHandler{
     handler:service_handler.t()
 --
     +new(leader_module,worker_module,min_workers)
+    +restore(handler)
     +spawn_worker(handler)
     +spawn_workers(handler,n)
     +kill_worker(handler)
@@ -100,6 +101,19 @@ class ServiceHandler{
     +total_free_workers(handler)
     +total_workers(handler)
     +stop_workers(handler)
+}
+
+}
+
+frame "Tactics"{
+class FilterStash{
+    +start_link
+    +stop
+    +put_handler(filter,handler)
+    +get_handler(filter,handler)
+@genserver
+#init()
+#handle_call(:put_handler|:get_handler)  
 }
 
 }
@@ -129,6 +143,8 @@ struct billconfig{
     font_style:String.t()
     paper_size:String.t()
     landscape:boolean
+    currency:String.t()
+    language:String.t()
 }
 
 class BillConfig{
@@ -140,6 +156,8 @@ class BillConfig{
     -validate_font_style(font_style)
     -validate_paper_size(paper_size)
     -validate_landscape(landscape)
+    -validate_currency(currency)
+    -validate_language(language)
 }
 
 struct bill{
@@ -148,12 +166,16 @@ struct bill{
     seller:String.t()
     products:list(Product)
     total:float()
+    total_before_taxes:float()
+    taxes_amount:float()
+    date:String.t()
+    taxes:float()
 }
 
 class Bill{
     bill:bill.t()
 --
-    +new(title,purchaser,seller,products)
+    +new(title,purchaser,sellerdate, products,taxes)
     +update_total(bill)
     +validate(bill)
     -calculate_bill(products)
@@ -161,6 +183,10 @@ class Bill{
     -validate_purchaser(purchaser)
     -validate_seller(seller)
     -validate_products(products)
+    -validate_taxes(taxes)
+    -validate_date(date)
+    -calculate_taxes(taxes,total_before_taxes)
+
 }
 
 struct product{
@@ -168,6 +194,8 @@ struct product{
     price:number()
     quantity:number()
     total: number()
+    discount: number(),
+    discounted_amount: nil | number(),
 }
 
 class Product{
@@ -180,6 +208,7 @@ class Product{
     -validate_name(name)
     -validate_price(price)
     -validate_quantity(quantity)
+    -validate_discount(discount)
 }
 }
 
@@ -260,6 +289,8 @@ GenFilterWorker -D-> GenServer
 ServiceHandler *-R- GenFilterWorker
 GenFilter *-L- ServiceHandler
 
+FilterStash -D-> GenServer
+GenFilter -- FilterStash: < usa
 
 BillParser --> GenFilter
 BillValidator --> GenFilter
