@@ -11,7 +11,7 @@ defmodule BillsGenerator.Entities.Product do
           name: String.t(),
           price: number(),
           quantity: number(),
-          discount:  number(),
+          discount: number(),
           discounted_amount: nil | number(),
           total: nil | number()
         }
@@ -29,7 +29,14 @@ defmodule BillsGenerator.Entities.Product do
         }
   """
   def new(name, price, quantity, discount \\ 0.0) do
-    %__MODULE__{name: name, price: price, quantity: quantity, discount: discount, discounted_amount: nil, total: nil}
+    %__MODULE__{
+      name: name,
+      price: price,
+      quantity: quantity,
+      discount: discount,
+      discounted_amount: nil,
+      total: nil
+    }
   end
 
   @doc """
@@ -82,11 +89,8 @@ defmodule BillsGenerator.Entities.Product do
     price * quantity
   end
 
-  defp calculate_discount(%__MODULE__{discount: nil}, _total),
-    do: 0
-
   defp calculate_discount(%__MODULE__{discount: discount}, total) do
-    (Kernel.round(discount * total)) / 100
+    total * (discount / 100)
   end
 
   defp validate_name(name) when is_bitstring(name) do

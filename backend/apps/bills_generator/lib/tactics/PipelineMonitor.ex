@@ -89,6 +89,6 @@ defmodule BillsGenerator.Tactics.PipelineMonitor do
     filters_info_table = Scribe.format(filters_info_leaf_names, colorize: true)
 
     # TODO: Print this info in IO.puts? This would show the info when running tests,useful for debugging benchmarks...
-    Logger.info("Filters number of workers info:\n#{filters_info_table}")
+    # Logger.info("Filters number of workers info:\n#{filters_info_table}")
   end
 end
