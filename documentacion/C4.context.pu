@@ -23,14 +23,9 @@ Person_Ext(cliente, "Cliente", "Quere usar BillsGenerator")
 System_Boundary(sistema, "BillsGenerator\nRuns on <$docker>") {
   System(frontend,"Frontend","UI para a xeración e descarga de facturas",$sprite="phoenix")
   System(backend, "Backend", "Xestiona facturas a nome dun cliente polo compra de distintos produtos",$sprite="elixir")
-  'System(persistencia,"Almacenamento\n<$elixir>"){
-  '  SystemDb(bd,"BD","Almacena as facturas xeradas",$sprite="postgresql")
-  '}
 }
 
 Rel(cliente, frontend, "Interactúa", "a través dunha páxina web")
 Rel_R(frontend,backend,"Solicitude")
 Rel_L(backend,frontend,"Resposta")
-'Rel(backend,persistencia,"Solicitude")
-'Rel(persistencia,backend,"Resposta")
 @enduml 

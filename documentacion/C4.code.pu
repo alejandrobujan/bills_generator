@@ -15,14 +15,6 @@ System_Boundary(sistema, "BillsGenerator\n Backend\n<$elixir>") {
 
 frame "Core"{
 interface GenServer{
-    +start_link/3
-    +call/2
-    +cast/2
---
-    #init/1
-    #handle_call/3
-    #handle_cast/2
-    #handle_info/2
 }
 
 
@@ -327,9 +319,6 @@ billconfig -U- BillConfig
 bill -U- Bill
 service_handler -U- ServiceHandler
 product -U- Product
-
-
-
 
 }
 

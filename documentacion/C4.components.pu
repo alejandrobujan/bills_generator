@@ -16,87 +16,101 @@ LAYOUT_WITH_LEGEND()
 title BillsGenerator\nB<$euro_sign>G
 
 Person_Ext(cliente, "Cliente", "Quere usar BillsGenerator")
-System_Ext(frontend,"Frontend","Web Fwk",$sprite="phoenix",$tags="branco")
+System(frontend,"Phoenix","Web Fwk",$sprite="phoenix",$tags="branco")
 
 System_Boundary(sistema, "BillsGenerator\n Backend\n<$elixir>") {
 
-'System(backend, "Backend", "Xestiona facturas a nome dun cliente polo compra de distintos produtos",$sprite="elixir",$tags="Branco"){
-Component(filtroValidatorM,"Validator","GenFilter")
-Component(filtroParserM,"Parser","GenFilter")
-Component(filtroUpdateM,"Updater","GenFilter")
-Component(filtroGenerateLatexM,"Latex","GenFilter")
-Component(filtroGeneratePdfM,"Pdf","GenFilter")
-Component(filtroStoreM,"Storer","GenFilter")
+Component(filtroValidatorM,"Validator\nLeader","GenFilter")
+Component(filtroParserM,"Parser\nLeader","GenFilter")
+Component(filtroUpdateM,"Calculator\nLeader","GenFilter")
+Component(filtroGenerateLatexM,"Formatter\nLeader","GenFilter")
+Component(filtroGeneratePdfM,"PdfCompiler\nLeader","GenFilter")
+Component(filtroStoreM,"Storer\nLeader","GenFilter")
 
-frame "TFV" {
-Component(filtroValidatorW,"T1","GenFilterWorker")
+package "Validator Workers" {
+Component(filtroValidatorW,"T1","GenFilterWorker") 
 Component(filtroValidatorWN,"TN","GenFilterWorker")
 }
 
-frame "TFP" {
+package "Parser Workers" {
 Component(filtroParserW,"T1","GenFilterWorker")
 Component(filtroParserWN,"TN","GenFilterWorker")
 }
 
-frame "TFU" {
+package "Calculator Workers" {
 Component(filtroUpdateW,"T1","GenFilterWorker")
 Component(filtroUpdateWN,"TN","GenFilterWorker")
 }
 
-frame "TFL" {
+package "Formatter Workers" {
 Component(filtroGenerateLatexW,"T1","GenFilterWorker")
 Component(filtroGenerateLatexWN,"TN","GenFilterWorker")
 }
 
-frame "TFPdf" {
+package "PdfCompiler Workers" {
 Component(filtroGeneratePdfW,"T1","GenFilterWorker")
 Component(filtroGeneratePdfWN,"TN","GenFilterWorker")
 }
 
-frame "TFS" {
+package "Storer Workers" {
 Component(filtroStoreW,"T1","GenFilterWorker")
 Component(filtroStoreWN,"TN","GenFilterWorker")
 }
  ' }
   
-    System(persistencia,"Almacenamento\n<$elixir>","Module"){
-    ComponentDb(bd,"BD","Ecto",$sprite="postgresql")
-  }
+
+ComponentDb(bd,"BD","Ecto",$sprite="postgresql")
   
 }
 
-Rel_D(cliente, sistema, "Usa", "REST")
+BiRel_D(frontend,cliente, "Usa", "API/REST")
+
+
 Rel_D(frontend,sistema,"Solicitude","API/json")
-'Rel_U(backend,frontend,"Resposta","API/json")
-Rel_R(filtroStoreM,persistencia,"Almacena","binary")
-Rel_D(persistencia,frontend,"Resposta","API/bin")
-Rel_U(frontend,persistencia,"Petición","API/json")
+Rel_R(filtroStoreM,bd,"Almacena","binary")
+Rel_D(bd,frontend,"Resposta","API/bin")
+Rel_U(frontend,bd,"Petición","API/json")
 
 Rel_R(filtroParserM,filtroValidatorM,"Envía","Json",)
-Rel_R(filtroValidatorM,filtroUpdateM,"Envía","Elixir Map")
-Rel_R(filtroUpdateM,filtroGenerateLatexM,"Envía","Elixir Map")
-Rel_R(filtroGenerateLatexM,filtroGeneratePdfM,"Envía","Latex")
-Rel_R(filtroGeneratePdfM,filtroStoreM,"Envía","Binary")
+Rel_R(filtroValidatorM,filtroUpdateM,"Envía","BillRequest")
+Rel_R(filtroUpdateM,filtroGenerateLatexM,"Envía","BillRequest")
+Rel_R(filtroGenerateLatexM,filtroGeneratePdfM,"Envía","BillRequest/Latex")
+Rel_R(filtroGeneratePdfM,filtroStoreM,"Envía","BillRequest/Pdf")
+
+'Poñer o tipo de dato/tecnoloxía que se intercambia???  
+'Formato de exemplo-> Rel_D(filtroParserM,filtroParserW,"Solicita\nXestiona","Elixir tuple")
+Rel_D(filtroParserM,filtroParserW,"Solicita\nXestiona")
+Rel_D(filtroParserM,filtroParserWN,"Solicita\nXestiona")
+Rel_U(filtroParserW,filtroParserM,"Resultado")
+Rel_U(filtroParserWN,filtroParserM,"Resultado")
 
 
-BiRel_D(filtroValidatorM,filtroValidatorW,"1",)
-BiRel_D(filtroValidatorM,filtroValidatorWN,"N",)
+Rel_D(filtroValidatorM,filtroValidatorW,"Solicita\nXestiona")
+Rel_D(filtroValidatorM,filtroValidatorWN,"Solicita\nXestiona")
+Rel_U(filtroValidatorW,filtroValidatorM,"Resultado")
+Rel_U(filtroValidatorWN,filtroValidatorM,"Resultado")
 
-BiRel_D(filtroParserM,filtroParserW,"1")
-BiRel_D(filtroParserM,filtroParserWN,"N")
 
-BiRel_D(filtroUpdateM,filtroUpdateW,"1")
-BiRel_D(filtroUpdateM,filtroUpdateWN,"N")
+Rel_D(filtroUpdateM,filtroUpdateW,"Solicita\nXestiona")
+Rel_D(filtroUpdateM,filtroUpdateWN,"Solicita\nXestiona")
+Rel_U(filtroUpdateW,filtroUpdateM,"Resultado")
+Rel_U(filtroUpdateWN,filtroUpdateM,"Resultado")
 
-BiRel_D(filtroGenerateLatexM,filtroGenerateLatexW,"1")
-BiRel_D(filtroGenerateLatexM,filtroGenerateLatexWN,"N")
 
-BiRel_D(filtroGeneratePdfM,filtroGeneratePdfW,"1")
-BiRel_D(filtroGeneratePdfM,filtroGeneratePdfWN,"N")
+Rel_D(filtroGenerateLatexM,filtroGenerateLatexW,"Solicita\nXestiona")
+Rel_D(filtroGenerateLatexM,filtroGenerateLatexWN,"Solicita\nXestiona")
+Rel_U(filtroGenerateLatexW,filtroGenerateLatexM,"Resultado")
+Rel_U(filtroGenerateLatexWN,filtroGenerateLatexM,"Resultado")
 
-BiRel_D(filtroStoreM,filtroStoreW,"1")
-BiRel_D(filtroStoreM,filtroStoreWN,"N")
+Rel_D(filtroGeneratePdfM,filtroGeneratePdfW,"Solicita\nXestiona")
+Rel_D(filtroGeneratePdfM,filtroGeneratePdfWN,"Solicita\nXestiona")
+Rel_U(filtroGeneratePdfW,filtroGeneratePdfM,"Resultado")
+Rel_U(filtroGeneratePdfWN,filtroGeneratePdfM,"Resultado")
 
+Rel_D(filtroStoreM,filtroStoreW,"Solicita\nXestiona")
+Rel_D(filtroStoreM,filtroStoreWN,"Solicita\nXestiona")
+Rel_U(filtroStoreW,filtroStoreM,"Solicita\nXestiona")
+Rel_U(filtroStoreWN,filtroStoreM,"Solicita\nXestiona")
 
 
 filtroValidatorW . filtroValidatorWN
