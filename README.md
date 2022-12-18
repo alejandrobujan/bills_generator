@@ -55,18 +55,18 @@ de escalabiliade, decidimos implementar o backend utiliando Elixir debido a súa
 
 - Unha arquitectura **cliente-servidor**: Para poder atender as peticións HTTP que chegan ao sistema, o contar cun directorio capaz de redirixilas ao servizo é necesario. Neste caso,
   só contamos cun único servizo pero, pensando na ampliación de funcionalidades, poderíanse implementar novos servizos sen poñer en risco ningunha das características actuais do sistema.
-	Ademáis, esta arquitectura permítenos a intercomunicación con outros sistemas externos de forma sinxela, facilitando a accesibilidade.
+  Ademáis, esta arquitectura permítenos a intercomunicación con outros sistemas externos de forma sinxela, facilitando a accesibilidade.
 
 - Unha arquitectura en **pipeline**: O proceso de xeración é un proceso en serie, no que se van executando varias tarefas en orde, cada unha dependendo da anterior (Ver diagrama C4 de contedor).
   Por este motivo, optamos por utilizar unha arquitectura en pipeline nesta parte do sistema. Ademáis, esta arquitectura permítenos que cada etapa (filtro) se poida executar en paralelo, de xeito que
-	se poida aproveitar ao máximo a potencia do sistema. Tamén facilita o mantemento e amplicación das funcionalidades do _pipeline_, engandindo ou modificando os filtros.
+  se poida aproveitar ao máximo a potencia do sistema. Tamén facilita o mantemento e amplicación das funcionalidades do _pipeline_, engandindo ou modificando os filtros.
 
 #### Arquitectura interna
+
 - Unha arquitectura **líder-traballador**: Debido ó requisito non funcional de rendemento, non podíamos permitirnos o feito de que, habendo etapas do _pipeline_ que conlevan unha carga máis elevada ca o resto,
   ditas etapas causesen un _bottleneck_ no sistema. Para evitar isto, optamos por utilizar unha arquitectura líder-traballador, na que cada etapa do _pipeline_ contaría co seu propio líder
   e o seus propios traballadores. De este forma, o sistema sería capaz de crear novos traballadores e eliminar os que xa non son necesarios, de xeito que se poida adaptar automáticamente á carga
   que conleva cada etapa.
-
 
 Ademáis, cabe destacar a utilización dunha base de datos á que accede o servizo de facturas e a última etapa do _pipeline_. A pesar de non ter a lóxica suficiente para poder considerar este subsistema
 unha arquitectura en repositorio, a base de datos é unha parte esencial do sistema, xa que nos permite cumplir varios dos requisitos funcionais que se estableceron ao inicio,
@@ -86,8 +86,8 @@ Dado que aínda quedan requisiton non funcionais sen cumprir, utilizáronse as s
   manexadas polos propios compoñentes do sistema.
 
 - No contexto de recuperación de erros, era moi importante evitar que o sistema estivera moito tempo caído, polo que se utilizou un **supervisor** que detectase
-	a caída dun compoñente, e que dito compoñente, ao reiniciarse, recuperase o seu estado anterior e non se perdan as solicitudes de facturas. Para recuperar dito estado,
-	utilizouse un compoñente chamado _FilterStash_, que permite almacenar o estado dun filtro e recuperalo posteriormente. Todo isto consiste nunha **táctica de reposto**.
+  a caída dun compoñente, e que dito compoñente, ao reiniciarse, recuperase o seu estado anterior e non se perdan as solicitudes de facturas. Para recuperar dito estado,
+  utilizouse un compoñente chamado _FilterStash_, que permite almacenar o estado dun filtro e recuperalo posteriormente. Todo isto consiste nunha **táctica de reposto**.
 
 - Para tratar a monitorización implementouse un **monitor de procesos**, encargado de informar do estado interno do sistema, isto é, do número de traballadores que ten cada etapa do
   _pipeline_ en cada momento. Ademáis, utilizouse un sistema de _logging_ por terminal para poder ter unha visión máis ampla de que é o que está facendo o sistema.
@@ -105,6 +105,11 @@ O proxecto está dividio en tres carpetas principais:
 - Carpeta `frontend/`: Contén o código da aplicación web.
 - Carpeta `backend/`: Contén o código do propio sistema.
 - Carpeta `doc`: Contén a representación en C4 da arquitectura sistema.
+
+Dentro da carpeta `backend/` podemos atopamos a carpeta `apps/`, que contén as dúas aplicacións que conforman o sistema:
+
+- `bills_generator_web`: É a interface web do sistema, que inclúe o directorio e o servizo de facturas, implementados utilizando **Phoenix**.
+- `bills_generator`: É o propio sistema, o cal contén o _pipeline_/_cliente-servidor_, manexando a súa vez o acceso á base de datos facendo uso de **Ecto**.
 
 # Execución do sistema
 
