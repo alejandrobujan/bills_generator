@@ -92,6 +92,9 @@ Dado que aínda quedan requisiton non funcionais sen cumprir, utilizáronse as s
 - Para tratar a monitorización implementouse un **monitor de procesos**, encargado de informar do estado interno do sistema, isto é, do número de traballadores que ten cada etapa do
   _pipeline_ en cada momento. Ademáis, utilizouse un sistema de _logging_ por terminal para poder ter unha visión máis ampla de que é o que está facendo o sistema.
 
+- Táctica de **arbitraxe de recursos FIFO**, xa que aínda que a nosa implementación non ten moita lóxica, fíxose uso desta táctica para repartir as peticións
+  entre os distintos traballadores dun filtro.
+
 No noso caso, ao utilizar unha arquitectura líder-traballador, xa contamos cunha táctica de rendemento como é o da **replicación de procesos** no contexto da xestión
 de recursos. Tamén gustaríanos ter implementada algunha táctica máis de seguridade como é a da autenticación pero dado que non se especificaba como un requisito (e pola súa dificultade)
 decidimos non implementala.
@@ -140,6 +143,7 @@ mix test
 
 A documentación encóntrase no directorio `doc/`, onde se pode atopar a representación en C4 da arquitectura do sistema.
 O documento `doc/bills_generator.pdf` contén todos os diagramas C4.
+
 # Capturas
 
 ![Main](./screenshots/main.png)
