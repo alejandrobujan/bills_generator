@@ -1,4 +1,4 @@
-defmodule BillsGenerator.Core.ServiceHandler do
+defmodule BillsGenerator.Core.FilterHandler do
   @moduledoc """
   Módulo que se encarga de representar o estado internos dos servizos rexistrados no líder.
 
@@ -8,7 +8,7 @@ defmodule BillsGenerator.Core.ServiceHandler do
   que ter dito servizo.
   """
 
-  alias BillsGenerator.Core.ServiceHandler
+  alias BillsGenerator.Core.FilterHandler
 
   @enforce_keys [
     :leader_module,
@@ -32,7 +32,7 @@ defmodule BillsGenerator.Core.ServiceHandler do
     :next_worker_id
   ]
 
-  @type t() :: %ServiceHandler{
+  @type t() :: %FilterHandler{
           leader_module: module(),
           worker_module: module(),
           workers: list(GenServer.server()),
@@ -44,12 +44,12 @@ defmodule BillsGenerator.Core.ServiceHandler do
         }
 
   @doc """
-  Crea unha nova instancia de `ServiceHandler` a partir dun nome do servizo, o módulo que o implementa (que debe
+  Crea unha nova instancia de `FilterHandler` a partir dun nome do servizo, o módulo que o implementa (que debe
   implementar o comportamento `StandardServer`), e o número mínimo de traballadores que ten que ter dito servizo.
   """
   @spec new(module(), module(), pos_integer()) :: t()
   def new(leader_module, worker_module, min_workers) do
-    empty_handler = %ServiceHandler{
+    empty_handler = %FilterHandler{
       leader_module: leader_module,
       worker_module: worker_module,
       workers: [],
@@ -60,14 +60,14 @@ defmodule BillsGenerator.Core.ServiceHandler do
       next_worker_id: 1
     }
 
-    ServiceHandler.spawn_workers(empty_handler, min_workers)
+    FilterHandler.spawn_workers(empty_handler, min_workers)
   end
 
   @doc """
   Restaura un handler previo, cuns traballadores novos.
   """
   def restore(
-        %ServiceHandler{
+        %FilterHandler{
           leader_module: leader_module,
           worker_module: worker_module,
           request_queue: request_queue,
@@ -76,7 +76,7 @@ defmodule BillsGenerator.Core.ServiceHandler do
           next_worker_id: next_worker_id
         } = handler
       ) do
-    num_workers = ServiceHandler.total_workers(handler)
+    num_workers = FilterHandler.total_workers(handler)
 
     # Return all requests that were processing by a stopped worker in busy_workes to requests queue
     uncompleted_requests =
@@ -91,7 +91,7 @@ defmodule BillsGenerator.Core.ServiceHandler do
     # Do not save workers pids, since if the leader was killed,
     # its workers would've been killed too (linked processes).
     #  Then, it is not necessary to kill previous workers.
-    new_handler = %ServiceHandler{
+    new_handler = %FilterHandler{
       leader_module: leader_module,
       worker_module: worker_module,
       workers: [],
@@ -102,11 +102,11 @@ defmodule BillsGenerator.Core.ServiceHandler do
       next_worker_id: next_worker_id
     }
 
-    ServiceHandler.spawn_and_assign_workers(new_handler, num_workers)
+    FilterHandler.spawn_and_assign_workers(new_handler, num_workers)
   end
 
   @doc """
-  Crea un novo traballador para o servizo, engadíndoo á cola de traballadores libres. Devolve o `ServiceHandler` actualizado.
+  Crea un novo traballador para o servizo, engadíndoo á cola de traballadores libres. Devolve o `FilterHandler` actualizado.
   """
   @spec spawn_worker(t()) :: t()
   def spawn_worker(handler) do
@@ -118,7 +118,7 @@ defmodule BillsGenerator.Core.ServiceHandler do
 
     {:ok, new_worker} = handler.worker_module.start_link(handler.leader_module, worker_name)
 
-    %ServiceHandler{
+    %FilterHandler{
       handler
       | workers: [new_worker | handler.workers],
         free_workers: :queue.in(new_worker, handler.free_workers),
@@ -127,7 +127,7 @@ defmodule BillsGenerator.Core.ServiceHandler do
   end
 
   @doc """
-  Crea `n` traballadores novos para o servizo, engadíndoos á cola de traballadores libres. Devolve o `ServiceHandler` actualizado.
+  Crea `n` traballadores novos para o servizo, engadíndoos á cola de traballadores libres. Devolve o `FilterHandler` actualizado.
   """
   @spec spawn_workers(t(), non_neg_integer()) :: t()
   def spawn_workers(handler, 0), do: handler
@@ -144,16 +144,16 @@ defmodule BillsGenerator.Core.ServiceHandler do
           t()
   def spawn_and_assign_workers(handler, n) do
     new_handler = spawn_workers(handler, n)
-    pending_requests = ServiceHandler.total_pending_requests(new_handler)
+    pending_requests = FilterHandler.total_pending_requests(new_handler)
 
     # We have to assign jobs, but no more than spawned workers or the number of the pending requests
     jobs_to_assign = min(pending_requests, n)
-    ServiceHandler.assign_jobs(new_handler, jobs_to_assign)
+    FilterHandler.assign_jobs(new_handler, jobs_to_assign)
   end
 
   @doc """
   Elimina un traballador do servizo, mandándolle parar e eliminándoo da cola de traballadores libres
-  e da lista de traballadores. Devolve o `ServiceHandler` actualizado.
+  e da lista de traballadores. Devolve o `FilterHandler` actualizado.
 
   Precondición: A cola de traballadores libres non debe estar baleira.
   """
@@ -162,7 +162,7 @@ defmodule BillsGenerator.Core.ServiceHandler do
     {{:value, worker_to_kill}, other_workers} = :queue.out(handler.free_workers)
     :ok = handler.worker_module.stop(worker_to_kill)
 
-    %ServiceHandler{
+    %FilterHandler{
       handler
       | workers: List.delete(handler.workers, worker_to_kill),
         free_workers: other_workers
@@ -171,7 +171,7 @@ defmodule BillsGenerator.Core.ServiceHandler do
 
   @doc """
   Elimina `n` traballadores do servizo, mandándolles parar e eliminándoos da cola de traballadores libres
-  e da lista de traballadores. Devolve o `ServiceHandler` actualizado.
+  e da lista de traballadores. Devolve o `FilterHandler` actualizado.
 
   Precondición: A cola de traballadores libres ten que ter polo menos `n` traballadores.
   """
@@ -192,27 +192,27 @@ defmodule BillsGenerator.Core.ServiceHandler do
   def any_pending_request?(handler), do: not :queue.is_empty(handler.request_queue)
 
   @doc """
-  Mete a un cliente na cola de clientes que esperan a resposta. Devolve o `ServiceHandler` actualizado.
+  Mete a un cliente na cola de clientes que esperan a resposta. Devolve o `FilterHandler` actualizado.
   """
   @spec enqueue_request(t(), any()) :: t()
   def enqueue_request(handler, request),
     # Request queue stores only input data to the filter
-    do: %ServiceHandler{
+    do: %FilterHandler{
       handler
       | request_queue: :queue.in(request, handler.request_queue)
     }
 
   @doc """
-  Saca da cola de clientes ao primeiro que está esperando. Devolve o cliente que se sacou e o `ServiceHandler` actualizado.
+  Saca da cola de clientes ao primeiro que está esperando. Devolve o cliente que se sacou e o `FilterHandler` actualizado.
   """
   @spec dequeue_request(t()) :: {any(), t()}
   def dequeue_request(handler) do
     {{:value, request}, new_queue} = :queue.out(handler.request_queue)
-    {request, %ServiceHandler{handler | request_queue: new_queue}}
+    {request, %FilterHandler{handler | request_queue: new_queue}}
   end
 
   @doc """
-  Asigna un traballador libre a un cliente determinado, e devolve o novo estado do `ServiceHandler`.
+  Asigna un traballador libre a un cliente determinado, e devolve o novo estado do `FilterHandler`.
 
   Precondición: A cola de traballadores libres non debe estar baleira.
   """
@@ -222,22 +222,22 @@ defmodule BillsGenerator.Core.ServiceHandler do
     busy_workers = Map.put(handler.busy_workers, worker, request)
     handler.worker_module.process_filter(worker, request)
 
-    %ServiceHandler{handler | free_workers: other_workers, busy_workers: busy_workers}
+    %FilterHandler{handler | free_workers: other_workers, busy_workers: busy_workers}
   end
 
   @doc """
-  Asigna un traballador libre ao primeiro cliente que estea esperando na cola. Devolve o `ServiceHandler` actualizado
+  Asigna un traballador libre ao primeiro cliente que estea esperando na cola. Devolve o `FilterHandler` actualizado
   coa información da asignación do traballador ao cliente.
   """
   @spec assign_job(t()) :: t()
   def assign_job(handler) do
     # Assign a free worker to the first client on the queue
-    {request, new_handler} = ServiceHandler.dequeue_request(handler)
-    ServiceHandler.assign_job(new_handler, request)
+    {request, new_handler} = FilterHandler.dequeue_request(handler)
+    FilterHandler.assign_job(new_handler, request)
   end
 
   @doc """
-  Asigna `n` traballadores libres aos primeiros `n` clientes que estean esperando na cola. Devolve o `ServiceHandler` actualizado.
+  Asigna `n` traballadores libres aos primeiros `n` clientes que estean esperando na cola. Devolve o `FilterHandler` actualizado.
 
   Precondición: Ten que haber como mínimo `n` traballadores libres, e `n` clientes esperando na cola.
   """
@@ -249,7 +249,7 @@ defmodule BillsGenerator.Core.ServiceHandler do
   end
 
   @doc """
-  Libera a un traballador que esté ocupado. Devolve o cliente que tiña asignado e o `ServiceHandler`
+  Libera a un traballador que esté ocupado. Devolve o cliente que tiña asignado e o `FilterHandler`
   coa información actualizada.
 
   Precondición: O traballador que se pida liberar ten que estar ocupado.
@@ -260,7 +260,7 @@ defmodule BillsGenerator.Core.ServiceHandler do
     {_input_data, new_busy_workers} = Map.pop!(handler.busy_workers, worker)
     new_free_workers = :queue.in(worker, handler.free_workers)
 
-    %ServiceHandler{handler | free_workers: new_free_workers, busy_workers: new_busy_workers}
+    %FilterHandler{handler | free_workers: new_free_workers, busy_workers: new_busy_workers}
   end
 
   @doc """
@@ -289,6 +289,6 @@ defmodule BillsGenerator.Core.ServiceHandler do
     handler.workers
     |> Enum.each(fn worker -> handler.worker_module.stop(worker) end)
 
-    %ServiceHandler{handler | workers: [], free_workers: :queue.new(), busy_workers: %{}}
+    %FilterHandler{handler | workers: [], free_workers: :queue.new(), busy_workers: %{}}
   end
 end

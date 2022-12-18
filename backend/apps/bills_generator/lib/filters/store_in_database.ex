@@ -27,6 +27,8 @@ defmodule BillsGenerator.Filters.StoreInDatabase do
   # We use a map for input_data, so we can catch any input_data that has
   # at least the bill_id field. This helps us to catch errors from any
   # filter, since their input data contains at least the bill_id field.
+
+  @impl GenFilter
   def on_error(caused_by, error_msg, %{bill_id: bill_id}) do
     Logger.info(
       "catched error in #{__MODULE__.Worker}, error caused by filter #{caused_by}: #{error_msg}"

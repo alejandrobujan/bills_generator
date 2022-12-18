@@ -1,31 +1,22 @@
-@startuml BillsGenerator.C4
-!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
-!define FONTAWESOME https://raw.githubusercontent.com/tupadr3/plantuml-icon-font-sprites/master/font-awesome-5
-!define DEVICONS https://raw.githubusercontent.com/tupadr3/plantuml-icon-font-sprites/master/devicons2
+@startuml bills_generator_code
 
-!include DEVICONS/phoenix.puml
-!include DEVICONS/postgresql.puml
-!include DEVICONS/elixir.puml
-!include FONTAWESOME/euro_sign.puml
-
-HIDE_STEREOTYPE()
-LAYOUT_WITH_LEGEND()
-
-System_Boundary(sistema, "BillsGenerator\n Backend\n<$elixir>") {
+frame "Elixir"{
+    interface GenServer
+    interface Application
+    interface Supervisor
+}
 
 frame "Core"{
-    interface GenServer{}
-
-    interface GenFilter {
+    interface GenFilter implements GenServer{
         +start_link()
         +process_filter(input_data)
         +stop()
         +redirect(worker,output_data)
         +get_num_workers()
         +alive?()
-        +on_error(module(),any(),any())
-        +worker_action(any())
-        +next_action(any())
+        +on_error(caused_by,error_msg,input_data)
+        +worker_action(input_data)
+        +next_action(output_data)
         -check_services_worload(period)
         -handle_worload_rate(service_handler,worload_rate)  
     }
@@ -34,29 +25,25 @@ frame "Core"{
         +start_link(leader,name)
         +process_filter(server,input_data)
         +stop(worker)
-        +do_process_filter(any())
+        +do_process_filter(input_data)
     }
 
-    class ServiceHandler{   
-        leader_module: module
-        worker_module: module
-        workers: List<GenServer.server>
-        free_workers: Queue<GenServer.server>
-        busy_workers: Map<GenServer.server>
-        request_queue: Queue<client,input_data>
-        min_workers: pos_integer
-        next_worker_id: pos_integer
+    class FilterHandler{   
+        +request_queue: queue
+        +min_workers: pos_integer
+        +next_worker_id: pos_integer
         +new(leader_module,worker_module,min_workers)
         +restore(handler)
         +spawn_worker(handler)
         +spawn_workers(handler,n)
+        +spawn_and_assign_workers(handler,n)
         +kill_worker(handler)
         +kill_workers(handler,n)
         +all_workers_busy?(handler)
         +any_pending_request?(handler)
         +enqueue_request(handler)
         +dequeue_request(handler)
-        +assign_job(handler,{client,input_data}=request)
+        +assign_job(handler,request)
         +assign_job(handler)
         +assign_jobs(handler,n)
         +free_worker(handler,worker)
@@ -65,202 +52,212 @@ frame "Core"{
         +total_workers(handler)
         +stop_workers(handler)
     }
+    GenFilterWorker "N" <--o "1" FilterHandler: workers
+    GenFilterWorker "N" <--o "1" FilterHandler: free_workers
+    GenFilterWorker "N" <--o "1" FilterHandler: busy_workers : %{GenServer.server => GenServer.from}
+    GenFilterWorker "1" <--o "1" FilterHandler: worker_module
+    GenFilter "1" <--o "1" FilterHandler: leader_module
+
+    GenFilter "1" o--> "1" FilterHandler: handler
+
+
 
 }
+    
+
 
 frame "Tactics"{
-class FilterStash{
-    +start_link()
-    +stop(server)
-    +put_handler(filter,handler)
-    +get_handler(handler)
-}
+    class FilterStash implements GenServer{
+        +start_link()
+        +stop(server)
+        +put_handler(filter,handler)
+        +get_handler(handler)
+    }
 
-class PipelineMonitor{
-    +start_link()
-    +stop(server)
-    +get_filter_info
---
-    -check_filters(period)
-    -print_filters_info(filters_info)
-}
+    class PipelineMonitor implements GenServer{
+        +start_link()
+        +stop(server)
+        +get_filter_info(filter)
+        -check_filters(period)
+        -print_filters_info(filters_info)
+    }
 
 }
 
 frame "Entities"{
 
 
-BillRequest  o-- Bill 
-BillRequest  o-- BillConfig
-Bill  o-- Product
+    class BillRequest{
+        +user: String
+        +new(user,bill,config)
+        +validate(billrequest)
+        -validate_user(user)
+    }
 
+    BillRequest "1" o--> "1" Bill: bill
+    BillRequest "1" o--> "1" BillConfig: bill_config
 
-class BillRequest{
-    billrequest: struct |
-        user:String
-        bill:Bill
-        config:BillConfig |
---
-    +new(user,bill,config)
-    +validate(billrequest)
-    -validate_user(user)
-}
+    class BillConfig{
+        +font_size: non_neg_integer
+        +font_style: String
+        +paper_size: String
+        +landscape: boolean
+        +currency: String
+        +language: String
+        +new(font_size,font_style,paper_size,landscape)
+        +validate(billconfig)
+        -validate_font_size(font_size)
+        -validate_font_style(font_style)
+        -validate_paper_size(paper_size)
+        -validate_landscape(landscape)
+        -validate_currency(currency)
+        -validate_language(language)
+    }
 
-class BillConfig{
-    billconfig: struct |
-        font_size:non_neg_integer()
-        font_style:String
-        paper_size:String
-        landscape:boolean
-        currency:String
-        language:String |
---
-    +new(font_size,font_style,paper_size,landscape)
-    +validate(billconfig)
-    -validate_font_size(font_size)
-    -validate_font_style(font_style)
-    -validate_paper_size(paper_size)
-    -validate_landscape(landscape)
-    -validate_currency(currency)
-    -validate_language(language)
-}
+    class Bill{
+        +title: String
+        +purchaser: String
+        +seller: String
+        +total: number
+        +total_before_taxes: number
+        +taxes_amount: number
+        +date: String
+        +taxes: number
+        +new(title,purchaser,seller,date,products,taxes)
+        +update_total(bill)
+        +validate(bill)
+        -calculate_bill(products)
+        -validate_title(title)
+        -validate_purchaser(purchaser)
+        -validate_seller(seller)
+        -validate_products(products)
+        -validate_taxes(taxes)
+        -validate_date(date)
+        -calculate_taxes(taxes,total_before_taxes)
+    }
 
-class Bill{
-    bill:struct |
-        title:String
-        purchaser:String
-        seller:String
-        products:list(Product)
-        total:float
-        total_before_taxes:float
-        taxes_amount:float
-        date:String
-        taxes:float  |
---
-    +new(title,purchaser,sellerdate, products,taxes)
-    +update_total(bill)
-    +validate(bill)
-    -calculate_bill(products)
-    -validate_title(title)
-    -validate_purchaser(purchaser)
-    -validate_seller(seller)
-    -validate_products(products)
-    -validate_taxes(taxes)
-    -validate_date(date)
-    -calculate_taxes(taxes,total_before_taxes)
-}
+    Bill "1" o--> "N" Product: products
 
-class Product{
-    product:struct |
-        name:String
-        price:number
-        quantity:number
+    class Product{
+        name: String
+        price: number
+        quantity: number
         total: number
-        discount: number,
-        discounted_amount: nil | number 
-    |
---
-    +new(name,price,quantity)
-    +update_total(product)
-    +validate(product)
-    -calculate_total(product)
-    -validate_name(name)
-    -validate_price(price)
-    -validate_quantity(quantity)
-    -validate_discount(discount)
-}
+        discount: number
+        discounted_amount: number 
+        +new(name,price,quantity)
+        +update_total(product)
+        +validate(product)
+        -calculate_total(product)
+        -validate_name(name)
+        -validate_price(price)
+        -validate_quantity(quantity)
+        -validate_discount(discount)
+    }
 }
 
 
-
-class Aplicacion{}
 
 
 frame "Filters"{
-class BillParser{
-    -parse_json(json_bill)
+    class BillParser implements GenFilter{
+        -parse_json(json_bill)
+    }
+
+    class BillValidator implements GenFilter{
+        -validate_request!(bill_request)
+    }
+
+    class BillCalculator implements GenFilter{
+        -update_bill(bill_request)
+    }
+
+    class LatexFormatter implements GenFilter{
+        -generate_latex(bill_request)
+        -latex_styler(config)
+        -font_styler(font)
+        -landscape?(landscape_value)
+        -format_bill(products,total)
+    }
+
+    class LatexToPdf implements GenFilter{
+        -generate_pdf!(latex)
+    }
+
+    class StoreInDatabase implements GenFilter
+    BillParser -R-> BillRequest
+    BillParser --> BillValidator
+
+    BillValidator -R-> BillRequest
+    BillValidator --> BillCalculator
+
+    BillCalculator -R-> BillRequest
+    BillCalculator --> LatexFormatter
+
+    LatexFormatter -R-> BillRequest
+    LatexFormatter --> LatexToPdf
+
+    LatexToPdf --> StoreInDatabase
+
+    StoreInDatabase -R-> BillRequest
+    StoreInDatabase -R-> Repository.BillDao
+    StoreInDatabase -R-> Repository.Repo
+
+}
+
+
+
+interface Ecto.Schema
+interface Ecto.Repo
+class Repository.BillDao implements Ecto.Schema{
+    +user: String
+    +title: String
+    +pdf: binary
+    +error: boolean
+    +error_msg: String
+}
+
+class Repository.Repo implements Ecto.Repo
+
+
+
+
+frame "Phoenix"{
+    interface Router
+    interface Controller
 }
 
 
-class BillValidator{
-    -validate_request!(bill_request)
+frame "BillsGeneratorWeb"{
+    class BillsGeneratorWeb.Router implements Router
+    class BillsGeneratorWeb.BillController implements Controller
+    BillsGeneratorWeb.Router --> BillsGeneratorWeb.BillController
 }
 
-class BillCalculator{
-    -update_bill(bill_request)
+class BillsGenerator.Application implements Application{
+    +generate_bill(bill_json)
+}
+BillsGeneratorWeb.BillController --> BillsGenerator.Application
+
+BillsGenerator.Application --> Filters
+BillsGenerator.Application --> Repository.BillDao
+BillsGenerator.Application --> Repository.Repo
+BillsGenerator.Application --> Supervisor
+
+class Poison.Poison{
+    +decode!(json)
 }
 
-class LatexFormatter{
-    -generate_latex(bill_request)
-    -latex_styler(config)
-    -font_styler(font)
-    -landscape?(T/F)
-    -format_bill(products,total)
-}
+class Iona.Iona
 
-class LatexToPdf{
-    -generate_pdf!(latex)
-}
-
-class StoreInDatabase{
-    +on_error(caused_by,error_msg,bill_id)
-}
-}
-
-frame "Repository"{
-interface Ecto{
-    Ecto.Repo
-    Ecto.Schema
-    Ecto.Changeset
-}
-
-class BillDao{
-    changeset(bill=[:user, :title, :pdf, :error, error_msg]},attrs)
-}
-
-class Repo{}
-}
-
-entity "Phoenix"{
-}
-
-BillValidator -- BillRequest : > usa
-BillCalculator -- BillRequest : > usa
-LatexFormatter -- BillRequest : > usa
-LatexToPdf -- BillRequest : > usa
-StoreInDatabase -- BillRequest : > usa
-StoreInDatabase -- BillDao : > usa 
-
-BillDao --> Ecto : > Schema
-Repo --> Ecto : > Repo
+BillParser --> Poison.Poison
+LatexToPdf --> Iona.Iona
 
 
+Filters --> FilterStash
 
-GenFilter -D-> GenServer
-GenFilterWorker -D-> GenServer
-ServiceHandler o-R- GenFilterWorker
-GenFilter o-L- ServiceHandler
-
-FilterStash -D-> GenServer
-PipelineMonitor --> GenServer
-
-GenFilter -- FilterStash: > usa
-
-
-Aplicacion -D- Filters : > xestiona 
-Aplicacion -D- Repository : > xestiona 
-Aplicacion -D- Tactics : > xestiona 
-Aplicacion -D- Phoenix : > xestiona 
-
-BillParser --> GenFilter
-BillValidator --> GenFilter
-BillCalculator  --> GenFilter
-LatexFormatter --> GenFilter
-LatexToPdf --> GenFilter
-LatexToPdf --> GenFilter
-StoreInDatabase --> GenFilter
-
-}
+PipelineMonitor o--> Filters
 
 
 @enduml 
+

@@ -27,9 +27,9 @@ defmodule BillsGenerator.Entities.Bill do
           date: String.t(),
           products: list(Product),
           taxes: number(),
-          total_before_taxes: nil | float(),
-          taxes_amount: nil | float(),
-          total: nil | float()
+          total_before_taxes: nil | number(),
+          taxes_amount: nil | number(),
+          total: nil | number()
         }
 
   @doc """
