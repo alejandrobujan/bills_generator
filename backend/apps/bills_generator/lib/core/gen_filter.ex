@@ -261,7 +261,7 @@ defmodule BillsGenerator.Core.GenFilter do
       # of GenServer will not be called.
       @impl GenServer
       def handle_info({:EXIT, _dead_worker, reason}, service_handler) do
-        Logger.debug("#{__MODULE__} received a worker death. Restarting whole filter.")
+        Logger.debug("#{__MODULE__} received a worker death. Restarting filter.")
         FilterStash.put_handler(__MODULE__, service_handler)
         {:stop, reason, service_handler}
       end
