@@ -100,10 +100,11 @@ Ademáis, debido á utilización dunha arquitectura en _pipeline_, tamén estamo
 
 # Estructura do proxecto
 
-O proxecto está dividio en dúas carpetas principais:
+O proxecto está dividio en tres carpetas principais:
 
 - Carpeta `frontend/`: Contén o código da aplicación web.
-- Carpeta `backend/`: Contén o código do sistema en si.
+- Carpeta `backend/`: Contén o código do propio sistema.
+- Carpeta `doc`: Contén a representación en C4 da arquitectura sistema.
 
 # Execución do sistema
 
