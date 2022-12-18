@@ -14,67 +14,57 @@ LAYOUT_WITH_LEGEND()
 System_Boundary(sistema, "BillsGenerator\n Backend\n<$elixir>") {
 
 frame "Core"{
-interface GenServer{
-}
+    interface GenServer{}
 
+    interface GenFilter {
+        +start_link()
+        +process_filter(input_data)
+        +stop()
+        +redirect(worker,output_data)
+        +get_num_workers()
+        +alive?()
+        +on_error(module(),any(),any())
+        +worker_action(any())
+        +next_action(any())
+        -check_services_worload(period)
+        -handle_worload_rate(service_handler,worload_rate)  
+    }
 
-interface GenFilter{
-    service_handler:ServiceHandler()
---
-    +start_link()
-    +process_filter(input_data)
-    +stop()
-    +redirect(worker,output_data)
-    +get_num_workers()
-    +alive?()
-    +on_error(module(),any(),any())
-    +worker_action(any())
-    +next_action(any())
---
-    -check_services_worload(period)
-    -handle_worload_rate(service_handler,worload_rate)  
-}
+    interface GenFilterWorker{
+        +start_link(leader,name)
+        +process_filter(server,input_data)
+        +stop(worker)
+        +do_process_filter(any())
+    }
 
-
-
-interface GenFilterWorker{
-    +start_link(leader,name)
-    +process_filter(server,input_data)
-    +stop(worker)
-    +do_process_filter(any())
-}
-
-class ServiceHandler{   
-    service_handler: struct |
-        leader_module: module()
-        worker_module: module()
-        workers: List(GenServer.server())
-        free_workers: Queue(GenServer.server())
-        busy_workers: Map(GenServer.server())
-        request_queue: Queue(client,input_data)
+    class ServiceHandler{   
+        leader_module: module
+        worker_module: module
+        workers: List<GenServer.server>
+        free_workers: Queue<GenServer.server>
+        busy_workers: Map<GenServer.server>
+        request_queue: Queue<client,input_data>
         min_workers: pos_integer
         next_worker_id: pos_integer
-    |
---
-    +new(leader_module,worker_module,min_workers)
-    +restore(handler)
-    +spawn_worker(handler)
-    +spawn_workers(handler,n)
-    +kill_worker(handler)
-    +kill_workers(handler,n)
-    +all_workers_busy?(handler)
-    +any_pending_request?(handler)
-    +enqueue_request(handler)
-    +dequeue_request(handler)
-    +assign_job(handler,{client,input_data}=request)
-    +assign_job(handler)
-    +assign_jobs(handler,n)
-    +free_worker(handler,worker)
-    +total_pending_request(handler)
-    +total_free_workers(handler)
-    +total_workers(handler)
-    +stop_workers(handler)
-}
+        +new(leader_module,worker_module,min_workers)
+        +restore(handler)
+        +spawn_worker(handler)
+        +spawn_workers(handler,n)
+        +kill_worker(handler)
+        +kill_workers(handler,n)
+        +all_workers_busy?(handler)
+        +any_pending_request?(handler)
+        +enqueue_request(handler)
+        +dequeue_request(handler)
+        +assign_job(handler,{client,input_data}=request)
+        +assign_job(handler)
+        +assign_jobs(handler,n)
+        +free_worker(handler,worker)
+        +total_pending_request(handler)
+        +total_free_workers(handler)
+        +total_workers(handler)
+        +stop_workers(handler)
+    }
 
 }
 
