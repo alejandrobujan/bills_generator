@@ -1,0 +1,25 @@
+@startuml bills_generator_context
+
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Context.puml
+!define FONTAWESOME https://raw.githubusercontent.com/tupadr3/plantuml-icon-font-sprites/master/font-awesome-5
+!define DEVICONS https://raw.githubusercontent.com/tupadr3/plantuml-icon-font-sprites/master/devicons2
+
+!include DEVICONS/postgresql.puml
+!include FONTAWESOME/euro_sign.puml
+
+
+
+left to right direction
+
+title BillsGenerator\nB<$euro_sign>G
+
+System_Ext(client, "Cliente", "Quere interactuar co sistema")
+
+System(bills_generator,"BillsGenerator","Recibe peticións dos clientes, procésaas e devolve unha resposta")
+
+Rel(client,bills_generator,"Envía","petición")
+Rel(bills_generator,client,"Devolve","resposta")
+
+
+
+@enduml 

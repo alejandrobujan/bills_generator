@@ -1,0 +1,106 @@
+@startuml bills_generator_component
+
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
+!define FONTAWESOME https://raw.githubusercontent.com/tupadr3/plantuml-icon-font-sprites/master/font-awesome-5
+!define DEVICONS https://raw.githubusercontent.com/tupadr3/plantuml-icon-font-sprites/master/devicons2
+
+!include DEVICONS/phoenix.puml
+!include DEVICONS/postgresql.puml
+!include DEVICONS/elixir.puml
+!include FONTAWESOME/euro_sign.puml
+
+
+title BillsGenerator\nB<$euro_sign>G
+
+System_Ext(client, "Cliente", "Quere interactuar co sistema")
+System_Ext(bd,"Base de Datos","Almacena as facturas xeradas",$sprite="postgresql")
+
+
+
+System_Boundary(bills_generator,"Bills Generator"){
+  Container_Boundary(bills_generator_web,"Bills Generator Web Server\n<$phoenix>"){
+    Component(directory,"Directorio","Phoenix.Router","Publica o API accesible para o cliente, e redirixe a petición ao servizo correspondente")
+    Component(bills_controller,"Bills Controller","Phoenix.Controller","Servizo que se encarga de procesar as peticións de xeración de facturas, consulta de facturas e descarga do pdf das facturas")
+  }
+  Container_Boundary(bills_generator_application,"Bills Generator Pipeline\n<$elixir>"){
+	Boundary(parser,"Bill Parser"){
+    	Component(parser_leader,"Bill Parser Líder","GenFilter","Compoñente que se encarga de xestionar os seus traballadores, asignarlles traballo e redirixir a finalización do seu traballo realizado")
+		Component(parser_worker_1,"Bill Parser Traballador 1","GenFilter.Worker","Compoñente que se encarga de convertir o JSON a unha representación interna da petición da factura")
+		Component(parser_worker_N,"Bill Parser Traballador N","GenFilter.Worker","Compoñente que se encarga de convertir o JSON a unha representación interna da petición da factura")
+	}
+	Boundary(validator,"Bill Validator"){
+    	Component(validator_leader,"Bill Validator Líder","GenFilter","Compoñente que se encarga de xestionar os seus traballadores, asignarlles traballo e redirixir a finalización do seu traballo realizado")
+		Component(validator_worker_1,"Bill Validator Traballador 1","GenFilter.Worker","Compoñente que se encarga de comprobar que unha petición de xeración de factura é válida")
+		Component(validator_worker_N,"Bill Validator Traballador N","GenFilter.Worker","Compoñente que se encarga de comprobar que unha petición de xeración de factura é válida")
+	}
+	Boundary(calculator,"Bill Calculator"){
+    	Component(calculator_leader,"Bill Calculator Líder","GenFilter","Compoñente que se encarga de xestionar os seus traballadores, asignarlles traballo e redirixir a finalización do seu traballo realizado")
+		Component(calculator_worker_1,"Bill Calculator Traballador 1","GenFilter.Worker","Compoñente que se encarga de calcular os precios totais da factura")
+		Component(calculator_worker_N,"Bill Calculator Traballador N","GenFilter.Worker","Compoñente que se encarga de calcular os precios totais da factura")
+	}
+	Boundary(formatter,"Bill Formatter"){
+		Component(formatter_leader,"Bill Formatter Líder","GenFilter","Compoñente que se encarga de xestionar os seus traballadores, asignarlles traballo e redirixir a finalización do seu traballo realizado")
+		Component(formatter_worker_1,"Bill Formatter Traballador 1","GenFilter.Worker","Compoñente que se encarga de convertir a representación interna da factura a un documento LaTeX")
+		Component(formatter_worker_N,"Bill Formatter Traballador N","GenFilter.Worker","Compoñente que se encarga de convertir a representación interna da factura a un documento LaTeX")
+	}
+	Boundary(pdf_compiler,"Bill PDF Compiler"){
+		Component(pdf_compiler_leader,"Bill PDF Compiler Líder","GenFilter","Compoñente que se encarga de xestionar os seus traballadores, asignarlles traballo e redirixir a finalización do seu traballo realizado")
+		Component(pdf_compiler_worker_1,"Bill PDF Compiler Traballador 1","GenFilter.Worker","Compoñente que se encarga de xerar un PDF a partir dun documento LaTeX")
+		Component(pdf_compiler_worker_N,"Bill PDF Compiler Traballador N","GenFilter.Worker","Compoñente que se encarga de xerar un PDF a partir dun documento LaTeX")
+	}
+	Boundary(storer,"Bill Storer"){
+		Component(storer_leader,"Bill Storer Líder","GenFilter","Compoñente que se encarga de xestionar os seus traballadores, asignarlles traballo e redirixir a finalización do seu traballo realizado")
+		Component(storer_worker_1,"Bill Storer Traballador 1","GenFilter.Worker","Compoñente que se encarga de almacenar a factura xerada na Base de Datos")
+		Component(storer_worker_N,"Bill Storer Traballador N","GenFilter.Worker","Compoñente que se encarga de almacenar a factura xerada na Base de Datos")
+	}
+  }
+}
+
+Rel_D(client,directory,"Envía","petición")
+Rel_U(directory,client,"Devolve","resposta")
+
+Rel_D(directory,bills_controller,"Redirixe","petición")
+Rel_U(bills_controller,directory,"Responde","resultado")
+Rel_R(bills_controller,bd,"Consulta","Factura")
+Rel_L(bd,bills_controller,"Devolve","Factura")
+
+Rel_R(bills_controller,parser_leader,"Envía petición de xeración de factura","JSON")
+
+Rel_R(parser_leader,validator_leader,"Envía","Bill Request")
+Rel_R(validator_leader,calculator_leader,"Envía","Bill Request válida")
+Rel_D(calculator_leader,formatter_leader,"Envía","Bill Request con totais calculados")
+Rel_L(formatter_leader,pdf_compiler_leader,"Envía","Bill Request e o seu documento LaTeX asociado")
+Rel_L(pdf_compiler_leader,storer_leader,"Envía","Bill Request e o seu PDF asociado")
+Rel(storer_worker_1,bd,"Almacena","Os datos da factura xerada")
+Rel(storer_worker_N,bd,"Almacena","Os datos da factura xerada")
+
+Rel_U(parser_leader,parser_worker_1,"Envía traballo","JSON")
+Rel_D(parser_worker_1,parser_leader,"Responde traballo finalizado","Bill Request")
+Rel_U(parser_leader,parser_worker_N,"Envía traballo","JSON")
+Rel_D(parser_worker_N,parser_leader,"Responde traballo finalizado","Bill Request")
+
+Rel_U(validator_leader,validator_worker_1,"Envía traballo","Bill Request")
+Rel_D(validator_worker_1,validator_leader,"Responde traballo finalizado","Bill Request válida")
+Rel_U(validator_leader,validator_worker_N,"Envía traballo","Bill Request")
+Rel_D(validator_worker_N,validator_leader,"Responde traballo finalizado","Bill Request válida")
+
+Rel_U(calculator_leader,calculator_worker_1,"Envía traballo","Bill Request válida")
+Rel_D(calculator_worker_1,calculator_leader,"Responde traballo finalizado","Bill Request con totais calculados")
+Rel_U(calculator_leader,calculator_worker_N,"Envía traballo","Bill Request válida")
+Rel_D(calculator_worker_N,calculator_leader,"Responde traballo finalizado","Bill Request con totais calculados")
+
+Rel_D(formatter_leader,formatter_worker_1,"Envía traballo","Bill Request con totais calculados")
+Rel_U(formatter_worker_1,formatter_leader,"Responde traballo finalizado","Bill Request e o seu documento LaTeX asociado")
+Rel_D(formatter_leader,formatter_worker_N,"Envía traballo","Bill Request con totais calculados")
+Rel_U(formatter_worker_N,formatter_leader,"Responde traballo finalizado","Bill Request e o seu documento LaTeX asociado")
+
+Rel_D(pdf_compiler_leader,pdf_compiler_worker_1,"Envía traballo","Bill Request e o seu documento LaTeX asociado")
+Rel_U(pdf_compiler_worker_1,pdf_compiler_leader,"Responde traballo finalizado","Bill Request e o seu PDF asociado")
+Rel_D(pdf_compiler_leader,pdf_compiler_worker_N,"Envía traballo","Bill Request e o seu documento LaTeX asociado")
+Rel_U(pdf_compiler_worker_N,pdf_compiler_leader,"Responde traballo finalizado","Bill Request e o seu PDF asociado")
+
+Rel_D(storer_leader,storer_worker_1,"Envía traballo","Bill Request e o seu PDF asociado")
+Rel_U(storer_worker_1,storer_leader,"Responde traballo finalizado","Bill Request almacenada")
+Rel_D(storer_leader,storer_worker_N,"Envía traballo","Bill Request e o seu PDF asociado")
+Rel_U(storer_worker_N,storer_leader,"Responde traballo finalizado","Bill Request almacenada")
+@enduml 

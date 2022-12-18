@@ -1,0 +1,53 @@
+@startuml bills_generator_container
+
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
+!define FONTAWESOME https://raw.githubusercontent.com/tupadr3/plantuml-icon-font-sprites/master/font-awesome-5
+!define DEVICONS https://raw.githubusercontent.com/tupadr3/plantuml-icon-font-sprites/master/devicons2
+
+!include DEVICONS/postgresql.puml
+!include FONTAWESOME/euro_sign.puml
+
+
+title BillsGenerator\nB<$euro_sign>G
+
+
+System_Ext(client, "Cliente", "Quere interactuar co sistema")
+
+
+
+System_Boundary(bills_generator,"Bills Generator"){
+  Container_Boundary(bills_generator_web,"Bills Generator Web Server"){
+    Component(directory,"Directorio","Publica o API accesible para o cliente, e redirixe a petición ao servizo correspondente")
+    Component(bills_controller,"Bills Controller","Servizo que se encarga de procesar as peticións de xeración de facturas, consulta de facturas e descarga do pdf das facturas")
+  }
+  Container_Boundary(bills_generator_application,"Bills Generator Pipeline"){
+    Component(parser,"Bill Parser","Filtro que se encarga de convertir o JSON a unha representación interna da petición da factura")
+    Component(validator,"Bill Validator","Filtro que se encarga de comprobar que unha petición de xeración de factura é válida")
+    Component(calculator,"Bill Calculator","Filtro que se encarga de calcular os precios totais da factura")
+    Component(formatter,"Bill Formatter","Filtro que utiliza a representación da factura para xerar un documento LaTeX")
+    Component(pdf_compiler,"Bill PDF Compiler","Filtro que se encarga de xerar un PDF a partir dun documento LaTeX")
+    Component(storer,"Bill Storer","Filtro que se encarga de almacenar a factura xerada na Base de Datos")
+  }
+  ContainerDb(bd,"Base de Datos","Postgres","Almacena as facturas xeradas",$sprite="postgresql")
+}
+
+Rel_D(client,directory,"Envía","petición")
+Rel_U(directory,client,"Devolve","resposta")
+
+Rel_D(directory,bills_controller,"Redirixe","petición")
+Rel_U(bills_controller,directory,"Responde","resultado")
+Rel_R(bills_controller,bd,"Consulta","Factura")
+Rel_L(bd,bills_controller,"Devolve","Factura")
+
+Rel_D(bills_controller,parser,"Envía petición de xeración de factura","JSON")
+Rel_R(parser,validator,"Envía","Bill Request")
+Rel_R(validator,calculator,"Envía","Bill Request válida")
+Rel_D(calculator,formatter,"Envía","Bill Request con totais calculados")
+Rel_L(formatter,pdf_compiler,"Envía","Bill Request e o seu documento LaTeX asociado")
+Rel_L(pdf_compiler,storer,"Envía","Bill Request e o seu PDF asociado")
+Rel(storer,bd,"Almacena","Os datos da factura xerada")
+
+
+
+
+@enduml 
