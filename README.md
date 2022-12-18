@@ -104,12 +104,12 @@ O proxecto está dividio en tres carpetas principais:
 
 - Carpeta `frontend/`: Contén o código da aplicación web.
 - Carpeta `backend/`: Contén o código do propio sistema.
-- Carpeta `doc`: Contén a representación en C4 da arquitectura sistema.
+- Carpeta `doc/`: Contén a representación en C4 da arquitectura sistema.
 
 Dentro da carpeta `backend/` podemos atopamos a carpeta `apps/`, que contén as dúas aplicacións que conforman o sistema:
 
-- `bills_generator_web`: É a interface web do sistema, que inclúe o directorio e o servizo de facturas, implementados utilizando **Phoenix**.
-- `bills_generator`: É o propio sistema, o cal contén o _pipeline_/_cliente-servidor_, manexando a súa vez o acceso á base de datos facendo uso de **Ecto**.
+- `bills_generator_web/`: É a interface web do sistema, que inclúe o directorio e o servizo de facturas, implementados utilizando **Phoenix**.
+- `bills_generator/`: É o propio sistema, o cal contén os diferentes filtros do _pipeline_ e a lóxica do _líder-traballador_, manexando a súa vez o acceso á base de datos facendo uso de **Ecto**.
 
 # Execución do sistema
 
