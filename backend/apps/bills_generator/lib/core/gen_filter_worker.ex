@@ -1,23 +1,19 @@
 defmodule BillsGenerator.Core.GenFilterWorker do
   @moduledoc """
-  Módulo que representa o comportamento dun filtro estándar que pode ser rexistrado
-  nun líder. É necesario que os filtros que se queiran rexistrar como traballadores utilicen este comportamento,
-  xa que o líder espera unha interfaz estándar para poder comunicarse con eles.
 
-  Para definir o comportamento do `process_filter` dun filtro, o filtro ten que definir a función
-  `handle_process_filter/1`, xa que non se proporciona unha implementación por defecto para esta.
+  Módulo que representa o comportamento que ten que cumplir un traballador de dun filtro.
   """
   alias BillsGenerator.Core.GenFilterWorker
 
   # Public API
 
-  @doc "Inicia un traballador para este servizo"
+  @doc "Inicia un traballador para este filtro"
   @callback start_link(atom(), atom()) :: {:ok, pid()}
 
-  @doc "Petición `process_filter` ao servizo"
+  @doc "Petición `process_filter` ao filtro"
   @callback process_filter(GenServer.server(), any()) :: :ok
 
-  @doc "Para o traballador indicado do servizo"
+  @doc "Para o traballador indicado do filtro"
   @callback stop(GenServer.server()) :: :ok
 
   @doc "Función que é chamada cando o se chama `process_filter/1` para obter o resultado do filtro"
@@ -56,7 +52,6 @@ defmodule BillsGenerator.Core.GenFilterWorker do
       @impl GenServer
       def handle_cast({:process_filter, input_data}, {leader, name} = state) do
         message = __MODULE__.do_process_filter(input_data)
-        # Logger.debug("Sending message from #{name} to leader: #{message}")
         leader.redirect(self(), message)
         {:noreply, state}
       end

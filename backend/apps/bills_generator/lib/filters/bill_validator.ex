@@ -1,4 +1,11 @@
 defmodule BillsGenerator.Filters.BillValidator do
+  @moduledoc """
+  Filtro que se encarga de validar a petición de factura, comprobando que os datos de entrada son correctos.
+  Devolve un error como salida, xunto coa mensaxe de error, se a petición non é válida.
+
+  Redirixe a saída ao filtro `BillCalculator`
+  """
+
   alias BillsGenerator.Entities.BillRequest
   alias BillsGenerator.Core.GenFilter
   use GenFilter

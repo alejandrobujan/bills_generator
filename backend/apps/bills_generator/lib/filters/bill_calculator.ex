@@ -1,4 +1,9 @@
 defmodule BillsGenerator.Filters.BillCalculator do
+  @moduledoc """
+  Filtro que se encarga de calcular os totais dunha factura
+
+  Redirixe a saída ao filtro `LatexFormatter`
+  """
   alias BillsGenerator.Entities.{BillRequest, Bill}
   alias BillsGenerator.Core.GenFilter
   use GenFilter

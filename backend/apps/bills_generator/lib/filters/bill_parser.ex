@@ -1,4 +1,10 @@
 defmodule BillsGenerator.Filters.BillParser do
+  @moduledoc """
+  Filtro que se encarga de parsear a petición de factura, pasando dun formato en JSON como entrada,
+  a unha estructura de datos interna (`BillRequest`).
+  
+  Redirixe a saída ao filtro `BillValidator`
+  """
   alias BillsGenerator.Entities.{BillRequest, Bill, BillConfig, Product}
   alias BillsGenerator.Core.GenFilter
   use GenFilter

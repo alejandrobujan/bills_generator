@@ -2,22 +2,23 @@ defmodule BillsGenerator.Core.GenFilter do
   @moduledoc """
   Módulo que implementa o compoñente líder dunha arquitectura líder-traballador.
 
-  É un proceso que permite rexistrar traballadores que use o behaviour `Core.StandardServer` e
-  que permite recibir peticións a estos servizos, redirixíndoas a un traballador de dito servizo
-  que esté disponible, realizando unha repartición da carga seguindo unha estratexia FIFO
-  (First In First Out).
+  É un proceso que permite rexistrar traballadores que implementen o behaviour `GenFilterWorker` e
+  que permite redirixir as peticións que recibe a ditos traballadores, realizando unha repartición
+  da carga seguindo unha estratexia FIFO (First In First Out).
+
+  É un módulo que ten como estado un FilterHandler, o cal é o encargado de xestionar os traballadores.
 
   Ademais, este proceso líder comproba cada certos segundos (`@workload_check_period`) a carga
-  dos distintos servizos rexistrados, para modificar o número de traballadores de forma dinámica.
-  En caso de que un servizo estea sobrecargado (carga maior
+  do filtro, para modificar o número de traballadores de forma dinámica.
+  En caso de que o filtro estea sobrecargado (carga maior
   ao umbral de trigger `@workload_trigger_max`), aumenta o número de traballadores de xeito que
-  a carga que teña o servizo sexa como moito o umbral de carga máximo _ideal_ (`@workload_max`).
-  En caso de que un servizo estea subutilizado (carga menor ao umbral de trigger
+  a carga que teña o filtro sexa como moito o umbral de carga máximo _ideal_ (`@workload_max`).
+  En caso de que o filtro estea subutilizado (carga menor ao umbral de trigger
   `@workload_trigger_min`), reduce o número de traballadores de xeito que a carga que teña o
-  servizo sexa como mínimo o umbral de carga mínimo _ideal_ (@workload_min).
+  filtro sexa como mínimo o umbral de carga mínimo _ideal_ (@workload_min).
 
   Así, intentamos ter a carga sempre entre [@workload_interval_min, @workload_interval_max]
-  para cada servizo, pero modificamos o número de traballadores unha vez se pasen os umbrales
+  para o filtro, pero modificamos o número de traballadores unha vez se pasen os umbrales
   "críticos" (@workload_trigger_min e @workload_trigger_max). Así conséguese unha boa reacción
   aos cambios da carga de peticións, para aproveitar os recursos o mellor posible.
 
@@ -47,9 +48,9 @@ defmodule BillsGenerator.Core.GenFilter do
   @callback process_filter(any()) :: :ok
 
   @doc """
-  Función que utilizan os traballadores dun certo servizo para indicar que remataron
-  o seu traballo, e que o líder debería de redirixir a resposta ao cliente que teña
-  asignado dito traballador, ademáis de marcar ao traballador como libre.
+  Función que utilizan os traballadores dun certo filtro para indicar que remataron
+  o seu traballo, e que o líder debería de redirixir a resposta empregando o callback `next_action/1`,
+  ademáis de marcar ao traballador que respondeucomo libre.
 
   É unha petición asíncrona (cast), pois ao traballador non lle interesa ter a resposta do
   líder.
@@ -63,8 +64,17 @@ defmodule BillsGenerator.Core.GenFilter do
   @callback alive?() :: boolean()
 
   # Callback to execute code if needed on worker
+
+  @doc """
+  Callback que se executa cando un traballador recibe un erro. Permite xestionar o que fai
+  un traballador cando recibe un error dunha etapa anterior.
+  """
   @callback on_error(caused_by :: module(), error_msg :: any(), input_data :: any()) :: :ok
 
+  @doc """
+  Callback que se executa cando un traballador remata o seu traballo. Permite xestionar qué se
+  fai coa resposta do traballador.
+  """
   @callback next_action(any()) :: any()
 
   defmacro __using__(_) do

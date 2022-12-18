@@ -1,4 +1,8 @@
 defmodule BillsGenerator.Repository.BillDao do
+  @moduledoc """
+  Módulo que encapsula as operacións de acceso á base de datos para as facturas.
+  """
+
   use Ecto.Schema
   import Ecto.Changeset
 

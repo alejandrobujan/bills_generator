@@ -1,4 +1,8 @@
 defmodule GlobalResourcesGL do
+  @moduledoc """
+  Módulo que encapsula os recursos globais en galego.
+  """
+
   @resources %{
     purchaser: "Comprador",
     seller: "Vendedor",

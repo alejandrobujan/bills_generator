@@ -1,4 +1,7 @@
 defmodule Resources do
+  @moduledoc """
+  Módulo que encapsula os recursos globais.
+  """
   def get_global_resources(locale \\ "en")
   def get_global_resources("es"), do: GlobalResourcesES.get_resources()
   def get_global_resources("gl"), do: GlobalResourcesGL.get_resources()

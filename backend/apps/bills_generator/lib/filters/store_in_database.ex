@@ -1,4 +1,12 @@
 defmodule BillsGenerator.Filters.StoreInDatabase do
+  @moduledoc """
+  Filtro que se encarga de gardar a factura nunha base de datos.
+
+  En caso de que se producira algún error nunha etapa anterior do pipeline, garda o erro na base de datos.
+
+
+  Non redirixe a súa saída a ningún outro filtro.
+  """
   alias BillsGenerator.Core.GenFilter
   alias BillsGenerator.Repository.{Repo, BillDao}
   use GenFilter

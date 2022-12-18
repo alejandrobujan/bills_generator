@@ -1,4 +1,9 @@
 defmodule BillsGenerator.Filters.LatexToPdf do
+  @moduledoc """
+  Filtro que se encarga de converter unha petición de factura en formato LaTeX a PDF.
+
+  Redirixe a saída ao filtro `StoreInDatabase`
+  """
   alias BillsGenerator.Core.GenFilter
   use GenFilter
 

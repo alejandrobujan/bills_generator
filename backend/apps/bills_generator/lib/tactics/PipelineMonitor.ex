@@ -1,4 +1,9 @@
 defmodule BillsGenerator.Tactics.PipelineMonitor do
+  @moduledoc """
+  Módulo implementado para realizar a táctica de monitorización de procesos.
+  O que fai é consultar cada 3 segundos o número de workers que ten cada filtro,
+  para posteriormente facer log deles pola terminal.
+  """
   alias BillsGenerator.Filters.{
     BillParser,
     BillCalculator,

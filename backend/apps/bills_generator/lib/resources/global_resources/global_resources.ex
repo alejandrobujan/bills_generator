@@ -1,4 +1,7 @@
 defmodule GlobalResources do
+  @moduledoc """
+  Módulo que encapsula os recursos globais en inglés.
+  """
   @resources %{
     purchaser: "Purchaser",
     seller: "Seller",

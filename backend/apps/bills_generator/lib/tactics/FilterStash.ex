@@ -1,4 +1,8 @@
 defmodule BillsGenerator.Tactics.FilterStash do
+  @moduledoc """
+  Módulo implementado para realizar a táctica de resposto. Garda o estado asociado a cada filtro,
+  para que se poida recuperar o estado do filtro en calquera momento.
+  """
   use GenServer
   require Logger
 

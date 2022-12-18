@@ -1,4 +1,11 @@
 defmodule BillsGenerator.Filters.LatexFormatter do
+  @moduledoc """
+  Filtro que se encarga de formatear a petición de factura, pasando de unha estructura de datos interna (`BillRequest`)
+  a unha cadea de texto en formato LaTeX.
+
+  Redirixe a saída ao filtro `LatexToPdf`
+  """
+
   alias BillsGenerator.Entities.BillRequest
   alias BillsGenerator.Core.GenFilter
   use GenFilter

@@ -1,11 +1,11 @@
 defmodule BillsGenerator.Core.FilterHandler do
   @moduledoc """
-  Módulo que se encarga de representar o estado internos dos servizos rexistrados no líder.
+  Módulo que se encarga de xestionar os traballadores dun GenFilter.
 
-  Garda a información sobre o nome do servizo, o módulo ao que pertence, a lista actual de traballadores,
-  os traballadores que están libres, os traballadores que están ocupados e a que cliente están atendendo,
-  a cola de clientes que están esperando a recibir unha resposta, e o número mínimo de traballadores que ten
-  que ter dito servizo.
+  Garda a información sobre o módulo líder, o módulo traballador, a lista actual de traballadores,
+  os traballadores que están libres, os traballadores que están ocupados e qué resposta están atendendo,
+  a cola de peticións que están esperando a recibir unha resposta, e o número mínimo de traballadores que ten
+  que ter dito líder .
   """
 
   alias BillsGenerator.Core.FilterHandler
