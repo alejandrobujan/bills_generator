@@ -106,10 +106,10 @@ O proxecto está dividio en tres carpetas principais:
 - Carpeta `backend/`: Contén o código do propio sistema.
 - Carpeta `doc/`: Contén a representación en C4 da arquitectura sistema.
 
-Dentro da carpeta `backend/` podemos atopamos a carpeta `apps/`, que contén as dúas aplicacións que conforman o sistema:
+Dentro da carpeta `backend/` atopamos a carpeta `apps/`, que contén as dúas aplicacións que conforman o sistema:
 
 - `bills_generator_web/`: É a interface web do sistema, que inclúe o directorio e o servizo de facturas, implementados utilizando **Phoenix**.
-- `bills_generator/`: É o propio sistema, o cal contén os diferentes filtros do _pipeline_ e a lóxica do _líder-traballador_, manexando a súa vez o acceso á base de datos facendo uso de **Ecto**.
+- `bills_generator/`: É o propio sistema de xeración de facturas, o cal contén os diferentes filtros do _pipeline_ e a lóxica do _líder-traballador_, manexando a súa vez o acceso á base de datos facendo uso de **Ecto**.
 
 # Execución do sistema
 
@@ -136,6 +136,10 @@ docker compose up -d
 mix test
 ```
 
+# Documentación
+
+A documentación encóntrase no directorio `doc/`, onde se pode atopar a representación en C4 da arquitectura do sistema.
+O documento `doc/bills_generator.pdf` contén todos os diagramas C4.
 # Capturas
 
 ![Main](./screenshots/main.png)
