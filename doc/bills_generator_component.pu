@@ -13,7 +13,6 @@
 title BillsGenerator\nB<$euro_sign>G
 
 System_Ext(client, "Cliente", "Quere interactuar co sistema")
-System_Ext(bd,"Base de Datos","Almacena as facturas xeradas",$sprite="postgresql")
 
 
 
@@ -54,6 +53,7 @@ System_Boundary(bills_generator,"Bills Generator"){
 		Component(storer_worker_N,"Bill Storer Traballador N","GenFilter.Worker","Compoñente que se encarga de almacenar a factura xerada na Base de Datos")
 	}
   }
+	ContainerDb(bd,"Base de Datos","Almacena as facturas xeradas",$sprite="postgresql")
 }
 
 Rel_D(client,directory,"Envía","petición")
