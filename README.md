@@ -154,8 +154,8 @@ O documento `doc/bills_generator.pdf` contén todos os diagramas C4.
 
 Este sistema foi desenvolvido por:
 
-+ Alejandro Buján Pampín
-+ Jorge Hermo González
-+ Gabriel López Schmidt
-+ Sergio Marcos Vázquez
-+ David Rodríguez Bacelar
++ Alejandro Buján Pampín [@alejandrobujan](https://www.github.com/alejandrobujan)
++ Jorge Hermo González [@jorgehermo9](https://www.github.com/jorgehermo9)
++ Gabriel López Schmidt [@gals-udc](https://www.github.com/gals-udc)
++ Sergio Marcos Vázquez [@seergiomv](https://www.github.com/seergiomv)
++ David Rodríguez Bacelar [@daavidrgz](https://www.github.com/daavidrgz)
