@@ -149,3 +149,13 @@ O documento `doc/bills_generator.pdf` contén todos os diagramas C4.
 ![Main](./screenshots/main.png)
 
 ![Bills](./screenshots/bills.png)
+
+# Autoría
+
+Este sistema foi desenvolvido por:
+
++ Alejandro Buján Pampín
++ Jorge Hermo González
++ Gabriel López Schmidt
++ Sergio Marcos Vázquez
++ David Rodríguez Bacelar
